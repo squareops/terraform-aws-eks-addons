@@ -10,34 +10,34 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ## Usage Example
 ```hcl
 module "eks_addons" {
-  source                        = "squareops/eks_addons/aws"
-  name                          = "skaf"
-  vpc_id                        = "vpc-06e37f0786b7eskaf"
-  environment                   = "production"
-  ipv6_enabled                  = true
-  kms_key_arn                   = "arn:aws:kms:region:222222222222:key/kms_key_arn"
-  keda_enabled                  = true
-  kms_policy_arn                = "arn:aws:iam::222222222222:policy/kms_policy_arn" ## eks module will create kms_policy_arn
-  eks_cluster_name              = "cluster_name"
-  reloader_enabled              = true
-  karpenter_enabled             = true
-  private_subnet_ids            = [""]
-  single_az_sc_config           = [{ name = "infra-service-sc", zone = "zone-name" }]
-  kubeclarity_enabled           = true
-  kubeclarity_hostname          = "kubeclarity.prod.in"
-  kubecost_enabled              = true
-  kubecost_hostname             = "kubecost.prod.in"
-  cert_manager_enabled          = true
-  worker_iam_role_name          = "worker_iam_role_name"
-  worker_iam_role_arn           = "worker_iam_role_arn"
-  ingress_nginx_enabled         = true
-  metrics_server_enabled        = true
-  external_secrets_enabled      = true
-  amazon_eks_vpc_cni_enabled    = true
-  cluster_autoscaler_enabled    = true
-  service_monitor_crd_enabled   = true
+  source                              = "squareops/eks_addons/aws"
+  name                                = "skaf"
+  vpc_id                              = "vpc-06e37f0786b7eskaf"
+  environment                         = "production"
+  ipv6_enabled                        = true
+  kms_key_arn                         = "arn:aws:kms:region:222222222222:key/kms_key_arn"
+  keda_enabled                        = true
+  kms_policy_arn                      = "arn:aws:iam::222222222222:policy/kms_policy_arn" ## eks module will create kms_policy_arn
+  eks_cluster_name                    = "cluster_name"
+  reloader_enabled                    = true
+  karpenter_enabled                   = true
+  private_subnet_ids                  = [""]
+  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "zone-name" }]
+  kubeclarity_enabled                 = true
+  kubeclarity_hostname                = "kubeclarity.prod.in"
+  kubecost_enabled                    = true
+  kubecost_hostname                   = "kubecost.prod.in"
+  cert_manager_enabled                = true
+  worker_iam_role_name                = "worker_iam_role_name"
+  worker_iam_role_arn                 = "worker_iam_role_arn"
+  ingress_nginx_enabled               = true
+  metrics_server_enabled              = true
+  external_secrets_enabled            = true
+  amazon_eks_vpc_cni_enabled          = true
+  cluster_autoscaler_enabled          = true
+  service_monitor_crd_enabled         = true
   enable_aws_load_balancer_controller = true
-  istio_enabled                 = true
+  istio_enabled                       = true
   istio_config = {
     ingress_gateway_enabled             = true
     ingress_gateway_namespace           = "istio-ingressgateway"
