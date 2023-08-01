@@ -14,20 +14,20 @@ locals {
     ingressNginx              = var.enable_ingress_nginx ? module.ingress_nginx[0].argocd_gitops_config : null
     keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
     metricsServer             = var.enable_metrics_server ? module.metrics_server[0].argocd_gitops_config : null
-    tetrateIstio            = var.enable_tetrate_istio ? module.tetrate_istio[0].argocd_gitops_config : null
-    vault                   = var.enable_vault ? module.vault[0].argocd_gitops_config : null
-    vpa                     = var.enable_vpa ? module.vpa[0].argocd_gitops_config : null
-    karpenter               = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
-    kubernetesDashboard     = var.enable_kubernetes_dashboard ? module.kubernetes_dashboard[0].argocd_gitops_config : null
-    awsCloudWatchMetrics    = var.enable_aws_cloudwatch_metrics ? module.aws_cloudwatch_metrics[0].argocd_gitops_config : null
-    externalDns             = var.enable_external_dns ? module.external_dns[0].argocd_gitops_config : null
-    externalSecrets         = var.enable_external_secrets ? module.external_secrets[0].argocd_gitops_config : null
-    velero                  = var.enable_velero ? module.velero[0].argocd_gitops_config : null
-    kubecost                = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
-    strimziKafkaOperator    = var.enable_strimzi_kafka_operator ? module.strimzi_kafka_operator[0].argocd_gitops_config : null
-    kyverno                 = var.enable_kyverno ? { enable = true } : null
-    kyverno_policies        = var.enable_kyverno ? { enable = true } : null
-    kyverno_policy_reporter = var.enable_kyverno ? { enable = true } : null
+    tetrateIstio              = var.enable_tetrate_istio ? module.tetrate_istio[0].argocd_gitops_config : null
+    vault                     = var.enable_vault ? module.vault[0].argocd_gitops_config : null
+    vpa                       = var.enable_vpa ? module.vpa[0].argocd_gitops_config : null
+    karpenter                 = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
+    kubernetesDashboard       = var.enable_kubernetes_dashboard ? module.kubernetes_dashboard[0].argocd_gitops_config : null
+    awsCloudWatchMetrics      = var.enable_aws_cloudwatch_metrics ? module.aws_cloudwatch_metrics[0].argocd_gitops_config : null
+    externalDns               = var.enable_external_dns ? module.external_dns[0].argocd_gitops_config : null
+    externalSecrets           = var.enable_external_secrets ? module.external_secrets[0].argocd_gitops_config : null
+    velero                    = var.enable_velero ? module.velero[0].argocd_gitops_config : null
+    kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
+    strimziKafkaOperator      = var.enable_strimzi_kafka_operator ? module.strimzi_kafka_operator[0].argocd_gitops_config : null
+    kyverno                   = var.enable_kyverno ? { enable = true } : null
+    kyverno_policies          = var.enable_kyverno ? { enable = true } : null
+    kyverno_policy_reporter   = var.enable_kyverno ? { enable = true } : null
   }
 
   addon_context = {

@@ -80,13 +80,7 @@ module "eks_addons" {
 
 | Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |
 |------------------|------------------|------------------|----------------------|----------------------|
-| Release 1.0.0  | &#x2714;  | &#x2717;  | &#x2717; | &#x2717; |
-| Release 1.0.1  | &#x2714;  | &#x2714;  | &#x2714; | &#x2717; |
-| Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2717; |
-| Release 2.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2717; |
-| Release 2.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2717;  |
-| Release 3.0.0  | &#x2714;  | &#x2714;  | &#x2714; |  &#x2714; |
-| Release 3.1.0  | &#x2714;  | &#x2714;  | &#x2714; |  &#x2714; |
+| Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 
 ## IAM Permissions
 The required IAM permissions to create resources from this module can be found [here](https://github.com/squareops/terraform-aws-eks-addons.git/blob/main/IAM.md)
@@ -217,13 +211,13 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_efs"></a> [efs](#module\_efs) | ./addons/efs | n/a |
-| <a name="module_istio"></a> [istio](#module\_istio) | ./addons/istio | n/a |
-| <a name="module_k8s_addons"></a> [k8s\_addons](#module\_k8s\_addons) | ./EKS-Blueprint/modules/kubernetes-addons | n/a |
-| <a name="module_karpenter_provisioner"></a> [karpenter\_provisioner](#module\_karpenter\_provisioner) | ./addons/karpenter_provisioner | n/a |
-| <a name="module_service_monitor_crd"></a> [service\_monitor\_crd](#module\_service\_monitor\_crd) | ./addons/service_monitor_crd | n/a |
-| <a name="module_single_az_sc"></a> [single\_az\_sc](#module\_single\_az\_sc) | ./addons/aws-ebs-storage-class | n/a |
-| <a name="module_velero"></a> [velero](#module\_velero) | ./addons/velero | n/a |
+| <a name="module_efs"></a> [efs](#module\_efs) | ./modules/efs | n/a |
+| <a name="module_istio"></a> [istio](#module\_istio) | ./modules/istio | n/a |
+| <a name="module_k8s_addons"></a> [k8s\_addons](#module\_k8s\_addons) | ./modules/kubernetes-addons | n/a |
+| <a name="module_karpenter_provisioner"></a> [karpenter\_provisioner](#module\_karpenter\_provisioner) | ./modules/karpenter_provisioner | n/a |
+| <a name="module_service_monitor_crd"></a> [service\_monitor\_crd](#module\_service\_monitor\_crd) | ./modules/service_monitor_crd | n/a |
+| <a name="module_single_az_sc"></a> [single\_az\_sc](#module\_single\_az\_sc) | ./modules/aws-ebs-storage-class | n/a |
+| <a name="module_velero"></a> [velero](#module\_velero) | ./modules/velero | n/a |
 
 ## Resources
 
@@ -315,8 +309,8 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="output_environment"></a> [environment](#output\_environment) | Environment Name for the EKS cluster |
 | <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
 | <a name="output_istio_ingressgateway_dns_hostname"></a> [istio\_ingressgateway\_dns\_hostname](#output\_istio\_ingressgateway\_dns\_hostname) | DNS hostname of the Istio Ingress Gateway. |
-| <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity\_Info |
-| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost\_Info |
+| <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity\_credentials |
+| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost\_credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

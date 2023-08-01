@@ -26,7 +26,7 @@ This example is useful for users who are new to a module and want to quickly lea
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks-addons"></a> [eks\_addons](#module\_eks\_addons) | squareops/eks-addons/aws | n/a |
+| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | n/a |
 
 ## Resources
 

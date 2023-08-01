@@ -36,7 +36,7 @@ module "eks-addons" {
   external_secrets_enabled            = true
   amazon_eks_vpc_cni_enabled          = true
   cluster_autoscaler_enabled          = true
-  service_monitor_crd_enabled         = true 
+  service_monitor_crd_enabled         = true
   enable_aws_load_balancer_controller = true
   istio_enabled                       = true
   istio_config = {
@@ -49,7 +49,7 @@ module "eks-addons" {
     prometheus_monitoring_enabled       = true
     cert_manager_cluster_issuer_enabled = true
   }
-  karpenter_provisioner_enabled       = false
+  karpenter_provisioner_enabled = false
   karpenter_provisioner_config = {
     private_subnet_name    = "private-subnet-name"
     instance_capacity_type = ["on-demand"]
