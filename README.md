@@ -9,8 +9,8 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 
 ## Usage Example
 ```hcl
-module "eks_bootstrap" {
-  source                        = "squareops/eks-bootstrap/aws"
+module "eks_addons" {
+  source                        = "squareops/eks_addons/aws"
   name                          = "skaf"
   vpc_id                        = "vpc-06e37f0786b7eskaf"
   environment                   = "production"

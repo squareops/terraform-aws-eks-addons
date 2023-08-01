@@ -10,7 +10,7 @@ locals {
   ipv6_enabled = false
 }
 
-module "eks_bootstrap" {
+module "eks-addons" {
   source                              = "squareops/eks-addons/aws"
   name                                = local.name
   vpc_id                              = ""
