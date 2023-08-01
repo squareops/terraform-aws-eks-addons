@@ -23,10 +23,10 @@ module "eks_addons" {
   karpenter_enabled             = true
   private_subnet_ids            = [""]
   single_az_sc_config           = [{ name = "infra-service-sc", zone = "zone-name" }]
-  kubeclarity_enabled           = false
-  kubeclarity_hostname          = ""
-  kubecost_enabled              = false
-  kubecost_hostname             = ""
+  kubeclarity_enabled           = true
+  kubeclarity_hostname          = "kubeclarity.prod.in"
+  kubecost_enabled              = true
+  kubecost_hostname             = "kubecost.prod.in"
   cert_manager_enabled          = true
   worker_iam_role_name          = "worker_iam_role_name"
   ingress_nginx_enabled         = true
@@ -35,7 +35,7 @@ module "eks_addons" {
   amazon_eks_vpc_cni_enabled    = true
   cluster_autoscaler_enabled    = true
   service_monitor_crd_enabled   = true
-  istio_enabled                 = false
+  istio_enabled                 = true
   istio_config = {
     ingress_gateway_enabled             = true
     ingress_gateway_namespace           = "istio-ingressgateway"
@@ -61,7 +61,7 @@ module "eks_addons" {
   cluster_propotional_autoscaler_enabled        = true
   single_az_ebs_gp3_storage_class_enabled       = true
   cert_manager_install_letsencrypt_http_issuers = true
-  velero_enabled                                = false
+  velero_enabled                                = true
   velero_config = {
     namespaces                      = "my-application" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_notification_token        = "xoxb-slack-token"

@@ -7,7 +7,7 @@ locals {
     Expires    = "Never"
     Department = "Engineering"
   }
-  ipv6_enabled = false
+  ipv6_enabled = true
 }
 
 module "eks-addons" {
@@ -24,10 +24,10 @@ module "eks-addons" {
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
   single_az_sc_config                 = [{ name = "infra-service-sc", zone = "us-east-2a" }]
-  kubeclarity_enabled                 = false
-  kubeclarity_hostname                = ""
-  kubecost_enabled                    = false
-  kubecost_hostname                   = ""
+  kubeclarity_enabled                 = true
+  kubeclarity_hostname                = "kubeclarity.prod.in"
+  kubecost_enabled                    = true
+  kubecost_hostname                   = "kubecost.prod.in"
   cert_manager_enabled                = true
   worker_iam_role_name                = ""
   worker_iam_role_arn                 = ""
@@ -49,7 +49,7 @@ module "eks-addons" {
     prometheus_monitoring_enabled       = true
     cert_manager_cluster_issuer_enabled = true
   }
-  karpenter_provisioner_enabled = false
+  karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
     private_subnet_name    = "private-subnet-name"
     instance_capacity_type = ["on-demand"]
@@ -64,14 +64,14 @@ module "eks-addons" {
   cluster_propotional_autoscaler_enabled        = true
   single_az_ebs_gp3_storage_class_enabled       = true
   cert_manager_install_letsencrypt_http_issuers = true
-  velero_enabled                                = false
+  velero_enabled                                = true
   velero_config = {
-    namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
+    namespaces                      = "my-application" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_notification_token        = "xoxb-EuvmxrYxRatsM8R"
-    slack_notification_channel_name = ""
+    slack_notification_channel_name = "slack-notifications-channel"
     retention_period_in_days        = 45
-    schedule_backup_cron_time       = ""
-    velero_backup_name              = ""
-    backup_bucket_name              = ""
+    schedule_backup_cron_time       = "* 6 * * *"
+    velero_backup_name              = "my-application-backup"
+    backup_bucket_name              = "velero-cluster-backup"
   }
 }
