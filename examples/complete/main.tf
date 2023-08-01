@@ -11,7 +11,7 @@ locals {
 }
 
 module "eks_bootstrap" {
-  source                              = "../../" #"squareops/eks-addons/aws"
+  source                              = "squareops/eks-addons/aws"
   name                                = local.name
   vpc_id                              = ""
   environment                         = local.environment
@@ -32,14 +32,13 @@ module "eks_bootstrap" {
   worker_iam_role_name                = ""
   worker_iam_role_arn                 = ""
   ingress_nginx_enabled               = true
-  metrics_server_enabled              = false
+  metrics_server_enabled              = true
   external_secrets_enabled            = true
   amazon_eks_vpc_cni_enabled          = true
   cluster_autoscaler_enabled          = true
-  service_monitor_crd_enabled         = true
-  karpenter_provisioner_enabled       = false
+  service_monitor_crd_enabled         = true 
   enable_aws_load_balancer_controller = true
-  istio_enabled                       = false
+  istio_enabled                       = true
   istio_config = {
     ingress_gateway_enabled             = true
     ingress_gateway_namespace           = "istio-ingressgateway"
@@ -50,6 +49,7 @@ module "eks_bootstrap" {
     prometheus_monitoring_enabled       = true
     cert_manager_cluster_issuer_enabled = true
   }
+  karpenter_provisioner_enabled       = false
   karpenter_provisioner_config = {
     private_subnet_name    = "private-subnet-name"
     instance_capacity_type = ["on-demand"]

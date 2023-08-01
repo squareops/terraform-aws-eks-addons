@@ -96,31 +96,6 @@ module "aws_ebs_csi_driver" {
 
 #-----------------Kubernetes Add-ons----------------------
 
-module "argocd" {
-  count         = var.enable_argocd ? 1 : 0
-  source        = "./argocd"
-  helm_config   = var.argocd_helm_config
-  applications  = var.argocd_applications
-  addon_config  = { for k, v in local.argocd_addon_config : k => v if v != null }
-  addon_context = local.addon_context
-}
-
-module "argo_rollouts" {
-  count             = var.enable_argo_rollouts ? 1 : 0
-  source            = "./argo-rollouts"
-  helm_config       = var.argo_rollouts_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
-
-module "argo_workflows" {
-  count             = var.enable_argo_workflows ? 1 : 0
-  source            = "./argo-workflows"
-  helm_config       = var.argo_workflows_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
-
 module "aws_efs_csi_driver" {
   count             = var.enable_aws_efs_csi_driver ? 1 : 0
   source            = "./aws-efs-csi-driver"
@@ -312,14 +287,6 @@ module "tetrate_istio" {
   gateway_helm_config  = var.tetrate_istio_gateway_helm_config
   manage_via_gitops    = var.argocd_manage_add_ons
   addon_context        = local.addon_context
-}
-
-module "traefik" {
-  count             = var.enable_traefik ? 1 : 0
-  source            = "./traefik"
-  helm_config       = var.traefik_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
 }
 
 module "vault" {

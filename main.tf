@@ -50,7 +50,7 @@ module "k8s_addons" {
   #keda
   enable_keda = var.keda_enabled
   keda_helm_config = {
-     version = "2.10.2"
+    version = "2.10.2"
   }
   #Ingress Nginx Controller
   enable_ingress_nginx = var.ingress_nginx_enabled
@@ -309,7 +309,7 @@ resource "aws_eks_addon" "kubecost" {
   cluster_name             = var.eks_cluster_name
   addon_name               = "kubecost_kubecost"
   addon_version            = data.aws_eks_addon_version.kubecost.version
-  resolve_conflicts        = "OVERWRITE"
+  # resolve_conflicts        = "OVERWRITE"
   service_account_role_arn = var.worker_iam_role_arn
   preserve                 = true
 
@@ -406,7 +406,7 @@ resource "helm_release" "vpa-crds" {
 
 resource "helm_release" "metrics-server-vpa" {
   count      = var.metrics_server_enabled ? 1 : 0
-  depends_on = ["helm_release.vpa-crds"]
+  depends_on = [helm_release.vpa-crds]
   name       = "metricsservervpa"
   namespace  = "kube-system"
   chart      = "${path.module}/modules/metrics_server_vpa/"

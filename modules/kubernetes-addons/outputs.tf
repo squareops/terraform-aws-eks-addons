@@ -1,18 +1,3 @@
-output "argocd" {
-  description = "Map of attributes of the Helm release and IRSA created"
-  value       = try(module.argocd[0], null)
-}
-
-output "argo_rollouts" {
-  description = "Map of attributes of the Helm release and IRSA created"
-  value       = try(module.argo_rollouts[0], null)
-}
-
-output "argo_workflows" {
-  description = "Map of attributes of the Helm release and IRSA created"
-  value       = try(module.argo_workflows[0], null)
-}
-
 output "aws_cloudwatch_metrics" {
   description = "Map of attributes of the Helm release and IRSA created"
   value       = try(module.aws_cloudwatch_metrics[0], null)
@@ -146,11 +131,6 @@ output "secrets_store_csi_driver" {
 output "strimzi_kafka_operator" {
   description = "Map of attributes of the Helm release and IRSA created"
   value       = try(module.strimzi_kafka_operator[0], null)
-}
-
-output "traefik" {
-  description = "Map of attributes of the Helm release and IRSA created"
-  value       = try(module.traefik[0], null)
 }
 
 output "velero" {
