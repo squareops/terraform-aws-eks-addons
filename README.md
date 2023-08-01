@@ -29,12 +29,14 @@ module "eks_addons" {
   kubecost_hostname             = "kubecost.prod.in"
   cert_manager_enabled          = true
   worker_iam_role_name          = "worker_iam_role_name"
+  worker_iam_role_arn           = "worker_iam_role_arn"
   ingress_nginx_enabled         = true
   metrics_server_enabled        = true
   external_secrets_enabled      = true
   amazon_eks_vpc_cni_enabled    = true
   cluster_autoscaler_enabled    = true
   service_monitor_crd_enabled   = true
+  enable_aws_load_balancer_controller = true
   istio_enabled                 = true
   istio_config = {
     ingress_gateway_enabled             = true
