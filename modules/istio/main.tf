@@ -103,7 +103,6 @@ resource "helm_release" "istio_egress" {
 
 resource "helm_release" "istio_observability" {
   depends_on = [helm_release.istiod]
-  count      = var.observability_enabled ? 1 : 0
   name       = "istio-observability"
   chart      = "${path.module}/istio-observability/"
   namespace  = "istio-system"
@@ -114,10 +113,6 @@ resource "helm_release" "istio_observability" {
   set {
     name  = "monitoring.enabled"
     value = var.prometheus_monitoring_enabled
-  }
-  set {
-    name  = "clusterIssuer.enabled"
-    value = var.cert_manager_cluster_issuer_enabled
   }
   set {
     name  = "clusterIssuer.email"

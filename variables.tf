@@ -204,17 +204,15 @@ variable "istio_enabled" {
 
 variable "istio_config" {
   description = "Configuration to provide settings for Istio"
-  default = {
-    ingress_gateway_enabled             = true
-    ingress_gateway_namespace           = "istio-ingressgateway"
-    egress_gateway_enabled              = false
-    egress_gateway_namespace            = "istio-egressgateway"
-    observability_enabled               = true
-    envoy_access_logs_enabled           = false
-    prometheus_monitoring_enabled       = false
-    cert_manager_cluster_issuer_enabled = false
-  }
-  type = any
+  type = object({
+    ingress_gateway_enabled       = bool
+    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")
+    egress_gateway_enabled        = bool
+    egress_gateway_namespace      = optional(string, "istio-egressgateway")
+    envoy_access_logs_enabled     = bool
+    prometheus_monitoring_enabled = bool
+  })
+
 }
 
 

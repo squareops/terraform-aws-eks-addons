@@ -40,14 +40,10 @@ module "eks-addons" {
   enable_aws_load_balancer_controller = true
   istio_enabled                       = true
   istio_config = {
-    ingress_gateway_enabled             = true
-    ingress_gateway_namespace           = "istio-ingressgateway"
-    egress_gateway_enabled              = true
-    egress_gateway_namespace            = "istio-egressgateway"
-    observability_enabled               = true
-    envoy_access_logs_enabled           = true
-    prometheus_monitoring_enabled       = true
-    cert_manager_cluster_issuer_enabled = true
+    ingress_gateway_enabled       = true
+    egress_gateway_enabled        = false
+    envoy_access_logs_enabled     = true
+    prometheus_monitoring_enabled = true
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
