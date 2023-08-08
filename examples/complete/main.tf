@@ -23,7 +23,7 @@ module "eks-addons" {
   reloader_enabled                    = true
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
-  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "us-east-2a" }]
+  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "${local.region}a" }]
   kubeclarity_enabled                 = true
   kubeclarity_hostname                = "kubeclarity.prod.in"
   kubecost_enabled                    = true
@@ -40,14 +40,10 @@ module "eks-addons" {
   enable_aws_load_balancer_controller = true
   istio_enabled                       = true
   istio_config = {
-    ingress_gateway_enabled             = true
-    ingress_gateway_namespace           = "istio-ingressgateway"
-    egress_gateway_enabled              = true
-    egress_gateway_namespace            = "istio-egressgateway"
-    observability_enabled               = true
-    envoy_access_logs_enabled           = true
-    prometheus_monitoring_enabled       = true
-    cert_manager_cluster_issuer_enabled = true
+    ingress_gateway_enabled       = true
+    egress_gateway_enabled        = false
+    envoy_access_logs_enabled     = true
+    prometheus_monitoring_enabled = true
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {

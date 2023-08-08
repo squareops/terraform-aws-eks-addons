@@ -10,7 +10,7 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ## Usage Example
 ```hcl
 module "eks_addons" {
-  source                              = "squareops/eks_addons/aws"
+  source                              = "squareops/eks-addons/aws"
   name                                = "skaf"
   vpc_id                              = "vpc-06e37f0786b7eskaf"
   environment                         = "production"
@@ -39,14 +39,10 @@ module "eks_addons" {
   enable_aws_load_balancer_controller = true
   istio_enabled                       = true
   istio_config = {
-    ingress_gateway_enabled             = true
-    ingress_gateway_namespace           = "istio-ingressgateway"
-    egress_gateway_enabled              = true
-    egress_gateway_namespace            = "istio-egressgateway"
-    observability_enabled               = true
-    envoy_access_logs_enabled           = true
-    prometheus_monitoring_enabled       = true
-    cert_manager_cluster_issuer_enabled = true
+    ingress_gateway_enabled       = true
+    egress_gateway_enabled        = false
+    envoy_access_logs_enabled     = true
+    prometheus_monitoring_enabled = true
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
@@ -83,6 +79,8 @@ module "eks_addons" {
 | Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |
 |------------------|------------------|------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
+| Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
+
 
 ## IAM Permissions
 The required IAM permissions to create resources from this module can be found [here](https://github.com/squareops/terraform-aws-eks-addons.git/blob/main/IAM.md)
@@ -273,7 +271,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.7.0"` | no |
 | <a name="input_internal_ingress_nginx_enabled"></a> [internal\_ingress\_nginx\_enabled](#input\_internal\_ingress\_nginx\_enabled) | Enable or disable the deployment of an internal ingress controller for Kubernetes. | `bool` | `false` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
-| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | `any` | <pre>{<br>  "cert_manager_cluster_issuer_enabled": false,<br>  "egress_gateway_enabled": false,<br>  "egress_gateway_namespace": "istio-egressgateway",<br>  "envoy_access_logs_enabled": false,<br>  "ingress_gateway_enabled": true,<br>  "ingress_gateway_namespace": "istio-ingressgateway",<br>  "observability_enabled": true,<br>  "prometheus_monitoring_enabled": false<br>}</pre> | no |
+| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>  })</pre> | n/a | yes |
 | <a name="input_istio_enabled"></a> [istio\_enabled](#input\_istio\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_karpenter_enabled"></a> [karpenter\_enabled](#input\_karpenter\_enabled) | Enable or disable Karpenter, a Kubernetes-native, multi-tenant, and auto-scaling solution for containerized workloads on Kubernetes. | `bool` | `false` | no |
 | <a name="input_karpenter_provisioner_config"></a> [karpenter\_provisioner\_config](#input\_karpenter\_provisioner\_config) | Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types. | `any` | <pre>{<br>  "excluded_instance_type": [<br>    "nano",<br>    "micro",<br>    "small"<br>  ],<br>  "instance_capacity_type": [<br>    "spot"<br>  ],<br>  "instance_hypervisor": [<br>    "nitro"<br>  ],<br>  "private_subnet_name": ""<br>}</pre> | no |
@@ -311,8 +309,8 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="output_environment"></a> [environment](#output\_environment) | Environment Name for the EKS cluster |
 | <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
 | <a name="output_istio_ingressgateway_dns_hostname"></a> [istio\_ingressgateway\_dns\_hostname](#output\_istio\_ingressgateway\_dns\_hostname) | DNS hostname of the Istio Ingress Gateway. |
-| <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity\_credentials |
-| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost\_credentials |
+| <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
+| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

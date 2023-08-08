@@ -24,7 +24,7 @@ output "internal_nginx_ingress_controller_dns_hostname" {
 }
 
 output "kubeclarity" {
-  description = "Kubeclarity_credentials"
+  description = "Kubeclarity endpoint and credentials"
   value = var.kubeclarity_enabled ? {
     username = "admin",
     password = nonsensitive(random_password.kube_clarity.result),
@@ -33,7 +33,7 @@ output "kubeclarity" {
 }
 
 output "kubecost" {
-  description = "Kubecost_credentials"
+  description = "Kubecost endpoint and credentials"
   value = var.kubecost_enabled ? {
     username = "admin",
     password = nonsensitive(random_password.kubecost.result),
