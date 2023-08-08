@@ -23,7 +23,7 @@ module "eks-addons" {
   reloader_enabled                    = true
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
-  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "us-east-2a" }]
+  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "${local.region}a" }]
   kubeclarity_enabled                 = true
   kubeclarity_hostname                = "kubeclarity.prod.in"
   kubecost_enabled                    = true

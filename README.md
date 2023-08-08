@@ -10,7 +10,7 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ## Usage Example
 ```hcl
 module "eks_addons" {
-  source                              = "squareops/eks_addons/aws"
+  source                              = "squareops/eks-addons/aws"
   name                                = "skaf"
   vpc_id                              = "vpc-06e37f0786b7eskaf"
   environment                         = "production"
@@ -39,14 +39,10 @@ module "eks_addons" {
   enable_aws_load_balancer_controller = true
   istio_enabled                       = true
   istio_config = {
-    ingress_gateway_enabled             = true
-    ingress_gateway_namespace           = "istio-ingressgateway"
-    egress_gateway_enabled              = true
-    egress_gateway_namespace            = "istio-egressgateway"
-    observability_enabled               = true
-    envoy_access_logs_enabled           = true
-    prometheus_monitoring_enabled       = true
-    cert_manager_cluster_issuer_enabled = true
+    ingress_gateway_enabled       = true
+    egress_gateway_enabled        = false
+    envoy_access_logs_enabled     = true
+    prometheus_monitoring_enabled = true
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
@@ -83,6 +79,8 @@ module "eks_addons" {
 | Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |
 |------------------|------------------|------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
+| Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
+
 
 ## IAM Permissions
 The required IAM permissions to create resources from this module can be found [here](https://github.com/squareops/terraform-aws-eks-addons.git/blob/main/IAM.md)
