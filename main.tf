@@ -287,8 +287,9 @@ resource "helm_release" "kubeclarity" {
   repository = "https://openclarity.github.io/kubeclarity"
   values = [
     templatefile("${path.module}/modules/kubeclarity/values.yaml", {
-      hostname  = var.kubeclarity_hostname
-      namespace = var.kubeclarity_namespace
+      hostname        = var.kubeclarity_hostname
+      namespace       = var.kubeclarity_namespace
+      ingress_enabled = var.ingress_type == "public" ? true : false
     })
   ]
 }
@@ -334,7 +335,7 @@ resource "kubernetes_secret" "kubecost" {
 }
 
 resource "kubernetes_ingress_v1" "kubecost" {
-  count                  = var.kubecost_enabled ? 1 : 0
+  count                  = var.kubecost_enabled && var.ingress_type == "public" ? 1 : 0
   depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
   wait_for_load_balancer = true
   metadata {
