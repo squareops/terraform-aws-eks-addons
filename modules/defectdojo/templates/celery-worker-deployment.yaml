@@ -95,7 +95,7 @@ spec:
         {{- if  .Values.django.uwsgi.certificates.enabled }}
         - name: cert-mount
           mountPath: {{ .Values.django.uwsgi.certificates.certMountPath }}
-        {{- end }}  
+        {{- end }}
         {{- range .Values.celery.extraVolumes }}
         - name: userconfig-{{ .name }}
           readOnly: true

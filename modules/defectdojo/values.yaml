@@ -298,7 +298,7 @@ django:
       size: 5Gi
       accessModes:
       - ReadWriteMany  # check KUBERNETES.md doc first for option to choose
-      storageClassName: ${storageClassName} 
+      storageClassName: ${storageClassName}
 
 initializer:
   run: true

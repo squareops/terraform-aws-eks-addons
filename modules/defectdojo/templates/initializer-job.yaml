@@ -60,7 +60,7 @@ spec:
         {{- if .Values.securityContext.enabled }}
         securityContext:
           {{- toYaml .Values.securityContext.djangoSecurityContext | nindent 10 }}
-        {{- end }}          
+        {{- end }}
         command:
           - /entrypoint-initializer.sh
         envFrom:

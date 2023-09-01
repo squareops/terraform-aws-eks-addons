@@ -436,8 +436,8 @@ resource "helm_release" "defectdojo" {
   timeout    = 600
   values = [
     templatefile("${path.module}/modules/defectdojo/values.yaml", {
-      hostname                      = var.defectdojo_hostname,
-      storageClassName              = var.storageClassName
+      hostname         = var.defectdojo_hostname,
+      storageClassName = var.storageClassName
     })
   ]
 }
@@ -453,8 +453,8 @@ data "kubernetes_secret" "defectdojo" {
 
 # securecodebox
 module "securecodebox" {
-  count = var.securecodebox_enabled ? 1 : 0
-  source = "./modules/securecodebox"
+  count               = var.securecodebox_enabled ? 1 : 0
+  source              = "./modules/securecodebox"
   defectdojo_hostname = var.defectdojo_hostname
 }
 
