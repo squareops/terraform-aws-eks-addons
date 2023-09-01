@@ -419,3 +419,64 @@ resource "helm_release" "metrics-server-vpa" {
     })
   ]
 }
+
+#defectdojo
+resource "kubernetes_namespace" "defectdojo" {
+  metadata {
+    name = "defectdojo"
+  }
+}
+
+resource "helm_release" "defectdojo" {
+  count      = var.defectdojo_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.defectdojo]
+  name       = "defectdojo"
+  namespace  = "defectdojo"
+  chart      = "${path.module}/modules/defectdojo/"
+  timeout    = 600
+  values = [
+    templatefile("${path.module}/modules/defectdojo/values.yaml", {
+      hostname                      = var.defectdojo_hostname,
+      storageClassName              = var.storageClassName
+    })
+  ]
+}
+
+data "kubernetes_secret" "defectdojo" {
+  count      = var.defectdojo_enabled ? 1 : 0
+  depends_on = [helm_release.defectdojo]
+  metadata {
+    name      = "defectdojo"
+    namespace = "defectdojo"
+  }
+}
+
+# securecodebox
+module "securecodebox" {
+  count = var.securecodebox_enabled ? 1 : 0
+  source = "./modules/securecodebox"
+  defectdojo_hostname = var.defectdojo_hostname
+}
+
+#falco
+resource "kubernetes_namespace" "falco" {
+  metadata {
+    name = "falco"
+  }
+}
+
+resource "helm_release" "falco" {
+  count      = var.falco_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.falco]
+  name       = "falco"
+  namespace  = "falco"
+  chart      = "falco"
+  repository = "https://falcosecurity.github.io/charts"
+  timeout    = 600
+  version    = "3.4.1"
+  values = [
+    templatefile("${path.module}/modules/falco/values.yaml", {
+      slack_webhook = var.slack_webhook
+    })
+  ]
+}

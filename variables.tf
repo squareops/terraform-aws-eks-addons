@@ -212,7 +212,12 @@ variable "istio_config" {
     envoy_access_logs_enabled     = bool
     prometheus_monitoring_enabled = bool
   })
-
+  default = {
+    ingress_gateway_enabled       = true
+    egress_gateway_enabled        = false
+    envoy_access_logs_enabled     = true
+    prometheus_monitoring_enabled = true
+  }
 }
 
 
@@ -328,4 +333,39 @@ variable "ipv6_enabled" {
   description = "whether IPv6 enabled or not"
   type        = bool
   default     = false
+}
+
+variable "falco_enabled" {
+  description = "Enable falco for security alerts."
+  default     = true
+  type        = bool
+}
+
+variable "slack_webhook" {
+  description = "Slack webhook for falco Alerts."
+  default     = ""
+  type        = string
+}
+variable "securecodebox_enabled" {
+  description = "Enable istio for service mesh."
+  default     = true
+  type        = bool
+}
+
+variable "defectdojo_enabled" {
+  description = "Enable istio for service mesh."
+  default     = true
+  type        = bool
+}
+
+variable "defectdojo_hostname" {
+  description = "Specify the hostname for the kubecsot. "
+  default     = "defectdojo.dev.skaf.squareops.in"
+  type        = string
+}
+
+variable "storageClassName" {
+  description = "Specify the hostname for the kubecsot. "
+  default     = "infra-service-sc"
+  type        = string
 }
