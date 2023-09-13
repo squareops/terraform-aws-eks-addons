@@ -23,6 +23,8 @@ module "eks-addons" {
   reloader_enabled                    = true
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
+  availability_zone                   = "${local.region}a"
+  gp2_sc_config                       = [{ name = "gp2-sc", zone = "${local.region}a" }]                        
   single_az_sc_config                 = [{ name = "infra-service-sc", zone = "${local.region}a" }]
   kubeclarity_enabled                 = true
   kubeclarity_hostname                = "kubeclarity.prod.in"
@@ -58,6 +60,7 @@ module "eks-addons" {
   aws_node_termination_handler_enabled          = true
   amazon_eks_aws_ebs_csi_driver_enabled         = true
   cluster_propotional_autoscaler_enabled        = true
+  single_az_ebs_gp2_storage_class_enabled       = true
   single_az_ebs_gp3_storage_class_enabled       = true
   cert_manager_install_letsencrypt_http_issuers = true
   velero_enabled                                = true

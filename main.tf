@@ -156,6 +156,16 @@ module "single_az_sc" {
 }
 
 
+module "gp2_sc" {
+  for_each                                = { for sc in var.gp2_sc_config : sc.name => sc }
+  source                                  = "./modules/aws-gp2-ebs-storage-class"
+  kms_key_id                              = var.kms_key_arn
+  availability_zone                       = each.value.zone
+  single_az_ebs_gp2_storage_class_enabled = var.single_az_ebs_gp2_storage_class_enabled
+  single_az_ebs_gp2_storage_class_name    = each.value.name
+}
+
+
 ### EFS
 module "efs" {
   depends_on         = [module.k8s_addons]

@@ -16,6 +16,18 @@ variable "single_az_sc_config" {
   type        = list(any)
 }
 
+variable "single_az_ebs_gp2_storage_class_enabled" {
+  description = "Whether to enable the Single AZ storage class or not."
+  default     = false
+  type        = bool
+}
+
+variable "gp2_sc_config" {
+  description = "Name and regions for storage class in Key-Value pair."
+  default     = []
+  type        = list(any)
+}
+
 variable "cluster_autoscaler_enabled" {
   description = "Whether to enable the Cluster Autoscaler add-on or not."
   default     = false
