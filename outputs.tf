@@ -45,3 +45,12 @@ output "istio_ingressgateway_dns_hostname" {
   description = "DNS hostname of the Istio Ingress Gateway."
   value       = var.istio_enabled ? data.kubernetes_service.istio-ingress.status[0].load_balancer[0].ingress[0].hostname : null
 }
+
+output "defectdojo" {
+  description = "DefectDojo endpoint and credentials"
+  value = var.defectdojo_enabled ? {
+    username = "admin",
+    password = nonsensitive(data.kubernetes_secret.defectdojo[0].data["DD_ADMIN_PASSWORD"]),
+    url      = var.defectdojo_hostname
+  } : null
+}
