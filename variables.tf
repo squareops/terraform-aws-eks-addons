@@ -335,23 +335,6 @@ variable "ipv6_enabled" {
   default     = false
 }
 
-variable "falco_enabled" {
-  description = "Enable falco for security alerts."
-  default     = true
-  type        = bool
-}
-
-variable "slack_webhook" {
-  description = "Slack webhook for falco Alerts."
-  default     = ""
-  type        = string
-}
-variable "securecodebox_enabled" {
-  description = "Enable istio for service mesh."
-  default     = true
-  type        = bool
-}
-
 variable "defectdojo_enabled" {
   description = "Enable istio for service mesh."
   default     = true

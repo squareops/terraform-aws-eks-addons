@@ -450,33 +450,3 @@ data "kubernetes_secret" "defectdojo" {
     namespace = "defectdojo"
   }
 }
-
-# securecodebox
-module "securecodebox" {
-  count               = var.securecodebox_enabled ? 1 : 0
-  source              = "./modules/securecodebox"
-  defectdojo_hostname = var.defectdojo_hostname
-}
-
-#falco
-resource "kubernetes_namespace" "falco" {
-  metadata {
-    name = "falco"
-  }
-}
-
-resource "helm_release" "falco" {
-  count      = var.falco_enabled ? 1 : 0
-  depends_on = [kubernetes_namespace.falco]
-  name       = "falco"
-  namespace  = "falco"
-  chart      = "falco"
-  repository = "https://falcosecurity.github.io/charts"
-  timeout    = 600
-  version    = "3.4.1"
-  values = [
-    templatefile("${path.module}/modules/falco/values.yaml", {
-      slack_webhook = var.slack_webhook
-    })
-  ]
-}
