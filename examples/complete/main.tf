@@ -8,6 +8,16 @@ locals {
     Department = "Engineering"
   }
   ipv6_enabled = true
+  ingress_type = "public" ## public is Ingress and private is internal-ingress-nginx
+  domain_name  = "mgt.skaf.squareops.in"
+}
+
+data "aws_route53_zone" "selected" {
+  name = "skaf.squareops.in"
+}
+
+data "aws_lb_hosted_zone_id" "main" {
+  load_balancer_type = "network"
 }
 
 module "eks-addons" {
@@ -24,10 +34,11 @@ module "eks-addons" {
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
   single_az_sc_config                 = [{ name = "infra-service-sc", zone = "${local.region}a" }]
+  ingress_type                        = local.ingress_type
   kubeclarity_enabled                 = true
-  kubeclarity_hostname                = "kubeclarity.prod.in"
+  kubeclarity_hostname                = "kubeclarity.${local.domain_name}"
   kubecost_enabled                    = true
-  kubecost_hostname                   = "kubecost.prod.in"
+  kubecost_hostname                   = "kubecost.${local.domain_name}"
   cert_manager_enabled                = true
   worker_iam_role_name                = ""
   worker_iam_role_arn                 = ""
@@ -69,5 +80,31 @@ module "eks-addons" {
     schedule_backup_cron_time       = "* 6 * * *"
     velero_backup_name              = "my-application-backup"
     backup_bucket_name              = "velero-cluster-backup"
+  }
+}
+
+resource "aws_route53_record" "kubeclarity" {
+  depends_on = [module.eks-addons]
+  zone_id    = data.aws_route53_zone.selected.zone_id
+  name       = join(".", ["kubeclarity", local.domain_name])
+  type       = "A"
+
+  alias {
+    name                   = module.eks-addons.internal_nginx_ingress_controller_dns_hostname
+    zone_id                = data.aws_lb_hosted_zone_id.main.id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "kubecost" {
+  depends_on = [module.eks-addons]
+  zone_id    = data.aws_route53_zone.selected.zone_id
+  name       = join(".", ["kubecost", local.domain_name])
+  type       = "A"
+
+  alias {
+    name                   = module.eks-addons.internal_nginx_ingress_controller_dns_hostname
+    zone_id                = data.aws_lb_hosted_zone_id.main.id
+    evaluate_target_health = true
   }
 }
