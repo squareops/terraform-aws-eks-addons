@@ -94,7 +94,7 @@ variable "ingress_nginx_enabled" {
   type        = bool
 }
 
-variable "enable_aws_load_balancer_controller" {
+variable "aws_load_balancer_controller_enabled" {
   description = "Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes."
   default     = false
   type        = bool

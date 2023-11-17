@@ -75,7 +75,7 @@ module "k8s_addons" {
   }
 
   #Aws Load balancer Controller
-  enable_aws_load_balancer_controller = var.enable_aws_load_balancer_controller
+  enable_aws_load_balancer_controller = var.aws_load_balancer_controller_enabled
   aws_load_balancer_controller_helm_config = {
     version = var.aws_load_balancer_version
     values = [
