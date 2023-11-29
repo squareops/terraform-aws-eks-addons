@@ -117,7 +117,15 @@ celery:
   logLevel: INFO
   beat:
     annotations: {}
-    affinity: {}
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
     nodeSelector: {}
     replicas: 1
     resources:
@@ -130,7 +138,15 @@ celery:
     tolerations: []
   worker:
     annotations: {}
-    affinity: {}
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
     logLevel: INFO
     nodeSelector: {}
     replicas: 1
@@ -187,7 +203,15 @@ celery:
 
 django:
   annotations: {}
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
   ingress:
     enabled: true
     ingressClassName: "nginx"
@@ -307,7 +331,15 @@ initializer:
   }
   annotations: {}
   keepSeconds: 60
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
   nodeSelector: {}
   resources:
     requests:
@@ -365,7 +397,15 @@ postgresql:
       enabled: true
       # runAsUser specification below is not applied if enabled=false. enabled=false is the required setting for OpenShift "restricted SCC" to work successfully.
       runAsUser: 1001
-    affinity: {}
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
     nodeSelector: {}
   volumePermissions:
     enabled: false
@@ -458,12 +498,20 @@ rabbitmq:
     enabled: true
     type: relative
     value: 0.5
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
   nodeSelector: {}
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 200m
+      memory: 250Mi
     limits:
       cpu: 500m
       memory: 512Mi
