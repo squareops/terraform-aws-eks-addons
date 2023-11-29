@@ -23,6 +23,9 @@ resource "helm_release" "istiod" {
   namespace  = "istio-system"
   timeout    = 600
   version    = "1.18.0"
+  values = [
+    file("${path.module}/helm/values.yaml")
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress" {
@@ -45,6 +48,9 @@ resource "helm_release" "istio_ingress" {
   namespace  = var.ingress_gateway_namespace
   timeout    = 600
   version    = "1.18.0"
+  values = [
+    file("${path.module}/helm/values.yaml")
+  ]
 
   set {
     name  = "labels.app"
@@ -84,6 +90,9 @@ resource "helm_release" "istio_egress" {
   namespace  = var.egress_gateway_namespace
   timeout    = 600
   version    = "1.18.0"
+  values = [
+    file("${path.module}/helm/values.yaml")
+  ]
 
   set {
     name  = "labels.app"

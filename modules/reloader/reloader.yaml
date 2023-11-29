@@ -5,10 +5,18 @@ reloader:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Infra-Services"
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"
+    
+    resources:
+      limits:
+        cpu: "150m"
+        memory: "400Mi"
+      requests:
+        cpu: "50m"
+        memory: "150Mi"
 
     pod:
       annotations:

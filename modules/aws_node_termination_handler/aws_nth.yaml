@@ -3,3 +3,21 @@ enablePrometheusServer: ${enable_service_monitor}
 
 podAnnotations:
   co.elastic.logs/enabled: "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 60Mi
+  requests:
+    cpu: 10m
+    memory: 30Mi

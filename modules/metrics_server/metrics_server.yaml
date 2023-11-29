@@ -5,7 +5,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "Infra-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"
@@ -23,10 +23,10 @@ apiService:
 
 resources:
   limits:
-    cpu: 200m
-    memory: 250Mi
+    cpu: 100m
+    memory: 350Mi
   requests:
-    cpu: 50m
+    cpu: 30m
     memory: 150Mi
 
 podAnnotations:

@@ -97,11 +97,11 @@ kubeclarity:
 
   resources:
     requests:
-      memory: "200Mi"
-      cpu: "100m"
+      memory: "100Mi"
+      cpu: "50m"
     limits:
-      memory: "1000Mi"
-      cpu: "1000m"
+      memory: "500Mi"
+      cpu: "300m"
 
   initContainers:
     resources:
@@ -260,11 +260,11 @@ kubeclarity-grype-server:
 
   resources:
     requests:
-      cpu: "200m"
-      memory: "200Mi"
+      cpu: "100m"
+      memory: "100Mi"
     limits:
-      cpu: "1000m"
-      memory: "1G"
+      cpu: "300m"
+      memory: "500Mi"
 
 ## End of KubeClarity Grype Server Values
 #######################################################################################
@@ -333,8 +333,8 @@ kubeclarity-sbom-db:
       memory: "20Mi"
       cpu: "10m"
     limits:
-      memory: "1Gi"
-      cpu: "200m"
+      memory: "200Mi"
+      cpu: "60m"
 
 ## End of KubeClarity SBOM DB Values
 #######################################################################################
@@ -399,11 +399,11 @@ kubeclarity-postgresql:
 
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "100Mi"
+      cpu: "25m"
     limits:
-      memory: "1000Mi"
-      cpu: "1000m"
+      memory: "300Mi"
+      cpu: "100m"
 
 # End of KubeClarity Internal Postgres Values
 #######################################################################################
