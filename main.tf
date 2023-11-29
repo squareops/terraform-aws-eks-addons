@@ -422,6 +422,7 @@ resource "helm_release" "metrics-server-vpa" {
 
 #defectdojo
 resource "kubernetes_namespace" "defectdojo" {
+  count      = var.defectdojo_enabled ? 1 : 0
   metadata {
     name = "defectdojo"
   }
