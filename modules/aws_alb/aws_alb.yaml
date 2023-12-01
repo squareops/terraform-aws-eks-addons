@@ -22,3 +22,4 @@ resources:
 
 podAnnotations:
   co.elastic.logs/enabled: "true"
+
