@@ -42,5 +42,5 @@ variable "cert_manager_letsencrypt_email" {
 variable "istio_values_yaml" {
   description = "Custom config values for istiod helm"
   type        = any
-  default = ""
+  default     = ""
 }

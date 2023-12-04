@@ -45,6 +45,7 @@ module "eks_addons" {
     egress_gateway_enabled        = false
     envoy_access_logs_enabled     = true
     prometheus_monitoring_enabled = true
+    istio_values_yaml             = ""
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
@@ -78,10 +79,14 @@ module "eks_addons" {
 
 ## Compatibility
 
-| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |
-|------------------|------------------|------------------|----------------------|----------------------|
+| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |
+|------------------|------------------|------------------|----------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
+| Release 1.1.1  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.2  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.3  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.4  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 
 
 ## IAM Permissions
@@ -272,8 +277,8 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
 | <a name="input_cluster_propotional_autoscaler_enabled"></a> [cluster\_propotional\_autoscaler\_enabled](#input\_cluster\_propotional\_autoscaler\_enabled) | Enable or disable Cluster propotional autoscaler add-on | `bool` | `false` | no |
 | <a name="input_core_dns_hpa_config"></a> [core\_dns\_hpa\_config](#input\_core\_dns\_hpa\_config) | Configuration to provide settings of hpa over core dns | `any` | <pre>{<br>  "corednsdeploymentname": "coredns",<br>  "maxReplicas": 10,<br>  "minReplicas": 2,<br>  "targetCPUUtilizationPercentage": 80,<br>  "targetMemoryUtilizationPercentage": "150Mi"<br>}</pre> | no |
-| <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable istio for service mesh. | `bool` | `true` | no |
-| <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `"defectdojo.dev.skaf.squareops.in"` | no |
+| <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
+| <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Fetch Cluster ID of the cluster | `string` | `""` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster. | `string` | `""` | no |
@@ -282,7 +287,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.7.0"` | no |
 | <a name="input_internal_ingress_nginx_enabled"></a> [internal\_ingress\_nginx\_enabled](#input\_internal\_ingress\_nginx\_enabled) | Enable or disable the deployment of an internal ingress controller for Kubernetes. | `bool` | `false` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
-| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
+| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
 | <a name="input_istio_enabled"></a> [istio\_enabled](#input\_istio\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_karpenter_enabled"></a> [karpenter\_enabled](#input\_karpenter\_enabled) | Enable or disable Karpenter, a Kubernetes-native, multi-tenant, and auto-scaling solution for containerized workloads on Kubernetes. | `bool` | `false` | no |
 | <a name="input_karpenter_provisioner_config"></a> [karpenter\_provisioner\_config](#input\_karpenter\_provisioner\_config) | Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types. | `any` | <pre>{<br>  "excluded_instance_type": [<br>    "nano",<br>    "micro",<br>    "small"<br>  ],<br>  "instance_capacity_type": [<br>    "spot"<br>  ],<br>  "instance_hypervisor": [<br>    "nitro"<br>  ],<br>  "private_subnet_name": ""<br>}</pre> | no |

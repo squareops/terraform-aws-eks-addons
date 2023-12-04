@@ -25,11 +25,8 @@ No modules.
 | Name | Type |
 |------|------|
 | [helm_release.istio_base](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.istio_egress](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.istio_ingress](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.istio_observability](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.istiod](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubernetes_namespace.istio_egress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.istio_ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.istio_system](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 
@@ -43,6 +40,7 @@ No modules.
 | <a name="input_envoy_access_logs_enabled"></a> [envoy\_access\_logs\_enabled](#input\_envoy\_access\_logs\_enabled) | Enable or disable the installation of Envoy access logs across Mesh | `bool` | `false` | no |
 | <a name="input_ingress_gateway_enabled"></a> [ingress\_gateway\_enabled](#input\_ingress\_gateway\_enabled) | Enable or disable the installation of Istio Ingress Gateway. | `bool` | `true` | no |
 | <a name="input_ingress_gateway_namespace"></a> [ingress\_gateway\_namespace](#input\_ingress\_gateway\_namespace) | Name of the Kubernetes namespace where the Istio Ingress Gateway will be deployed | `string` | `"istio-ingressgateway"` | no |
+| <a name="input_istio_values_yaml"></a> [istio\_values\_yaml](#input\_istio\_values\_yaml) | Custom config values for istiod helm | `any` | `""` | no |
 | <a name="input_prometheus_monitoring_enabled"></a> [prometheus\_monitoring\_enabled](#input\_prometheus\_monitoring\_enabled) | Enable or disable the installation of Prometheus Operator's servicemonitor to monitor Istio Controlplane and Dataplane | `bool` | `false` | no |
 
 ## Outputs

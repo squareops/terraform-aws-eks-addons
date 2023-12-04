@@ -9,7 +9,7 @@ reloader:
               operator: In
               values:
               - "true"
-    
+
     resources:
       limits:
         cpu: "150m"
