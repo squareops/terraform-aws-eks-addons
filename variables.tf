@@ -339,13 +339,13 @@ variable "ipv6_enabled" {
 
 variable "defectdojo_enabled" {
   description = "Enable istio for service mesh."
-  default     = true
+  default     = false
   type        = bool
 }
 
 variable "defectdojo_hostname" {
   description = "Specify the hostname for the kubecsot. "
-  default     = "defectdojo.dev.skaf.squareops.in"
+  default     = ""
   type        = string
 }
 

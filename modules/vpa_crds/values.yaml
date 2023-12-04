@@ -154,7 +154,15 @@ admissionController:
 
   tolerations: []
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
 
   extraArgs:
     # kube-api-burst: 10

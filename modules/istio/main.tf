@@ -49,6 +49,9 @@ resource "helm_release" "istio_ingress" {
   namespace  = var.ingress_gateway_namespace
   timeout    = 600
   version    = "1.18.0"
+  values = [
+    file("${path.module}/helm/values.yaml")
+  ]
 
   set {
     name  = "labels.app"

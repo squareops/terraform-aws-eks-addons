@@ -5,7 +5,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "Infra-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"
@@ -32,8 +32,8 @@ autoDiscovery:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 1000Mi
-  requests:
     cpu: 50m
-    memory: 800Mi
+    memory: 300Mi
+  requests:
+    cpu: 10m
+    memory: 100Mi

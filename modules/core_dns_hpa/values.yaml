@@ -3,3 +3,21 @@ minReplicas: ${minReplicas}
 maxReplicas: ${maxReplicas}
 targetCPUUtilizationPercentage: ${targetCPUUtilizationPercentage}
 targetMemoryUtilizationPercentage: ${targetMemoryUtilizationPercentage}
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
