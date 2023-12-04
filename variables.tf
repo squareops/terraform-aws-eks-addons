@@ -211,12 +211,14 @@ variable "istio_config" {
     egress_gateway_namespace      = optional(string, "istio-egressgateway")
     envoy_access_logs_enabled     = bool
     prometheus_monitoring_enabled = bool
+    istio_values_yaml             = any
   })
   default = {
     ingress_gateway_enabled       = true
     egress_gateway_enabled        = false
     envoy_access_logs_enabled     = true
     prometheus_monitoring_enabled = true
+    istio_values_yaml             = ""
   }
 }
 

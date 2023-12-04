@@ -23,6 +23,10 @@ resource "helm_release" "istiod" {
   namespace  = "istio-system"
   timeout    = 600
   version    = "1.18.0"
+  values = [
+    file("${path.module}/helm/values/istiod/values.yaml"),
+    var.istio_values_yaml
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress" {
@@ -64,58 +68,58 @@ resource "helm_release" "istio_ingress" {
 }
 
 
-resource "kubernetes_namespace" "istio_egress" {
+# resource "kubernetes_namespace" "istio_egress" {
 
-  depends_on = [helm_release.istiod]
-  count      = var.egress_gateway_enabled ? 1 : 0
+#   depends_on = [helm_release.istiod]
+#   count      = var.egress_gateway_enabled ? 1 : 0
 
-  metadata {
-    name = var.egress_gateway_namespace
-  }
+#   metadata {
+#     name = var.egress_gateway_namespace
+#   }
 
-}
-resource "helm_release" "istio_egress" {
-  depends_on = [helm_release.istiod, kubernetes_namespace.istio_egress]
-  count      = var.egress_gateway_enabled ? 1 : 0
+# }
+# resource "helm_release" "istio_egress" {
+#   depends_on = [helm_release.istiod, kubernetes_namespace.istio_egress]
+#   count      = var.egress_gateway_enabled ? 1 : 0
 
-  name       = "istio-egressgateway"
-  repository = "https://istio-release.storage.googleapis.com/charts"
-  chart      = "gateway"
-  namespace  = var.egress_gateway_namespace
-  timeout    = 600
-  version    = "1.18.0"
+#   name       = "istio-egressgateway"
+#   repository = "https://istio-release.storage.googleapis.com/charts"
+#   chart      = "gateway"
+#   namespace  = var.egress_gateway_namespace
+#   timeout    = 600
+#   version    = "1.18.0"
 
-  set {
-    name  = "labels.app"
-    value = "istio-egressgateway"
-  }
+#   set {
+#     name  = "labels.app"
+#     value = "istio-egressgateway"
+#   }
 
-  set {
-    name  = "labels.istio"
-    value = "egressgateway"
-  }
+#   set {
+#     name  = "labels.istio"
+#     value = "egressgateway"
+#   }
 
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-}
+#   set {
+#     name  = "service.type"
+#     value = "ClusterIP"
+#   }
+# }
 
-resource "helm_release" "istio_observability" {
-  depends_on = [helm_release.istiod]
-  name       = "istio-observability"
-  chart      = "${path.module}/istio-observability/"
-  namespace  = "istio-system"
-  set {
-    name  = "accessLogging.enabled"
-    value = var.envoy_access_logs_enabled
-  }
-  set {
-    name  = "monitoring.enabled"
-    value = var.prometheus_monitoring_enabled
-  }
-  set {
-    name  = "clusterIssuer.email"
-    value = var.cert_manager_letsencrypt_email
-  }
-}
+# resource "helm_release" "istio_observability" {
+#   depends_on = [helm_release.istiod]
+#   name       = "istio-observability"
+#   chart      = "${path.module}/istio-observability/"
+#   namespace  = "istio-system"
+#   set {
+#     name  = "accessLogging.enabled"
+#     value = var.envoy_access_logs_enabled
+#   }
+#   set {
+#     name  = "monitoring.enabled"
+#     value = var.prometheus_monitoring_enabled
+#   }
+#   set {
+#     name  = "clusterIssuer.email"
+#     value = var.cert_manager_letsencrypt_email
+#   }
+# }

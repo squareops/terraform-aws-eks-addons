@@ -198,6 +198,7 @@ module "istio" {
   envoy_access_logs_enabled      = var.istio_config.envoy_access_logs_enabled
   prometheus_monitoring_enabled  = var.istio_config.prometheus_monitoring_enabled
   cert_manager_letsencrypt_email = var.cert_manager_letsencrypt_email
+  istio_values_yaml              = var.istio_config.istio_values_yaml
 }
 
 data "kubernetes_service" "istio-ingress" {
