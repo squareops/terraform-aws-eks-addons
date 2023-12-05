@@ -28,7 +28,7 @@ affinity:
           operator: In
           values:
           - "true"
-      
+
 resources:
   requests:
     cpu: 10m
