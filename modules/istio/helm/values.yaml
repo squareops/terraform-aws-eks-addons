@@ -35,7 +35,3 @@ gateways:
       requests:
         cpu: 10m
         memory: 100Mi
-
-
-    
-    
