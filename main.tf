@@ -308,7 +308,6 @@ resource "aws_eks_addon" "kubecost" {
   cluster_name                = var.eks_cluster_name
   addon_name                  = "kubecost_kubecost"
   addon_version               = data.aws_eks_addon_version.kubecost.version
-  resolve_conflicts_on_create = "OVERWRITE"
   service_account_role_arn    = var.worker_iam_role_arn
   preserve                    = true
 
