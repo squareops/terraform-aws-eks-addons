@@ -27,7 +27,7 @@ resources:
     memory: 350Mi
   requests:
     cpu: 30m
-    memory: 150Mi
+    memory: 100Mi
 
 podAnnotations:
   co.elastic.logs/enabled: "true"

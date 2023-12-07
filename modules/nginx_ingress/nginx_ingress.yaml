@@ -12,7 +12,7 @@ controller:
       memory: 750Mi
     requests:
       cpu: 50m
-      memory: 200Mi
+      memory: 150Mi
   autoscaling:
     enabled: true
     minReplicas: 2
