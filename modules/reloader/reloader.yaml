@@ -16,7 +16,7 @@ reloader:
         memory: "400Mi"
       requests:
         cpu: "50m"
-        memory: "150Mi"
+        memory: "120Mi"
 
     pod:
       annotations:

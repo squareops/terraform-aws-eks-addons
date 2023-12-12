@@ -4,7 +4,7 @@ resources:
     memory: 1000Mi
   requests:
     cpu: 100m
-    memory: 100Mi
+    memory: 50Mi
 
 nodeSelector:
   kubernetes.io/os: linux

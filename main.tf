@@ -28,6 +28,7 @@ module "k8s_addons" {
   enable_amazon_eks_aws_ebs_csi_driver = var.amazon_eks_aws_ebs_csi_driver_enabled
   amazon_eks_aws_ebs_csi_driver_config = {
     additional_iam_policies = [var.kms_policy_arn]
+    values  = [file("${path.module}/modules/ebs-csi/values.yaml")]
   }
 
   #cluster-autoscaler
