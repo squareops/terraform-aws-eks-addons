@@ -30,6 +30,13 @@ webhook:
             operator: In
             values:
             - "true"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi
 
   podAnnotations:
     co.elastic.logs/enabled: "true"
@@ -44,6 +51,13 @@ cainjector:
             operator: In
             values:
             - "true"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 250Mi
+    requests:
+      cpu: 10m
+      memory: 200Mi
 
   podAnnotations:
     co.elastic.logs/enabled: "true"
