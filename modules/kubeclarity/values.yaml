@@ -21,7 +21,15 @@ global:
 
   ## Affinity
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  # affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true" 
   nodeSelector:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
