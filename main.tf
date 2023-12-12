@@ -287,7 +287,7 @@ resource "helm_release" "kubeclarity" {
   count      = var.kubeclarity_enabled ? 1 : 0
   name       = "kubeclarity"
   chart      = "kubeclarity"
-  version    = "2.18.0"
+  version    = "2.22.0"
   namespace  = var.kubeclarity_namespace
   repository = "https://openclarity.github.io/kubeclarity"
   values = [

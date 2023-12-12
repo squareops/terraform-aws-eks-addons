@@ -12,12 +12,27 @@ global:
     ## Configure registry
     ##
     registry: "ghcr.io/openclarity"
-    tag: "v2.18.0"
+    tag: "latest"
     imagePullPolicy: Always
 
   ## Is this being installed under OpenShift restricted SCC?
   ## NOTE: You also need to set the PostgreSQL section correctly if using the OpenShift restricted SCC
   openShiftRestricted: false
+
+  ## Affinity
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true" 
+  nodeSelector:
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
 
 ## End of Global Values
 #######################################################################################
@@ -48,13 +63,19 @@ kubeclarity:
   enableDBInfoLog: false
 
   prometheus:
-    enabled: true
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      interval: 30s
+      annotations: {}
+      labels: {}
     refreshIntervalSeconds: 300
 
   podAnnotations: {}
 
   service:
     type: ClusterIP
+    port: 8080
     annotations: {}
 
   ingress:
@@ -70,9 +91,6 @@ kubeclarity:
       nginx.ingress.kubernetes.io/auth-secret: basic-auth
       # message to display with an appropriate context why the authentication is required
       nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Kubeclarity'
-      # service.beta.kubernetes.io/aws-load-balancer-type: nlb
-      # service.beta.kubek logs -f kubeclarity-kubeclarity-grype-server-58b6dc6c46-46c7r -nrnetes.io/aws-load-balancer-internal: "true"
-      # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
 
     # Optionally use ingressClassName instead of deprecated annotation.
     # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
@@ -97,11 +115,11 @@ kubeclarity:
 
   resources:
     requests:
-      memory: "100Mi"
-      cpu: "50m"
+      memory: "200Mi"
+      cpu: "100m"
     limits:
-      memory: "500Mi"
-      cpu: "300m"
+      memory: "1000Mi"
+      cpu: "1000m"
 
   initContainers:
     resources:
@@ -111,6 +129,22 @@ kubeclarity:
       limits:
         memory: "200Mi"
         cpu: "200m"
+
+  ## Overrides global.affinity
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true" 
+
+  ## Overrides global.nodeSelector
+  # nodeSelector:
+  #   key1: value1
 
 ## End of KubeClarity Values
 #######################################################################################
@@ -148,6 +182,19 @@ kubeclarity-runtime-scan:
   ## Scanner pods nodeSelector.
   # nodeSelector:
   #   key1: value1
+
+  ## Scanner pods Affinity
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true"              
+  
 
   registry:
     skipVerifyTlS: "false"
@@ -200,7 +247,7 @@ kubeclarity-runtime-scan:
       analyzerScope: "squashed"
 
       trivy:
-        ## Enable trivy scanner, if true make sure to add it to analyzerList above
+        ## Enable trivy analyzer, if true make sure to add it to analyzerList above
         ##
         enabled: false
         timeout: "300"
@@ -250,7 +297,7 @@ kubeclarity-grype-server:
   ## Docker Image values.
   docker:
     imageRepo: "ghcr.io/openclarity"
-    imageTag: "v0.2.0"
+    imageTag: "v0.6.0"
     imagePullPolicy: Always
 
   ## Logging level (debug, info, warning, error, fatal, panic).
@@ -260,11 +307,19 @@ kubeclarity-grype-server:
 
   resources:
     requests:
-      cpu: "100m"
-      memory: "100Mi"
+      cpu: "200m"
+      memory: "200Mi"
     limits:
-      cpu: "300m"
-      memory: "500Mi"
+      cpu: "1000m"
+      memory: "1G"
+
+  ## Overrides global.affinity
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  # affinity: {}
+
+  ## Overrides global.nodeSelector
+  # nodeSelector:
+  #   key1: value1
 
 ## End of KubeClarity Grype Server Values
 #######################################################################################
@@ -280,7 +335,7 @@ kubeclarity-trivy-server:
   image:
     registry: docker.io
     repository: aquasec/trivy
-    tag: 0.41.0
+    tag: 0.44.1
     pullPolicy: IfNotPresent
 
   ## By default disable requirement for persistent storage
@@ -333,8 +388,24 @@ kubeclarity-sbom-db:
       memory: "20Mi"
       cpu: "10m"
     limits:
-      memory: "200Mi"
-      cpu: "60m"
+      memory: "1Gi"
+      cpu: "200m"
+
+  ## Overrides global.affinity
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true" 
+
+  ## Overrides global.nodeSelector
+  # nodeSelector:
+  #   key1: value1
 
 ## End of KubeClarity SBOM DB Values
 #######################################################################################
@@ -368,6 +439,7 @@ kubeclarity-postgresql:
     existingSecret: kubeclarity-postgresql-secret
     username: postgres
     database: kubeclarity
+    sslMode: disable
 
   service:
     ports:
@@ -399,11 +471,11 @@ kubeclarity-postgresql:
 
   resources:
     requests:
-      memory: "100Mi"
-      cpu: "25m"
+      memory: "256Mi"
+      cpu: "250m"
     limits:
-      memory: "300Mi"
-      cpu: "100m"
+      memory: "1000Mi"
+      cpu: "1000m"
 
 # End of KubeClarity Internal Postgres Values
 #######################################################################################
@@ -417,6 +489,7 @@ kubeclarity-postgresql-external:
     host: pgsql.hostname  # replace this to reach your PostgreSQL instance
     port: 5432
     database: kubeclarity
+    sslMode: disable
 
 # PostgreSQL connection information
 kubeclarity-postgresql-secret:
