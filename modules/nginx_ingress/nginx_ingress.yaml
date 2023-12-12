@@ -23,6 +23,14 @@ controller:
     co.elastic.logs/enabled: "true"
     co.elastic.logs/module: nginx
   affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true" 
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
