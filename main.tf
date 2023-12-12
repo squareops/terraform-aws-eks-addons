@@ -51,6 +51,7 @@ module "k8s_addons" {
   enable_keda = var.keda_enabled
   keda_helm_config = {
     version = "2.10.2"
+    values  = [file("${path.module}/modules/keda/keda.yaml")]
   }
   #Ingress Nginx Controller
   enable_ingress_nginx = var.ingress_nginx_enabled
@@ -129,7 +130,10 @@ module "k8s_addons" {
 
   # External Secrets
   enable_external_secrets = var.external_secrets_enabled
-
+  external_secrets_helm_config = {
+    values = [file("${path.module}/modules/external-secret/external-secret.yaml")
+    ]
+  }
 }
 
 resource "helm_release" "cert_manager_le_http" {
