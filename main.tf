@@ -129,7 +129,10 @@ module "k8s_addons" {
 
   # External Secrets
   enable_external_secrets = var.external_secrets_enabled
-
+  external_secrets_helm_config = {
+    values = [file("${path.module}/modules/external-secret/external-secret.yaml")
+    ]
+  }
 }
 
 resource "helm_release" "cert_manager_le_http" {
