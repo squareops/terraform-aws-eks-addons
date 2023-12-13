@@ -312,7 +312,46 @@ resource "aws_eks_addon" "kubecost" {
   service_account_role_arn    = var.worker_iam_role_arn
   preserve                    = true
 
+  configuration_values = jsonencode({
+    affinity = {
+      nodeAffinity = {
+        requiredDuringSchedulingIgnoredDuringExecution = {
+          nodeSelectorTerms = [
+            {
+              matchExpressions = [
+                {
+                  key      = "Addons-Services",
+                  operator = "In",
+                  values   = ["true"]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    resources = {
+      limits = {
+        cpu    = "100m",
+        memory = "150Mi"
+      },
+      requests = {
+        cpu    = "100m",
+        memory = "150Mi"
+      }
+    }
+  })
 }
+
+affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
 
 resource "random_password" "kubecost" {
   length  = 20
