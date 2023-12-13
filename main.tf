@@ -343,16 +343,6 @@ resource "aws_eks_addon" "kubecost" {
   })
 }
 
-affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: "Addons-Services"
-            operator: In
-            values:
-            - "true"
-
 resource "random_password" "kubecost" {
   length  = 20
   special = false
