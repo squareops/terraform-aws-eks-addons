@@ -88,13 +88,13 @@ resources:
   # to #falco slack channel for more info about it.
   requests:
     cpu: 50m
-    memory: 256Mi
+    memory: 50Mi
   # -- Maximum amount of resources that Falco container could get.
   # If you are enabling more than one source in falco, than consider to increase
   # the cpu limits.
   limits:
-    cpu: 1000m
-    memory: 1024Mi
+    cpu: 100m
+    memory: 200Mi
 # -- Selectors used to deploy Falco on a given node/nodes.
 nodeSelector: {}
 
@@ -154,6 +154,8 @@ controller:
       # -- Perform rolling updates by default in the DaemonSet agent
       # ref: https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
       type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 6
   deployment:
     # -- Number of replicas when installing Falco using a deployment. Change it if you really know what you are doing.
     # For more info check the section on Plugins in the README.md file.
@@ -361,7 +363,7 @@ falcosidekick:
       # -- `all` (default), `text` (only text is displayed in Slack), `fields` (only fields are displayed in Slack)
       outputformat: "all"
       # -- minimum priority of event to use this output, order is `emergency\|alert\|critical\|error\|warning\|notice\|informational\|debug or ""`
-      minimumpriority: "warning"
+      minimumpriority: "error"
       # -- a Go template to format Slack Text above Attachment, displayed in addition to the output from `slack.outputformat`. If empty, no Text is displayed before Attachment
       messageformat: ""
 
@@ -702,7 +704,7 @@ falco:
   # output events in memory until they are consumed by a gRPC client. Ensure that
   # you have a consumer for the output events or leave it disabled.
   grpc_output:
-    enabled: false
+    enabled: true
 
   ##########################
   # Falco exposed services #
@@ -743,7 +745,7 @@ falco:
 
   # -- gRPC server using a local unix socket
   grpc:
-    enabled: false
+    enabled: true
     bind_address: "unix:///run/falco/falco.sock"
     # -- When the `threadiness` value is set to 0, Falco will automatically determine
     # the appropriate number of threads based on the number of online cores in the system.
