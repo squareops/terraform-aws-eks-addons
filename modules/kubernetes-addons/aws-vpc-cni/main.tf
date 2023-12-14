@@ -12,11 +12,11 @@ data "aws_eks_addon_version" "this" {
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name                = var.addon_context.eks_cluster_id
-  addon_name                  = local.name
-  addon_version               = try(var.addon_config.addon_version, data.aws_eks_addon_version.this.version)
-  service_account_role_arn    = local.create_irsa ? module.irsa_addon[0].irsa_iam_role_arn : try(var.addon_config.service_account_role_arn, null)
-  preserve                    = try(var.addon_config.preserve, true)
+  cluster_name             = var.addon_context.eks_cluster_id
+  addon_name               = local.name
+  addon_version            = try(var.addon_config.addon_version, data.aws_eks_addon_version.this.version)
+  service_account_role_arn = local.create_irsa ? module.irsa_addon[0].irsa_iam_role_arn : try(var.addon_config.service_account_role_arn, null)
+  preserve                 = try(var.addon_config.preserve, true)
 
   tags = merge(
     var.addon_context.tags,

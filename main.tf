@@ -28,7 +28,7 @@ module "k8s_addons" {
   enable_amazon_eks_aws_ebs_csi_driver = var.amazon_eks_aws_ebs_csi_driver_enabled
   amazon_eks_aws_ebs_csi_driver_config = {
     additional_iam_policies = [var.kms_policy_arn]
-    values  = [file("${path.module}/modules/ebs-csi/values.yaml")]
+    values                  = [file("${path.module}/modules/ebs-csi/values.yaml")]
   }
 
   #cluster-autoscaler
@@ -309,12 +309,12 @@ data "aws_eks_addon_version" "kubecost" {
 }
 
 resource "aws_eks_addon" "kubecost" {
-  count                       = var.kubecost_enabled ? 1 : 0
-  cluster_name                = var.eks_cluster_name
-  addon_name                  = "kubecost_kubecost"
-  addon_version               = data.aws_eks_addon_version.kubecost.version
-  service_account_role_arn    = var.worker_iam_role_arn
-  preserve                    = true
+  count                    = var.kubecost_enabled ? 1 : 0
+  cluster_name             = var.eks_cluster_name
+  addon_name               = "kubecost_kubecost"
+  addon_version            = data.aws_eks_addon_version.kubecost.version
+  service_account_role_arn = var.worker_iam_role_arn
+  preserve                 = true
 
 }
 
@@ -427,7 +427,7 @@ resource "helm_release" "metrics-server-vpa" {
 
 #defectdojo
 resource "kubernetes_namespace" "defectdojo" {
-  count      = var.defectdojo_enabled ? 1 : 0
+  count = var.defectdojo_enabled ? 1 : 0
   metadata {
     name = "defectdojo"
   }
