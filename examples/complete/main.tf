@@ -38,6 +38,8 @@ module "eks-addons" {
   cluster_autoscaler_enabled          = true
   service_monitor_crd_enabled         = true
   enable_aws_load_balancer_controller = true
+  falco_enabled                       = true
+  slack_webhook                       = ""
   istio_enabled                       = true
   istio_config = {
     ingress_gateway_enabled       = true
