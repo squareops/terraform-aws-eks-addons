@@ -29,7 +29,7 @@ global:
           - key: "Addons-Services"
             operator: "In"
             values:
-            - "true" 
+            - "true"
   nodeSelector:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
@@ -140,7 +140,7 @@ kubeclarity:
           - key: "Addons-Services"
             operator: "In"
             values:
-            - "true" 
+            - "true"
 
   ## Overrides global.nodeSelector
   # nodeSelector:
@@ -193,8 +193,8 @@ kubeclarity-runtime-scan:
           - key: "Addons-Services"
             operator: "In"
             values:
-            - "true"              
-  
+            - "true"
+
 
   registry:
     skipVerifyTlS: "false"
@@ -401,7 +401,7 @@ kubeclarity-sbom-db:
           - key: "Addons-Services"
             operator: "In"
             values:
-            - "true" 
+            - "true"
 
   ## Overrides global.nodeSelector
   # nodeSelector:

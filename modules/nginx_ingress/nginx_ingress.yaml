@@ -30,7 +30,7 @@ controller:
           - key: "Addons-Services"
             operator: "In"
             values:
-            - "true" 
+            - "true"
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:

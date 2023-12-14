@@ -354,3 +354,13 @@ variable "storageClassName" {
   default     = "infra-service-sc"
   type        = string
 }
+
+variable "falco_enabled" {
+  default = false
+  type    = bool
+}
+
+variable "slack_webhook" {
+  default = ""
+  type    = string
+}
