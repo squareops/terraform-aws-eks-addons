@@ -16,14 +16,14 @@ pilot:
             values:
             - "true"
 
-gateways:
-  istio-ingressgateway:
-    nodeSelector:
-      Addons-Services: true
-    resources:
-      limits:
-        cpu: 100m
-        memory: 200Mi
-      requests:
-        cpu: 10m
-        memory: 100Mi
+# gateways:
+#   istio-ingressgateway:
+#     nodeSelector:
+#       Addons-Services: true
+#     resources:
+#       limits:
+#         cpu: 100m
+#         memory: 200Mi
+#       requests:
+#         cpu: 10m
+#         memory: 100Mi
