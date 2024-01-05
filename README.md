@@ -200,6 +200,22 @@ Velero is designed to work with cloud native environments, making it a popular c
   <summary>DefectDojo</summary>
    DefectDojo is an open-source application vulnerability management tool. It is designed to automate and streamline the process of managing application security testing efforts, including dynamic testing, static analysis, and manual penetration testing.
 </details>
+<details>
+  <summary> Falcon </summary>
+  Falcon helps network administrators monitor malicious activities, apply mitigation techniques and block data tampering across multiple devices.
+  Key feature:
+
+  Endpoint Protection: Safeguards devices from malware, ransomware, and malicious activities.
+
+  Cloud-Native Architecture: Built for easy scalability with real-time threat detection in the cloud.
+
+  Behavioral Analysis: Identifies threats through behavioral analysis, not just known signatures.
+
+  Threat Intelligence: Integrates real-time threat intelligence feeds for up-to-date risk mitigation.
+
+  Incident Response: Enables swift investigation and remediation of security incidents.
+
+</details>
 
 ## Notes
 
