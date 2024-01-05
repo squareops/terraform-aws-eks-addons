@@ -50,7 +50,7 @@ resource "helm_release" "istio_ingress" {
   timeout    = 600
   version    = "1.18.0"
   values = [
-    file("${path.module}/helm/values.yaml")
+    file("${path.module}/helm/istio-ingress.yaml")
   ]
 
   set {
