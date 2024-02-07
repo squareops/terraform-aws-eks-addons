@@ -320,81 +320,81 @@ resource "helm_release" "kubeclarity" {
 
 #Kubecost
 
-# data "aws_eks_addon_version" "kubecost" {
-#   count      = var.kubecost_enabled ? 1 : 0
-#   addon_name = "kubecost_kubecost"
-#   kubernetes_version = data.aws_eks_cluster.eks.version
-#   most_recent        = true
-# }
+data "aws_eks_addon_version" "kubecost" {
+  count      = var.kubecost_enabled ? 1 : 0
+  addon_name = "kubecost_kubecost"
+  kubernetes_version = data.aws_eks_cluster.eks.version
+  most_recent        = true
+}
 
-# resource "aws_eks_addon" "kubecost" {
-#   count                    = var.kubecost_enabled ? 1 : 0
-#   cluster_name             = var.eks_cluster_name
-#   addon_name               = "kubecost_kubecost"
-#   addon_version            = data.aws_eks_addon_version.kubecost[0].version
-#   service_account_role_arn = var.worker_iam_role_arn
-#   preserve                 = true
-# }
+resource "aws_eks_addon" "kubecost" {
+  count                    = var.kubecost_enabled ? 1 : 0
+  cluster_name             = var.eks_cluster_name
+  addon_name               = "kubecost_kubecost"
+  addon_version            = data.aws_eks_addon_version.kubecost[0].version
+  service_account_role_arn = var.worker_iam_role_arn
+  preserve                 = true
+}
 
-# resource "random_password" "kubecost" {
-#   count   = var.kubecost_enabled ? 1 : 0
-#   length  = 20
-#   special = false
-# }
+resource "random_password" "kubecost" {
+  count   = var.kubecost_enabled ? 1 : 0
+  length  = 20
+  special = false
+}
 
-# resource "kubernetes_secret" "kubecost" {
-#   count      = var.kubecost_enabled ? 1 : 0
-#   depends_on = [aws_eks_addon.kubecost]
-#   metadata {
-#     name      = "basic-auth"
-#     namespace = "kubecost"
-#   }
+resource "kubernetes_secret" "kubecost" {
+  count      = var.kubecost_enabled ? 1 : 0
+  depends_on = [aws_eks_addon.kubecost]
+  metadata {
+    name      = "basic-auth"
+    namespace = "kubecost"
+  }
 
-#   data = {
-#     auth = "admin:${bcrypt(random_password.kubecost[0].result)}"
-#   }
+  data = {
+    auth = "admin:${bcrypt(random_password.kubecost[0].result)}"
+  }
 
-#   type = "Opaque"
-# }
+  type = "Opaque"
+}
 
-# resource "kubernetes_ingress_v1" "kubecost" {
-#   count                  = var.kubecost_enabled ? 1 : 0
-#   depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
-#   wait_for_load_balancer = true
-#   metadata {
-#     name      = "kubecost"
-#     namespace = "kubecost"
-#     annotations = {
-#       "kubernetes.io/ingress.class"             = "nginx"
-#       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
-#       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
-#       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
-#       "nginx.ingress.kubernetes.io/auth-realm"  = "Authentication Required - kubecost"
-#     }
-#   }
-#   spec {
-#     rule {
-#       host = var.kubecost_hostname
-#       http {
-#         path {
-#           path = "/"
-#           backend {
-#             service {
-#               name = "cost-analyzer-cost-analyzer"
-#               port {
-#                 number = 9090
-#               }
-#             }
-#           }
-#         }
-#       }
-#     }
-#     tls {
-#       secret_name = "tls-kubecost"
-#       hosts       = [var.kubecost_hostname]
-#     }
-#   }
-# }
+resource "kubernetes_ingress_v1" "kubecost" {
+  count                  = var.kubecost_enabled ? 1 : 0
+  depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
+  wait_for_load_balancer = true
+  metadata {
+    name      = "kubecost"
+    namespace = "kubecost"
+    annotations = {
+      "kubernetes.io/ingress.class"             = "nginx"
+      "cert-manager.io/cluster-issuer"          = var.cluster_issuer
+      "nginx.ingress.kubernetes.io/auth-type"   = "basic"
+      "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
+      "nginx.ingress.kubernetes.io/auth-realm"  = "Authentication Required - kubecost"
+    }
+  }
+  spec {
+    rule {
+      host = var.kubecost_hostname
+      http {
+        path {
+          path = "/"
+          backend {
+            service {
+              name = "cost-analyzer-cost-analyzer"
+              port {
+                number = 9090
+              }
+            }
+          }
+        }
+      }
+    }
+    tls {
+      secret_name = "tls-kubecost"
+      hosts       = [var.kubecost_hostname]
+    }
+  }
+}
 
 #hpa-coredns
 resource "helm_release" "coredns-hpa" {
