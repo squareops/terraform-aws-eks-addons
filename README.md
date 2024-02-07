@@ -90,8 +90,8 @@ module "eks_addons" {
 | Release 1.1.3  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.4  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.5  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
-| Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | 
-| Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | 
+| Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 
 
 ## IAM Permissions
@@ -255,7 +255,6 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 
 | Name | Type |
 |------|------|
-| [aws_eks_addon.kubecost](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_iam_instance_profile.karpenter_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [helm_release.cert_manager_le_http](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.coredns-hpa](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -265,16 +264,12 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | [helm_release.kubeclarity](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.metrics-server-vpa](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.vpa-crds](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubernetes_ingress_v1.kubecost](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [kubernetes_namespace.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.falco](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.internal_nginx](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.kube_clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_secret.kube_clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
-| [kubernetes_secret.kubecost](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
 | [random_password.kube_clarity](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [random_password.kubecost](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [aws_eks_addon_version.kubecost](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_addon_version) | data source |
 | [aws_eks_cluster.eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [kubernetes_secret.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/secret) | data source |
@@ -300,6 +295,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
 | <a name="input_cluster_propotional_autoscaler_enabled"></a> [cluster\_propotional\_autoscaler\_enabled](#input\_cluster\_propotional\_autoscaler\_enabled) | Enable or disable Cluster propotional autoscaler add-on | `bool` | `false` | no |
 | <a name="input_core_dns_hpa_config"></a> [core\_dns\_hpa\_config](#input\_core\_dns\_hpa\_config) | Configuration to provide settings of hpa over core dns | `any` | <pre>{<br>  "corednsdeploymentname": "coredns",<br>  "maxReplicas": 10,<br>  "minReplicas": 2,<br>  "targetCPUUtilizationPercentage": 80,<br>  "targetMemoryUtilizationPercentage": "150Mi"<br>}</pre> | no |
+| <a name="input_coredns_hpa_enabled"></a> [coredns\_hpa\_enabled](#input\_coredns\_hpa\_enabled) | value | `bool` | `false` | no |
 | <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
@@ -308,7 +304,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_external_secrets_enabled"></a> [external\_secrets\_enabled](#input\_external\_secrets\_enabled) | Enable or disable External Secrets operator add-on for managing external secrets. | `bool` | `false` | no |
 | <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | n/a | `bool` | `false` | no |
 | <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services. | `bool` | `false` | no |
-| <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.7.0"` | no |
+| <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.9.1"` | no |
 | <a name="input_internal_ingress_nginx_enabled"></a> [internal\_ingress\_nginx\_enabled](#input\_internal\_ingress\_nginx\_enabled) | Enable or disable the deployment of an internal ingress controller for Kubernetes. | `bool` | `false` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
 | <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
@@ -325,7 +321,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_kubecost_enabled"></a> [kubecost\_enabled](#input\_kubecost\_enabled) | Enable or disable the deployment of an Kubecost for Kubernetes. | `bool` | `false` | no |
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
-| <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.8.2"` | no |
+| <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
 | <a name="input_metrics_server_vpa_config"></a> [metrics\_server\_vpa\_config](#input\_metrics\_server\_vpa\_config) | Configuration to provide settings of vpa over metrics server | `any` | <pre>{<br>  "maxCPU": "100m",<br>  "maxMemory": "500Mi",<br>  "metricsServerDeploymentName": "metrics-server",<br>  "minCPU": "25m",<br>  "minMemory": "150Mi"<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
@@ -353,7 +349,6 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
 | <a name="output_istio_ingressgateway_dns_hostname"></a> [istio\_ingressgateway\_dns\_hostname](#output\_istio\_ingressgateway\_dns\_hostname) | DNS hostname of the Istio Ingress Gateway. |
 | <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
-| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

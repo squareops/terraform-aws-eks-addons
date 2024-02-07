@@ -8,7 +8,7 @@ locals {
       name        = local.name
       chart       = local.name
       repository  = "https://charts.external-secrets.io/"
-      version     = "0.6.0"
+      version     = "0.9.11"
       namespace   = local.name
       description = "The External Secrets Operator Helm chart default configuration"
     },

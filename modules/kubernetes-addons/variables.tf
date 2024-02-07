@@ -861,6 +861,7 @@ variable "karpenter_node_iam_instance_profile" {
   default     = ""
 }
 
+
 #-----------KEDA ADDON-------------
 variable "enable_keda" {
   description = "Enable KEDA Event-based autoscaler add-on"

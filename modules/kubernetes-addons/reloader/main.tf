@@ -16,7 +16,7 @@ module "helm_addon" {
       name             = local.name
       chart            = local.name
       repository       = "https://stakater.github.io/stakater-charts"
-      version          = "v0.0.124"
+      version          = "v1.0.63"
       namespace        = local.name
       create_namespace = true
       description      = "Reloader Helm Chart deployment configuration"

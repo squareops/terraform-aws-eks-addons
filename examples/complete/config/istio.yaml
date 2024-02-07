@@ -49,8 +49,8 @@ global:
         memory: 80Mi
       limits:
         cpu: 100m
-        memory: 128Mi   
-        
+        memory: 128Mi
+
 pilot:
   resources:
     limits:

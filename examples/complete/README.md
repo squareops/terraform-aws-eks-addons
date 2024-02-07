@@ -26,7 +26,7 @@ This example is useful for users who are new to a module and want to quickly lea
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | n/a |
+| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | ../../ | n/a |
 
 ## Resources
 
@@ -49,6 +49,5 @@ No inputs.
 | <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
 | <a name="output_istio_ingressgateway_dns_hostname"></a> [istio\_ingressgateway\_dns\_hostname](#output\_istio\_ingressgateway\_dns\_hostname) | DNS hostname of the Istio Ingress Gateway |
 | <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
-| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

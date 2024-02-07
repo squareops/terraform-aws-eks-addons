@@ -10,6 +10,7 @@ module "service_monitor_crd" {
 }
 
 resource "aws_iam_instance_profile" "karpenter_profile" {
+  count       = var.karpenter_enabled ? 1 : 0
   role        = var.worker_iam_role_name
   name_prefix = var.eks_cluster_name
   tags = merge(
@@ -97,12 +98,12 @@ module "k8s_addons" {
     values = [
       templatefile("${path.module}/modules/karpenter/karpenter.yaml", {
         eks_cluster_id            = var.eks_cluster_name,
-        node_iam_instance_profile = aws_iam_instance_profile.karpenter_profile.name
+        node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
         eks_cluster_endpoint      = data.aws_eks_cluster.eks.endpoint
       })
     ]
   }
-  karpenter_node_iam_instance_profile = aws_iam_instance_profile.karpenter_profile.name
+  karpenter_node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
 
   enable_reloader = var.reloader_enabled
   reloader_helm_config = {
@@ -125,7 +126,10 @@ module "k8s_addons" {
     ]
   }
 
-  enable_amazon_eks_vpc_cni        = var.amazon_eks_vpc_cni_enabled
+  enable_amazon_eks_vpc_cni = var.amazon_eks_vpc_cni_enabled
+  amazon_eks_vpc_cni_config = {
+
+  }
   enable_aws_efs_csi_driver        = var.efs_storage_class_enabled
   aws_efs_csi_driver_irsa_policies = [var.kms_policy_arn]
 
@@ -162,19 +166,31 @@ module "single_az_sc" {
 
 
 ### EFS
+# module "efs" {
+#   depends_on         = [module.k8s_addons]
+#   source             = "./modules/efs"
+#   name               = var.name
+#   count              = var.efs_storage_class_enabled ? 1 : 0
+#   vpc_id             = var.vpc_id
+#   region             = data.aws_region.current.name
+#   environment        = var.environment
+#   kms_key_id         = var.kms_key_arn
+#   private_subnet_ids = var.private_subnet_ids
+# }
+
+# EFS
 module "efs" {
-  depends_on         = [module.k8s_addons]
-  source             = "./modules/efs"
-  name               = var.name
-  count              = var.efs_storage_class_enabled ? 1 : 0
-  vpc_id             = var.vpc_id
-  region             = data.aws_region.current.name
-  environment        = var.environment
-  kms_key_id         = var.kms_key_arn
-  private_subnet_ids = var.private_subnet_ids
+  source      = "./modules/efs"
+  count       = var.efs_storage_class_enabled ? 1 : 0
+  name        = var.name
+  vpc_id      = var.vpc_id
+  environment = var.environment
+  kms_key_arn = var.kms_key_arn
+  subnets     = var.private_subnet_ids
 }
 
 data "kubernetes_service" "nginx-ingress" {
+  count      = var.ingress_nginx_enabled ? 1 : 0
   depends_on = [module.k8s_addons]
   metadata {
     name      = "ingress-nginx-controller"
@@ -207,6 +223,7 @@ module "istio" {
 }
 
 data "kubernetes_service" "istio-ingress" {
+  count      = var.istio_enabled ? 1 : 0
   depends_on = [module.istio]
   metadata {
     name      = "istio-ingressgateway"
@@ -238,7 +255,7 @@ resource "helm_release" "internal_nginx" {
   count      = var.internal_ingress_nginx_enabled ? 1 : 0
   name       = "internal-ingress-nginx"
   chart      = "ingress-nginx"
-  version    = "4.7.0"
+  version    = "4.9.1"
   namespace  = "internal-ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"
   values = [
@@ -266,6 +283,7 @@ resource "kubernetes_namespace" "kube_clarity" {
 }
 
 resource "random_password" "kube_clarity" {
+  count   = var.kubeclarity_enabled ? 1 : 0
   length  = 20
   special = false
 }
@@ -279,7 +297,7 @@ resource "kubernetes_secret" "kube_clarity" {
   }
 
   data = {
-    auth = "admin:${bcrypt(random_password.kube_clarity.result)}"
+    auth = "admin:${bcrypt(random_password.kube_clarity[0].result)}"
   }
 
   type = "Opaque"
@@ -289,7 +307,7 @@ resource "helm_release" "kubeclarity" {
   count      = var.kubeclarity_enabled ? 1 : 0
   name       = "kubeclarity"
   chart      = "kubeclarity"
-  version    = "2.22.0"
+  version    = "2.23.0"
   namespace  = var.kubeclarity_namespace
   repository = "https://openclarity.github.io/kubeclarity"
   values = [
@@ -302,84 +320,85 @@ resource "helm_release" "kubeclarity" {
 
 #Kubecost
 
-data "aws_eks_addon_version" "kubecost" {
-  addon_name = "kubecost_kubecost"
-  # eks_cluster_version  = var.eks_cluster_version != null ? var.eks_cluster_version :
-  kubernetes_version = data.aws_eks_cluster.eks.version
-  most_recent        = true
-}
+# data "aws_eks_addon_version" "kubecost" {
+#   count      = var.kubecost_enabled ? 1 : 0
+#   addon_name = "kubecost_kubecost"
+#   kubernetes_version = data.aws_eks_cluster.eks.version
+#   most_recent        = true
+# }
 
-resource "aws_eks_addon" "kubecost" {
-  count                    = var.kubecost_enabled ? 1 : 0
-  cluster_name             = var.eks_cluster_name
-  addon_name               = "kubecost_kubecost"
-  addon_version            = data.aws_eks_addon_version.kubecost.version
-  service_account_role_arn = var.worker_iam_role_arn
-  preserve                 = true
+# resource "aws_eks_addon" "kubecost" {
+#   count                    = var.kubecost_enabled ? 1 : 0
+#   cluster_name             = var.eks_cluster_name
+#   addon_name               = "kubecost_kubecost"
+#   addon_version            = data.aws_eks_addon_version.kubecost[0].version
+#   service_account_role_arn = var.worker_iam_role_arn
+#   preserve                 = true
+# }
 
-}
+# resource "random_password" "kubecost" {
+#   count   = var.kubecost_enabled ? 1 : 0
+#   length  = 20
+#   special = false
+# }
 
-resource "random_password" "kubecost" {
-  length  = 20
-  special = false
-}
+# resource "kubernetes_secret" "kubecost" {
+#   count      = var.kubecost_enabled ? 1 : 0
+#   depends_on = [aws_eks_addon.kubecost]
+#   metadata {
+#     name      = "basic-auth"
+#     namespace = "kubecost"
+#   }
 
-resource "kubernetes_secret" "kubecost" {
-  count      = var.kubecost_enabled ? 1 : 0
-  depends_on = [aws_eks_addon.kubecost]
-  metadata {
-    name      = "basic-auth"
-    namespace = "kubecost"
-  }
+#   data = {
+#     auth = "admin:${bcrypt(random_password.kubecost[0].result)}"
+#   }
 
-  data = {
-    auth = "admin:${bcrypt(random_password.kubecost.result)}"
-  }
+#   type = "Opaque"
+# }
 
-  type = "Opaque"
-}
-
-resource "kubernetes_ingress_v1" "kubecost" {
-  count                  = var.kubecost_enabled ? 1 : 0
-  depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
-  wait_for_load_balancer = true
-  metadata {
-    name      = "kubecost"
-    namespace = "kubecost"
-    annotations = {
-      "kubernetes.io/ingress.class"             = "nginx"
-      "cert-manager.io/cluster-issuer"          = var.cluster_issuer
-      "nginx.ingress.kubernetes.io/auth-type"   = "basic"
-      "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
-      "nginx.ingress.kubernetes.io/auth-realm"  = "Authentication Required - kubecost"
-    }
-  }
-  spec {
-    rule {
-      host = var.kubecost_hostname
-      http {
-        path {
-          path = "/"
-          backend {
-            service {
-              name = "cost-analyzer-cost-analyzer"
-              port {
-                number = 9090
-              }
-            }
-          }
-        }
-      }
-    }
-    tls {
-      secret_name = "tls-kubecost"
-      hosts       = [var.kubecost_hostname]
-    }
-  }
-}
+# resource "kubernetes_ingress_v1" "kubecost" {
+#   count                  = var.kubecost_enabled ? 1 : 0
+#   depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
+#   wait_for_load_balancer = true
+#   metadata {
+#     name      = "kubecost"
+#     namespace = "kubecost"
+#     annotations = {
+#       "kubernetes.io/ingress.class"             = "nginx"
+#       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
+#       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
+#       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
+#       "nginx.ingress.kubernetes.io/auth-realm"  = "Authentication Required - kubecost"
+#     }
+#   }
+#   spec {
+#     rule {
+#       host = var.kubecost_hostname
+#       http {
+#         path {
+#           path = "/"
+#           backend {
+#             service {
+#               name = "cost-analyzer-cost-analyzer"
+#               port {
+#                 number = 9090
+#               }
+#             }
+#           }
+#         }
+#       }
+#     }
+#     tls {
+#       secret_name = "tls-kubecost"
+#       hosts       = [var.kubecost_hostname]
+#     }
+#   }
+# }
 
 #hpa-coredns
 resource "helm_release" "coredns-hpa" {
+  count     = var.coredns_hpa_enabled ? 1 : 0
   name      = "corednshpa"
   namespace = "kube-system"
   chart     = "${path.module}/modules/core_dns_hpa/"
@@ -401,7 +420,7 @@ resource "helm_release" "vpa-crds" {
   namespace  = "kube-system"
   repository = "https://cowboysysop.github.io/charts/"
   chart      = "vertical-pod-autoscaler"
-  version    = "7.2.0"
+  version    = "9.6.0"
   timeout    = 600
   values = [
     file("${path.module}/modules/vpa_crds/values.yaml")
@@ -460,6 +479,7 @@ data "kubernetes_secret" "defectdojo" {
 
 #falco
 resource "kubernetes_namespace" "falco" {
+  count = var.falco_enabled ? 1 : 0
   metadata {
     name = "falco"
   }
@@ -473,7 +493,7 @@ resource "helm_release" "falco" {
   chart      = "falco"
   repository = "https://falcosecurity.github.io/charts"
   timeout    = 600
-  version    = "3.4.1"
+  version    = "4.0.0"
   values = [
     templatefile("${path.module}/modules/falco/values.yaml", {
       slack_webhook = var.slack_webhook
