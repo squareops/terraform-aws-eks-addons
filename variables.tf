@@ -372,4 +372,3 @@ variable "coredns_hpa_enabled" {
   default     = false
   type        = bool
 }
-
