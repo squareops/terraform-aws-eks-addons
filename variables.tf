@@ -356,17 +356,20 @@ variable "storageClassName" {
 }
 
 variable "falco_enabled" {
-  default = false
-  type    = bool
-}
-
-variable "slack_webhook" {
-  default = ""
-  type    = string
-}
-
-variable "coredns_hpa_enabled" {
-  description = "value"
+  description = "Determines whether Falco is enabled."
   default     = false
   type        = bool
 }
+
+variable "slack_webhook" {
+  description = "The Slack webhook URL used for notifications."
+  default     = ""
+  type        = string
+}
+
+variable "coredns_hpa_enabled" {
+  description = "Determines whether Horizontal Pod Autoscaling (HPA) for CoreDNS is enabled."
+  default     = false
+  type        = bool
+}
+

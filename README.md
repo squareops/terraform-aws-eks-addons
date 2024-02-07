@@ -23,6 +23,7 @@ module "eks_addons" {
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
   single_az_sc_config                 = [{ name = "infra-service-sc", zone = "zone-name" }]
+  coredns_hpa_enabled                 = true
   kubeclarity_enabled                 = true
   kubeclarity_hostname                = "kubeclarity.prod.in"
   kubecost_enabled                    = true
@@ -39,8 +40,8 @@ module "eks_addons" {
   cluster_autoscaler_enabled          = true
   service_monitor_crd_enabled         = true
   enable_aws_load_balancer_controller = true
-  falco_enabled                        = true
-  slack_webhook                        = ""
+  falco_enabled                       = true
+  slack_webhook                       = ""
   istio_enabled                       = true
   istio_config = {
     ingress_gateway_enabled       = true

@@ -33,8 +33,8 @@ module "eks-addons" {
   defectdojo_enabled                      = true
   defectdojo_hostname                     = "defectdojo.prod.in"
   cert_manager_enabled                    = true
-  worker_iam_role_name                    = "proda-eksa-node-role"
-  worker_iam_role_arn                     = "arn:aws:iam::767398031518:role/proda-eksa-node-role"
+  worker_iam_role_name                    = "node-role"
+  worker_iam_role_arn                     = "arn:aws:iam::xxxxxxxxxx:role/node-role"
   ingress_nginx_enabled                   = true
   metrics_server_enabled                  = true
   external_secrets_enabled                = true
@@ -43,7 +43,7 @@ module "eks-addons" {
   service_monitor_crd_enabled             = true
   aws_load_balancer_controller_enabled    = true
   falco_enabled                           = true
-  slack_webhook                           = "xoxb-379541400966-5154435388295-CHQoVVoajtuiibMHnnoaPzVl"
+  slack_webhook                           = "xoxb-379541400966-iibMHnnoaPzVl"
   istio_enabled                           = true
   istio_config = {
     ingress_gateway_enabled       = true
@@ -59,7 +59,7 @@ module "eks-addons" {
     excluded_instance_type = ["nano", "micro", "small"]
     instance_hypervisor    = ["nitro"]
   }
-  cert_manager_letsencrypt_email                = "rohit.kumar@squareops.com"
+  cert_manager_letsencrypt_email                = "email@email.com"
   internal_ingress_nginx_enabled                = true
   efs_storage_class_enabled                     = true
   aws_node_termination_handler_enabled          = true
@@ -69,11 +69,11 @@ module "eks-addons" {
   velero_enabled                                = true
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
-    slack_notification_token        = "xoxb-379541400966-5154435388295-CHQoVVoajtuiibMHnnoaPzVl"
-    slack_notification_channel_name = "skaf-demo-notifications"
+    slack_notification_token        = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_notification_channel_name = "slack-notification-channel"
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
-    velero_backup_name              = "my-application-backup"
-    backup_bucket_name              = "velero-rohit-buckett"
+    velero_backup_name              = "application-backup"
+    backup_bucket_name              = "velero-bucket"
   }
 }
