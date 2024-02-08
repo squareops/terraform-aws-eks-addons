@@ -321,8 +321,8 @@ resource "helm_release" "kubeclarity" {
 #Kubecost
 
 data "aws_eks_addon_version" "kubecost" {
-  count      = var.kubecost_enabled ? 1 : 0
-  addon_name = "kubecost_kubecost"
+  count              = var.kubecost_enabled ? 1 : 0
+  addon_name         = "kubecost_kubecost"
   kubernetes_version = data.aws_eks_cluster.eks.version
   most_recent        = true
 }

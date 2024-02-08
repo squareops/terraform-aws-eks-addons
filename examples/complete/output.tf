@@ -20,7 +20,7 @@ output "efs_id" {
 
 output "defectdojo" {
   description = "DefectDojo endpoint and credentials"
-  value = module.eks-addons.defectdojo
+  value       = module.eks-addons.defectdojo
 }
 
 output "internal_nginx_ingress_controller_dns_hostname" {
