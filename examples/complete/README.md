@@ -43,6 +43,7 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_defectdojo"></a> [defectdojo](#output\_defectdojo) | DefectDojo endpoint and credentials |
 | <a name="output_ebs_encryption_enable"></a> [ebs\_encryption\_enable](#output\_ebs\_encryption\_enable) | Whether Amazon Elastic Block Store (EBS) encryption is enabled or not. |
 | <a name="output_efs_id"></a> [efs\_id](#output\_efs\_id) | ID of the Amazon Elastic File System (EFS) that has been created for the EKS cluster. |
 | <a name="output_environment"></a> [environment](#output\_environment) | Environment Name for the EKS cluster |

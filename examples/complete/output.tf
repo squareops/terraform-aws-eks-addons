@@ -18,6 +18,11 @@ output "efs_id" {
   description = "ID of the Amazon Elastic File System (EFS) that has been created for the EKS cluster."
 }
 
+output "defectdojo" {
+  description = "DefectDojo endpoint and credentials"
+  value       = module.eks-addons.defectdojo
+}
+
 output "internal_nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster."
   value       = module.eks-addons.internal_nginx_ingress_controller_dns_hostname

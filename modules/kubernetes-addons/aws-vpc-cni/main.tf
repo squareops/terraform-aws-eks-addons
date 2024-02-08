@@ -8,7 +8,7 @@ locals {
 data "aws_eks_addon_version" "this" {
   addon_name         = local.name
   kubernetes_version = var.addon_config.kubernetes_version
-  most_recent        = try(var.addon_config.most_recent, false)
+  most_recent        = true
 }
 
 resource "aws_eks_addon" "vpc_cni" {

@@ -123,7 +123,7 @@ module "aws_load_balancer_controller" {
 }
 
 module "aws_node_termination_handler" {
-  count                   = var.enable_aws_node_termination_handler && (length(var.auto_scaling_group_names) > 0 || var.enable_karpenter) ? 1 : 0
+  count                   = var.enable_aws_node_termination_handler ? 1 : 0
   source                  = "./aws-node-termination-handler"
   helm_config             = var.aws_node_termination_handler_helm_config
   irsa_policies           = var.aws_node_termination_handler_irsa_policies
@@ -214,9 +214,20 @@ module "ingress_nginx" {
   addon_context     = local.addon_context
 }
 
+# module "karpenter" {
+#   count                     = var.enable_karpenter ? 1 : 0
+#   source                    = "./karpenter"
+#   helm_config               = var.karpenter_helm_config
+#   irsa_policies             = var.karpenter_irsa_policies
+#   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
+#   manage_via_gitops         = var.argocd_manage_add_ons
+#   addon_context             = local.addon_context
+# }
+
 module "karpenter" {
+  source = "./karpenter"
+
   count                     = var.enable_karpenter ? 1 : 0
-  source                    = "./karpenter"
   helm_config               = var.karpenter_helm_config
   irsa_policies             = var.karpenter_irsa_policies
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile

@@ -23,6 +23,7 @@ module "eks_addons" {
   karpenter_enabled                   = true
   private_subnet_ids                  = [""]
   single_az_sc_config                 = [{ name = "infra-service-sc", zone = "zone-name" }]
+  coredns_hpa_enabled                 = true
   kubeclarity_enabled                 = true
   kubeclarity_hostname                = "kubeclarity.prod.in"
   kubecost_enabled                    = true
@@ -39,8 +40,8 @@ module "eks_addons" {
   cluster_autoscaler_enabled          = true
   service_monitor_crd_enabled         = true
   enable_aws_load_balancer_controller = true
-  falco_enabled                        = true
-  slack_webhook                        = ""
+  falco_enabled                       = true
+  slack_webhook                       = ""
   istio_enabled                       = true
   istio_config = {
     ingress_gateway_enabled       = true
@@ -81,8 +82,8 @@ module "eks_addons" {
 
 ## Compatibility
 
-| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |
-|------------------|------------------|------------------|----------------------|----------------------|----------------------|
+| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |  Kubernetes 1.28 |
+|------------------|------------------|------------------|----------------------|----------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.1  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
@@ -90,8 +91,9 @@ module "eks_addons" {
 | Release 1.1.3  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.4  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.5  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
-| Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | 
-| Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | 
+| Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
+| Release 1.1.8  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | &#x2714; |
 
 
 ## IAM Permissions
@@ -300,15 +302,16 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
 | <a name="input_cluster_propotional_autoscaler_enabled"></a> [cluster\_propotional\_autoscaler\_enabled](#input\_cluster\_propotional\_autoscaler\_enabled) | Enable or disable Cluster propotional autoscaler add-on | `bool` | `false` | no |
 | <a name="input_core_dns_hpa_config"></a> [core\_dns\_hpa\_config](#input\_core\_dns\_hpa\_config) | Configuration to provide settings of hpa over core dns | `any` | <pre>{<br>  "corednsdeploymentname": "coredns",<br>  "maxReplicas": 10,<br>  "minReplicas": 2,<br>  "targetCPUUtilizationPercentage": 80,<br>  "targetMemoryUtilizationPercentage": "150Mi"<br>}</pre> | no |
+| <a name="input_coredns_hpa_enabled"></a> [coredns\_hpa\_enabled](#input\_coredns\_hpa\_enabled) | Determines whether Horizontal Pod Autoscaling (HPA) for CoreDNS is enabled. | `bool` | `false` | no |
 | <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Fetch Cluster ID of the cluster | `string` | `""` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster. | `string` | `""` | no |
 | <a name="input_external_secrets_enabled"></a> [external\_secrets\_enabled](#input\_external\_secrets\_enabled) | Enable or disable External Secrets operator add-on for managing external secrets. | `bool` | `false` | no |
-| <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | n/a | `bool` | `false` | no |
+| <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | Determines whether Falco is enabled. | `bool` | `false` | no |
 | <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services. | `bool` | `false` | no |
-| <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.7.0"` | no |
+| <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.9.1"` | no |
 | <a name="input_internal_ingress_nginx_enabled"></a> [internal\_ingress\_nginx\_enabled](#input\_internal\_ingress\_nginx\_enabled) | Enable or disable the deployment of an internal ingress controller for Kubernetes. | `bool` | `false` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
 | <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
@@ -325,7 +328,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_kubecost_enabled"></a> [kubecost\_enabled](#input\_kubecost\_enabled) | Enable or disable the deployment of an Kubecost for Kubernetes. | `bool` | `false` | no |
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
-| <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.8.2"` | no |
+| <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
 | <a name="input_metrics_server_vpa_config"></a> [metrics\_server\_vpa\_config](#input\_metrics\_server\_vpa\_config) | Configuration to provide settings of vpa over metrics server | `any` | <pre>{<br>  "maxCPU": "100m",<br>  "maxMemory": "500Mi",<br>  "metricsServerDeploymentName": "metrics-server",<br>  "minCPU": "25m",<br>  "minMemory": "150Mi"<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
@@ -334,7 +337,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_service_monitor_crd_enabled"></a> [service\_monitor\_crd\_enabled](#input\_service\_monitor\_crd\_enabled) | Enable or disable the installation of Custom Resource Definitions (CRDs) for Prometheus Service Monitor. | `bool` | `false` | no |
 | <a name="input_single_az_ebs_gp3_storage_class_enabled"></a> [single\_az\_ebs\_gp3\_storage\_class\_enabled](#input\_single\_az\_ebs\_gp3\_storage\_class\_enabled) | Whether to enable the Single AZ storage class or not. | `bool` | `false` | no |
 | <a name="input_single_az_sc_config"></a> [single\_az\_sc\_config](#input\_single\_az\_sc\_config) | Name and regions for storage class in Key-Value pair. | `list(any)` | `[]` | no |
-| <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | n/a | `string` | `""` | no |
+| <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | The Slack webhook URL used for notifications. | `string` | `""` | no |
 | <a name="input_storageClassName"></a> [storageClassName](#input\_storageClassName) | Specify the hostname for the kubecsot. | `string` | `"infra-service-sc"` | no |
 | <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_backup_cron_time": "",<br>  "slack_notification_channel_name": "",<br>  "slack_notification_token": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
 | <a name="input_velero_enabled"></a> [velero\_enabled](#input\_velero\_enabled) | Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters. | `bool` | `false` | no |

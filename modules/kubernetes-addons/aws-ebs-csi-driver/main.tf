@@ -10,7 +10,7 @@ data "aws_eks_addon_version" "this" {
   addon_name = local.name
   # Need to allow both config routes - for managed and self-managed configs
   kubernetes_version = try(var.addon_config.kubernetes_version, var.helm_config.kubernetes_version)
-  most_recent        = try(var.addon_config.most_recent, var.helm_config.most_recent, false)
+  most_recent        = true
 }
 
 resource "aws_eks_addon" "aws_ebs_csi_driver" {
@@ -36,7 +36,7 @@ module "helm_addon" {
     name        = local.name
     description = "The Amazon Elastic Block Store Container Storage Interface (CSI) Driver provides a CSI interface used by Container Orchestrators to manage the lifecycle of Amazon EBS volumes."
     chart       = local.name
-    version     = "2.12.1"
+    version     = "2.27.0"
     repository  = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
     namespace   = local.namespace
     values = [

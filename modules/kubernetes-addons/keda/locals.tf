@@ -8,7 +8,7 @@ locals {
       name        = local.name
       chart       = local.name
       repository  = "https://kedacore.github.io/charts"
-      version     = "2.8.2"
+      version     = "2.13.0"
       namespace   = local.name
       description = "Keda Event-based autoscaler for workloads on Kubernetes"
     },

@@ -36,7 +36,7 @@ variable "metrics_server_enabled" {
 
 variable "metrics_server_helm_version" {
   description = "Version of the metrics server helm chart"
-  default     = "3.8.2"
+  default     = "3.11.0"
   type        = string
 }
 
@@ -108,7 +108,7 @@ variable "aws_load_balancer_version" {
 
 variable "ingress_nginx_version" {
   description = "Specify the version of the NGINX Ingress Controller"
-  default     = "4.7.0"
+  default     = "4.9.1"
   type        = string
 }
 
@@ -356,11 +356,19 @@ variable "storageClassName" {
 }
 
 variable "falco_enabled" {
-  default = false
-  type    = bool
+  description = "Determines whether Falco is enabled."
+  default     = false
+  type        = bool
 }
 
 variable "slack_webhook" {
-  default = ""
-  type    = string
+  description = "The Slack webhook URL used for notifications."
+  default     = ""
+  type        = string
+}
+
+variable "coredns_hpa_enabled" {
+  description = "Determines whether Horizontal Pod Autoscaling (HPA) for CoreDNS is enabled."
+  default     = false
+  type        = bool
 }
