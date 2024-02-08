@@ -164,20 +164,6 @@ module "single_az_sc" {
   single_az_ebs_gp3_storage_class_name = each.value.name
 }
 
-
-### EFS
-# module "efs" {
-#   depends_on         = [module.k8s_addons]
-#   source             = "./modules/efs"
-#   name               = var.name
-#   count              = var.efs_storage_class_enabled ? 1 : 0
-#   vpc_id             = var.vpc_id
-#   region             = data.aws_region.current.name
-#   environment        = var.environment
-#   kms_key_id         = var.kms_key_arn
-#   private_subnet_ids = var.private_subnet_ids
-# }
-
 # EFS
 module "efs" {
   source      = "./modules/efs"
