@@ -33,14 +33,14 @@ output "kubeclarity" {
   } : null
 }
 
-# output "kubecost" {
-#   description = "Kubecost endpoint and credentials"
-#   value = var.kubecost_enabled ? {
-#     username = "admin",
-#     password = nonsensitive(random_password.kubecost[0].result),
-#     url      = var.kubecost_hostname
-#   } : null
-# }
+output "kubecost" {
+  description = "Kubecost endpoint and credentials"
+  value = var.kubecost_enabled ? {
+    username = "admin",
+    password = nonsensitive(random_password.kubecost[0].result),
+    url      = var.kubecost_hostname
+  } : null
+}
 
 output "istio_ingressgateway_dns_hostname" {
   description = "DNS hostname of the Istio Ingress Gateway."

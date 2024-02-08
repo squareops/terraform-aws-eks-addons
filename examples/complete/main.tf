@@ -11,7 +11,7 @@ locals {
 }
 
 module "eks-addons" {
-  source                                  = "../../"
+  source                                  = "squareops/eks-addons/aws"
   name                                    = local.name
   vpc_id                                  = "vpc-abcd5245c2331xyz"
   environment                             = local.environment
@@ -52,7 +52,7 @@ module "eks-addons" {
     prometheus_monitoring_enabled = true
     istio_values_yaml             = file("./config/istio.yaml")
   }
-  karpenter_provisioner_enabled = false
+  karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
     private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
     instance_capacity_type = ["spot"]
