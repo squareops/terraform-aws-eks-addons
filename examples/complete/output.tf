@@ -49,6 +49,6 @@ output "k8s-dashboard-admin-token" {
 }
 
 output "k8s-dashboard-read-only-token" {
-  description = "k8s-dashboard admin token"
+  description = "k8s-dashboard read only  token"
   value       = module.eks-addons.k8s-dashboard-read-only-token
 }
