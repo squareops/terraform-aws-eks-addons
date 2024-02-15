@@ -372,3 +372,16 @@ variable "coredns_hpa_enabled" {
   default     = false
   type        = bool
 }
+
+variable "kubernetes_dashboard_enabled" {
+  description = "Determines whether k8s-dashboard is enabled or not"
+  default     = false
+  type        = bool
+}
+
+
+variable "k8s-dashboard-hostname" {
+  description = "Specify the hostname for the k8s dashboard. "
+  default     = ""
+  type        = string
+}

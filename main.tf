@@ -486,3 +486,180 @@ resource "helm_release" "falco" {
     })
   ]
 }
+
+resource "kubernetes_namespace" "k8s-dashboard" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+  metadata {
+    name = "kubernetes-dashboard"
+  }
+}
+
+resource "helm_release" "kubernetes-dashboard" {
+  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.k8s-dashboard]
+  name       = "kubernetes-dashboard"
+  namespace  = "kubernetes-dashboard"
+  chart      = "kubernetes-dashboard"
+  repository = "https://kubernetes.github.io/dashboard/"
+  timeout    = 600
+  version    = "6.0.8"
+}
+
+
+resource "kubernetes_ingress_v1" "k8s-ingress" {
+  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on             = [helm_release.kubernetes-dashboard]
+  wait_for_load_balancer = true
+  metadata {
+    name      = "k8s-dashboard-ingress"
+    namespace = "kubernetes-dashboard"
+    annotations = {
+      "cert-manager.io/cluster-issuer"                    : "letsencrypt-prod"
+      "kubernetes.io/ingress.class"                       : "nginx"
+      "kubernetes.io/tls-acme"                            : "false"
+      "nginx.ingress.kubernetes.io/backend-protocol"      : "HTTPS"
+      "nginx.ingress.kubernetes.io/rewrite-target"        : "/$2"
+      "nginx.ingress.kubernetes.io/configuration-snippet" : <<-EOF
+        if ($uri = "/dashboard") {
+          rewrite ^(/dashboard)$ $1/ redirect;
+        }
+      EOF
+    }
+  }
+  spec {
+    rule {
+      host = var.k8s-dashboard-hostname
+      http {
+        path {
+          path = "/dashboard(/|$)(.*)"
+          backend {
+            service {
+              name = "kubernetes-dashboard"
+              port {
+                number = 443
+              }
+            }
+          }
+        }
+      }
+    }
+    tls {
+      secret_name = "tls-k8s-dashboard"
+      hosts       = [var.k8s-dashboard-hostname]
+    }
+  }
+}
+
+resource "kubernetes_service_account" "dashboard_admin_sa" {
+  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on = [helm_release.kubernetes-dashboard]
+  metadata {
+    name      = "kubernetes-dashboard-admin-sa"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_secret_v1" "admin-user" {
+  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  metadata {
+    name      = "admin-user-token"
+    namespace = "kube-system"
+    annotations = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account.dashboard_admin_sa[0].metadata[0].name
+    }
+  }
+  type = "kubernetes.io/service-account-token"
+  depends_on = [
+    kubernetes_service_account.dashboard_admin_sa,
+    kubernetes_cluster_role_binding_v1.admin-user
+  ]
+}
+
+resource "kubernetes_cluster_role_binding_v1" "admin-user" {
+  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  metadata {
+    name = "admin-user"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.dashboard_admin_sa[0].metadata[0].name
+    namespace = "kube-system"
+  }
+  depends_on = [
+    kubernetes_service_account.dashboard_admin_sa
+  ]
+}
+
+resource "kubernetes_cluster_role" "eks_read_only_role" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+
+  metadata {
+    name = "eks-read-only-role"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods", "services", "configmaps", "secrets", "deployments", "replicasets"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  # Add more rules as needed for read-only access to other Kubernetes resources
+}
+
+resource "kubernetes_service_account" "dashboard_read_only_sa" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+
+  metadata {
+    name      = "dashboard-read-only-sa"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "eks_read_only_role_binding" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+
+  metadata {
+    name = "eks-read-only-role-binding"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.eks_read_only_role[0].metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.dashboard_read_only_sa[0].metadata[0].name
+    namespace = "kube-system"
+  }
+
+  depends_on = [
+    kubernetes_cluster_role.eks_read_only_role,
+    kubernetes_service_account.dashboard_read_only_sa
+  ]
+}
+
+resource "kubernetes_secret_v1" "dashboard_read_only_sa_token" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+
+  metadata {
+    name      = "dashboard-read-only-sa-token"
+    namespace = "kube-system"
+    annotations = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account.dashboard_read_only_sa[0].metadata[0].name
+    }
+  }
+
+  type = "kubernetes.io/service-account-token"
+
+  depends_on = [
+    kubernetes_service_account.dashboard_read_only_sa,
+    kubernetes_cluster_role_binding.eks_read_only_role_binding
+  ]
+}
