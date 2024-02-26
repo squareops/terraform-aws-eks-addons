@@ -6,11 +6,11 @@ provider "aws" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = "non-prod-Feb265"
+  name = ""
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = "non-prod-Feb265"
+  name = ""
 }
 
 provider "kubernetes" {
