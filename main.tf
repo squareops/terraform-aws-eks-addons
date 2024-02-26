@@ -599,17 +599,63 @@ resource "kubernetes_cluster_role" "eks_read_only_role" {
   count = var.kubernetes_dashboard_enabled ? 1 : 0
 
   metadata {
-    name = "eks-read-only-role"
+    name = "dashboard-viewonly"
   }
 
   rule {
     api_groups = [""]
-    resources  = ["pods", "services", "configmaps", "secrets", "deployments", "replicasets"]
-    verbs      = ["get", "list", "watch"]
+    resources  = [
+      "configmaps",
+      "endpoints",
+      "persistentvolumeclaims",
+      "pods",
+      "replicationcontrollers",
+      "replicationcontrollers/scale",
+      "serviceaccounts",
+      "services",
+      "nodes",
+      "persistentvolumes",
+      "bindings",
+      "events",
+      "limitranges",
+      "namespaces/status",
+      "pods/log",
+      "pods/status",
+      "replicationcontrollers/status",
+      "resourcequotas",
+      "resourcequotas/status",
+      "namespaces",
+      "apps/daemonsets",
+      "apps/deployments",
+      "apps/deployments/scale",
+      "apps/replicasets",
+      "apps/replicasets/scale",
+      "apps/statefulsets",
+      "autoscaling/horizontalpodautoscalers",
+      "batch/cronjobs",
+      "batch/jobs",
+      "extensions/daemonsets",
+      "extensions/deployments",
+      "extensions/deployments/scale",
+      "extensions/ingresses",
+      "extensions/networkpolicies",
+      "extensions/replicasets",
+      "extensions/replicasets/scale",
+      "extensions/replicationcontrollers/scale",
+      "policy/poddisruptionbudgets",
+      "networking.k8s.io/networkpolicies",
+      "storage.k8s.io/storageclasses",
+      "storage.k8s.io/volumeattachments",
+      "rbac.authorization.k8s.io/clusterrolebindings",
+      "rbac.authorization.k8s.io/clusterroles",
+      "rbac.authorization.k8s.io/roles",
+      "rbac.authorization.k8s.io/rolebindings",
+    ]
+    verbs = ["get", "list", "watch"]
   }
+}
 
   # Add more rules as needed for read-only access to other Kubernetes resources
-}
 
 resource "kubernetes_service_account" "dashboard_read_only_sa" {
   count = var.kubernetes_dashboard_enabled ? 1 : 0
