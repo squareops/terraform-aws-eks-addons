@@ -1,6 +1,6 @@
 nodeSelector:
   kubernetes.io/os: linux
-  
+
 settings:
       aws:
         defaultInstanceProfile: ${node_iam_instance_profile}

@@ -380,7 +380,7 @@ variable "kubernetes_dashboard_enabled" {
 }
 
 
-variable "k8s-dashboard-hostname" {
+variable "k8s_dashboard_hostname" {
   description = "Specify the hostname for the k8s dashboard. "
   default     = ""
   type        = string

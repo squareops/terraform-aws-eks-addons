@@ -507,18 +507,18 @@ resource "helm_release" "kubernetes-dashboard" {
 
 
 resource "kubernetes_ingress_v1" "k8s-ingress" {
-  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  count                  = var.kubernetes_dashboard_enabled ? 1 : 0
   depends_on             = [helm_release.kubernetes-dashboard]
   wait_for_load_balancer = true
   metadata {
     name      = "k8s-dashboard-ingress"
     namespace = "kubernetes-dashboard"
     annotations = {
-      "cert-manager.io/cluster-issuer"                    : "letsencrypt-prod"
-      "kubernetes.io/ingress.class"                       : "nginx"
-      "kubernetes.io/tls-acme"                            : "false"
-      "nginx.ingress.kubernetes.io/backend-protocol"      : "HTTPS"
-      "nginx.ingress.kubernetes.io/rewrite-target"        : "/$2"
+      "cert-manager.io/cluster-issuer" : "letsencrypt-prod"
+      "kubernetes.io/ingress.class" : "nginx"
+      "kubernetes.io/tls-acme" : "false"
+      "nginx.ingress.kubernetes.io/backend-protocol" : "HTTPS"
+      "nginx.ingress.kubernetes.io/rewrite-target" : "/$2"
       "nginx.ingress.kubernetes.io/configuration-snippet" : <<-EOF
         if ($uri = "/dashboard") {
           rewrite ^(/dashboard)$ $1/ redirect;
@@ -528,7 +528,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
   }
   spec {
     rule {
-      host = var.k8s-dashboard-hostname
+      host = var.k8s_dashboard_hostname
       http {
         path {
           path = "/dashboard(/|$)(.*)"
@@ -545,7 +545,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
     }
     tls {
       secret_name = "tls-k8s-dashboard"
-      hosts       = [var.k8s-dashboard-hostname]
+      hosts       = [var.k8s_dashboard_hostname]
     }
   }
 }
@@ -560,7 +560,7 @@ resource "kubernetes_service_account" "dashboard_admin_sa" {
 }
 
 resource "kubernetes_secret_v1" "admin-user" {
-  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
   metadata {
     name      = "admin-user-token"
     namespace = "kube-system"
@@ -576,7 +576,7 @@ resource "kubernetes_secret_v1" "admin-user" {
 }
 
 resource "kubernetes_cluster_role_binding_v1" "admin-user" {
-  count      = var.kubernetes_dashboard_enabled ? 1 : 0
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
   metadata {
     name = "admin-user"
   }
@@ -604,7 +604,7 @@ resource "kubernetes_cluster_role" "eks_read_only_role" {
 
   rule {
     api_groups = [""]
-    resources  = [
+    resources = [
       "configmaps",
       "endpoints",
       "persistentvolumeclaims",
@@ -655,7 +655,7 @@ resource "kubernetes_cluster_role" "eks_read_only_role" {
   }
 }
 
-  # Add more rules as needed for read-only access to other Kubernetes resources
+# Add more rules as needed for read-only access to other Kubernetes resources
 
 resource "kubernetes_service_account" "dashboard_read_only_sa" {
   count = var.kubernetes_dashboard_enabled ? 1 : 0
