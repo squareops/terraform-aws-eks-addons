@@ -21,6 +21,8 @@ module "eks-addons" {
   kms_policy_arn                          = "arn:aws:iam::xxxxxxxxxxxx:policy/policy_name" ## eks module will create kms_policy_arn
   eks_cluster_name                        = "cluster_name"
   reloader_enabled                        = true
+  kubernetes_dashboard_enabled            = true
+  k8s_dashboard_hostname                  = "dashboard.prod.in"
   karpenter_enabled                       = true
   private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
   single_az_ebs_gp3_storage_class_enabled = true

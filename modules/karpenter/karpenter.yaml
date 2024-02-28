@@ -1,9 +1,11 @@
 nodeSelector:
   kubernetes.io/os: linux
-clusterName: ${eks_cluster_id}
-clusterEndpoint: ${eks_cluster_endpoint}
-aws:
-  defaultInstanceProfile: ${node_iam_instance_profile}
+
+settings:
+      aws:
+        defaultInstanceProfile: ${node_iam_instance_profile}
+        clusterName: ${eks_cluster_id}
+        clusterEndpoint: ${eks_cluster_endpoint}
 
 controller:
   resources:
