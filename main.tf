@@ -1,5 +1,3 @@
-data "aws_region" "current" {}
-
 data "aws_eks_cluster" "eks" {
   name = var.eks_cluster_name
 }
@@ -37,7 +35,7 @@ module "k8s_addons" {
   cluster_autoscaler_helm_config = {
     version = var.cluster_autoscaler_chart_version
     values = [templatefile("${path.module}/modules/cluster_autoscaler/cluster_autoscaler.yaml", {
-      aws_region     = data.aws_region.current.name
+      aws_region     = var.aws_region
       eks_cluster_id = var.eks_cluster_name
     })]
   }
@@ -172,7 +170,7 @@ module "efs" {
   vpc_id      = var.vpc_id
   environment = var.environment
   kms_key_arn = var.kms_key_arn
-  subnets     = var.private_subnet_ids
+  subnets     = var.vpc_private_subnet_ids
 }
 
 data "kubernetes_service" "nginx-ingress" {
@@ -188,7 +186,7 @@ module "velero" {
   source        = "./modules/velero"
   name          = var.name
   count         = var.velero_enabled ? 1 : 0
-  region        = data.aws_region.current.name
+  region        = var.aws_region
   cluster_id    = var.eks_cluster_name
   environment   = var.environment
   velero_config = var.velero_config

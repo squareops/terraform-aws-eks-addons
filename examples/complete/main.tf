@@ -1,7 +1,8 @@
 locals {
-  region      = "us-east-2"
-  environment = "prod"
-  name        = "addons"
+  aws_region             = "us-east-2"
+  vpc_private_subnet_ids = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
+  environment            = "prod"
+  name                   = "addons"
   additional_tags = {
     Owner      = "Organization_Name"
     Expires    = "Never"
@@ -11,7 +12,8 @@ locals {
 }
 
 module "eks-addons" {
-  source                                  = "squareops/eks-addons/aws"
+  source                                  = "../../"
+  aws_region                              = local.aws_region
   name                                    = local.name
   vpc_id                                  = "vpc-abcd5245c2331xyz"
   environment                             = local.environment
@@ -24,9 +26,9 @@ module "eks-addons" {
   kubernetes_dashboard_enabled            = true
   k8s_dashboard_hostname                  = "dashboard.prod.in"
   karpenter_enabled                       = true
-  private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
+  vpc_private_subnet_ids                  = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
   single_az_ebs_gp3_storage_class_enabled = true
-  single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
+  single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.aws_region}a" }]
   coredns_hpa_enabled                     = true
   kubeclarity_enabled                     = true
   kubeclarity_hostname                    = "kubeclarity.prod.in"

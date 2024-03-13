@@ -1,3 +1,25 @@
+variable "additional_tags" {
+  description = "Additional tags to be applied to AWS resources"
+  type        = map(string)
+  default = {
+    Owner      = "organization_name"
+    Expires    = "Never"
+    Department = "Engineering"
+  }
+}
+
+variable "aws_region" {
+  description = "Name of the AWS region where S3 bucket is to be created."
+  default     = "us-east-1"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "Account ID of the AWS Account."
+  default     = ""
+  type        = string
+}
+
 variable "amazon_eks_aws_ebs_csi_driver_enabled" {
   description = "Whether to enable the EKS Managed AWS EBS CSI Driver add-on or not."
   default     = false
@@ -64,7 +86,7 @@ variable "efs_storage_class_enabled" {
   type        = bool
 }
 
-variable "private_subnet_ids" {
+variable "vpc_private_subnet_ids" {
   description = "Private subnets of the VPC which can be used by EFS"
   default     = [""]
   type        = list(string)
