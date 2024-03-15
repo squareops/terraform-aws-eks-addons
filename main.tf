@@ -31,9 +31,9 @@ module "k8s_addons" {
   }
 
   #cluster-autoscaler
-  enable_cluster_autoscaler = var.cluster_autoscaler_enabled
+  enable_cluster_autoscaler = var.eks_cluster_autoscaler_enabled
   cluster_autoscaler_helm_config = {
-    version = var.cluster_autoscaler_chart_version
+    version = var.eks_cluster_autoscaler_chart_version
     values = [templatefile("${path.module}/modules/cluster_autoscaler/cluster_autoscaler.yaml", {
       aws_region     = var.aws_region
       eks_cluster_id = var.eks_cluster_name
@@ -41,9 +41,9 @@ module "k8s_addons" {
   }
 
   #metrics server
-  enable_metrics_server = var.metrics_server_enabled
+  enable_metrics_server = var.eks_cluster_metrics_server_enabled
   metrics_server_helm_config = {
-    version = var.metrics_server_helm_version
+    version = var.eks_cluster_metrics_server_helm_version
     values  = [file("${path.module}/modules/metrics_server/metrics_server.yaml")]
   }
 
@@ -84,7 +84,7 @@ module "k8s_addons" {
     ]
   }
 
-  enable_coredns_autoscaler = var.cluster_propotional_autoscaler_enabled
+  enable_coredns_autoscaler = var.eks_cluster_propotional_autoscaler_enabled
   coredns_autoscaler_helm_config = {
     values = [
       file("${path.module}/modules/cluster_propotional_autoscaler/cpa.yaml")
@@ -399,7 +399,7 @@ resource "helm_release" "coredns-hpa" {
 }
 
 resource "helm_release" "vpa-crds" {
-  count      = var.metrics_server_enabled ? 1 : 0
+  count      = var.eks_cluster_metrics_server_enabled ? 1 : 0
   name       = "vertical-pod-autoscaler"
   namespace  = "kube-system"
   repository = "https://cowboysysop.github.io/charts/"
@@ -412,7 +412,7 @@ resource "helm_release" "vpa-crds" {
 }
 
 resource "helm_release" "metrics-server-vpa" {
-  count      = var.metrics_server_enabled ? 1 : 0
+  count      = var.eks_cluster_metrics_server_enabled ? 1 : 0
   depends_on = [helm_release.vpa-crds]
   name       = "metricsservervpa"
   namespace  = "kube-system"
