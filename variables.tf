@@ -1,3 +1,25 @@
+variable "additional_tags" {
+  description = "Additional tags to be applied to AWS resources"
+  type        = map(string)
+  default = {
+    Owner      = "organization_name"
+    Expires    = "Never"
+    Department = "Engineering"
+  }
+}
+
+variable "aws_region" {
+  description = "Name of the AWS region where S3 bucket is to be created."
+  default     = "us-east-1"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "Account ID of the AWS Account."
+  default     = ""
+  type        = string
+}
+
 variable "amazon_eks_aws_ebs_csi_driver_enabled" {
   description = "Whether to enable the EKS Managed AWS EBS CSI Driver add-on or not."
   default     = false
@@ -16,25 +38,25 @@ variable "single_az_sc_config" {
   type        = list(any)
 }
 
-variable "cluster_autoscaler_enabled" {
+variable "eks_cluster_autoscaler_enabled" {
   description = "Whether to enable the Cluster Autoscaler add-on or not."
   default     = false
   type        = bool
 }
 
-variable "cluster_autoscaler_chart_version" {
+variable "eks_cluster_autoscaler_chart_version" {
   description = "Version of the cluster autoscaler helm chart"
   default     = "9.29.0"
   type        = string
 }
 
-variable "metrics_server_enabled" {
+variable "eks_cluster_metrics_server_enabled" {
   description = "Enable or disable the metrics server add-on for EKS cluster."
   default     = false
   type        = bool
 }
 
-variable "metrics_server_helm_version" {
+variable "eks_cluster_metrics_server_helm_version" {
   description = "Version of the metrics server helm chart"
   default     = "3.11.0"
   type        = string
@@ -64,7 +86,7 @@ variable "efs_storage_class_enabled" {
   type        = bool
 }
 
-variable "private_subnet_ids" {
+variable "vpc_private_subnet_ids" {
   description = "Private subnets of the VPC which can be used by EFS"
   default     = [""]
   type        = list(string)
@@ -148,7 +170,7 @@ variable "kms_policy_arn" {
   type        = string
 }
 
-variable "cluster_propotional_autoscaler_enabled" {
+variable "eks_cluster_propotional_autoscaler_enabled" {
   description = "Enable or disable Cluster propotional autoscaler add-on"
   default     = false
   type        = bool
@@ -221,7 +243,6 @@ variable "istio_config" {
     istio_values_yaml             = ""
   }
 }
-
 
 variable "velero_enabled" {
   description = "Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters."

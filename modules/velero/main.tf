@@ -1,30 +1,45 @@
 #velero bucket lifecycle policy
-resource "aws_s3_bucket_lifecycle_configuration" "velero_bucket_policy" {
-
+resource "aws_s3_bucket_lifecycle_configuration" "velero_s3_bucket_lifecycle_rules" {
   bucket = var.velero_config.backup_bucket_name
+  
+  dynamic "rule" {
+    for_each = var.velero_s3_bucket_lifecycle_rules
 
-  rule {
-    id     = "archive"
-    status = "Enabled"
-    filter {
-      and {
-        prefix = "archive/"
-        tags = {
-          rule      = "archival"
-          autoclean = "true"
+    content {
+      id = rule.value.id
+
+      expiration {
+        days = rule.value.expiration_days
+      }
+
+      filter {
+        prefix = rule.value.filter_prefix
+      }
+
+      status = rule.value.status
+
+      dynamic "transition" {
+        for_each = rule.value.transitions
+
+        content {
+          days          = transition.value.days
+          storage_class = transition.value.storage_class
         }
       }
     }
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-
-    expiration {
-      days = var.velero_config.retention_period_in_days
-    }
   }
 }
+
+resource "aws_s3_bucket_object_lock_configuration" "velero_s3_bucket_object_lock" {
+  count  = var.velero_s3_bucket_enable_object_lock ? 1 : 0
+  bucket = var.velero_config.backup_bucket_name
+    rule {
+      default_retention {
+        mode  = var.velero_s3_bucket_object_lock_mode
+        days  = var.velero_s3_bucket_object_lock_days > 0 ? var.velero_s3_bucket_object_lock_days : var.velero_s3_bucket_object_lock_years * 365
+      }
+    }
+  }
 
 resource "aws_iam_policy" "velero_iam_policy" {
   name        = format("%s-%s-velero-policy", var.name, var.environment)
