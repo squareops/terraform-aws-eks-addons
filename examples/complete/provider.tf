@@ -1,16 +1,16 @@
 provider "aws" {
-  region = local.aws_region
+  region = local.region
   default_tags {
     tags = local.additional_tags
   }
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = ""
+  name = "proddd-eks"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = ""
+  name = "proddd-eks"
 }
 
 provider "kubernetes" {
