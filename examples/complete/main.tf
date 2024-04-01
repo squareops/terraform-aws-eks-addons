@@ -1,7 +1,7 @@
 locals {
-  aws_region             = "us-east-2"
-  vpc_private_subnet_ids = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
-  environment            = "prod"
+  aws_region             = "ap-northeast-1"
+  vpc_private_subnet_ids = ["subnet-0dc9253d70105cb39", "subnet-05d35737a25a391e6"]
+  environment            = "stg"
   name                   = "addons"
   additional_tags = {
     Owner      = "Organization_Name"
@@ -12,38 +12,38 @@ locals {
 }
 
 module "eks-addons" {
-  source                                  = "../../"
+  source                                  = "squareops/eks-addons/aws"
   aws_region                              = local.aws_region
   name                                    = local.name
-  vpc_id                                  = "vpc-abcd5245c2331xyz"
+  vpc_id                                  = "vpc-05ddaea3cccb035a2"
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:us-east-2:xxxxxxxxxx:key/mrk-abd9394bda5947cc864adc657d90386f"
+  kms_key_arn                             = "arn:aws:kms:ap-northeast-1:767398031518:key/b0681533-9271-49d3-a1b1-f15794f6697c"
   keda_enabled                            = true
-  kms_policy_arn                          = "arn:aws:iam::xxxxxxxxxxxx:policy/policy_name" ## eks module will create kms_policy_arn
-  eks_cluster_name                        = "cluster_name"
+  kms_policy_arn                          = "arn:aws:iam::767398031518:policy/stg-rachit-kubernetes-pvc-kms-policy" ## eks module will create kms_policy_arn
+  eks_cluster_name                        = "stg-rachit"
   reloader_enabled                        = true
   kubernetes_dashboard_enabled            = true
-  k8s_dashboard_hostname                  = "dashboard.prod.in"
+  k8s_dashboard_hostname                  = "dashboard.test.atmosly.in"
   karpenter_enabled                       = true
-  vpc_private_subnet_ids                  = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
+  vpc_private_subnet_ids                  = local.vpc_private_subnet_ids
   single_az_ebs_gp3_storage_class_enabled = true
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.aws_region}a" }]
   coredns_hpa_enabled                     = true
   kubeclarity_enabled                     = true
-  kubeclarity_hostname                    = "kubeclarity.prod.in"
+  kubeclarity_hostname                    = "kubeclarity.test.atmosly.in"
   kubecost_enabled                        = false
-  kubecost_hostname                       = "kubecost.prod.in"
+  kubecost_hostname                       = "kubecost.test.atmosly.in"
   defectdojo_enabled                      = true
-  defectdojo_hostname                     = "defectdojo.prod.in"
+  defectdojo_hostname                     = "defectdojo.test.atmosly.in"
   cert_manager_enabled                    = true
-  worker_iam_role_name                    = "node-role"
-  worker_iam_role_arn                     = "arn:aws:iam::xxxxxxxxxx:role/node-role"
+  worker_iam_role_name                    = "stg-rachit-node-role"
+  worker_iam_role_arn                     = "arn:aws:iam::767398031518:role/stg-rachit-node-role"
   ingress_nginx_enabled                   = true
-  metrics_server_enabled                  = true
+  eks_cluster_metrics_server_enabled      = true
   external_secrets_enabled                = true
   amazon_eks_vpc_cni_enabled              = true
-  cluster_autoscaler_enabled              = true
+  eks_cluster_autoscaler_enabled          = true
   service_monitor_crd_enabled             = true
   aws_load_balancer_controller_enabled    = true
   falco_enabled                           = true
@@ -63,12 +63,12 @@ module "eks-addons" {
     excluded_instance_type = ["nano", "micro", "small"]
     instance_hypervisor    = ["nitro"]
   }
-  cert_manager_letsencrypt_email                = "email@email.com"
+  cert_manager_letsencrypt_email                = "rachit.maheshwari@squareops.com"
   internal_ingress_nginx_enabled                = true
   efs_storage_class_enabled                     = true
   aws_node_termination_handler_enabled          = true
   amazon_eks_aws_ebs_csi_driver_enabled         = true
-  cluster_propotional_autoscaler_enabled        = true
+  eks_cluster_propotional_autoscaler_enabled    = true
   cert_manager_install_letsencrypt_http_issuers = true
   velero_enabled                                = true
   velero_config = {
@@ -78,6 +78,6 @@ module "eks-addons" {
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
     velero_backup_name              = "application-backup"
-    backup_bucket_name              = "velero-bucket"
+    backup_bucket_name              = "velero-bucket-rachit"
   }
 }
