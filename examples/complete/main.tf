@@ -1,6 +1,6 @@
 locals {
   aws_region             = "ap-northeast-1"
-  vpc_private_subnet_ids = ["subnet-0dc9253d70105cb39", "subnet-05d35737a25a391e6"]
+  vpc_private_subnet_ids = ["subnet-0fa4ef1cd038ed59c", "subnet-0fcb56b4cb18dfccf"]
   environment            = "stg"
   name                   = "addons"
   additional_tags = {
@@ -12,13 +12,13 @@ locals {
 }
 
 module "eks-addons" {
-  source                                  = "squareops/eks-addons/aws"
+  source                                  = "../../"
   aws_region                              = local.aws_region
   name                                    = local.name
-  vpc_id                                  = "vpc-05ddaea3cccb035a2"
+  vpc_id                                  = "vpc-0e88423e95fd02bd7"
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:ap-northeast-1:767398031518:key/b0681533-9271-49d3-a1b1-f15794f6697c"
+  kms_key_arn                             = "arn:aws:kms:ap-northeast-1:767398031518:key/77b779dd-0252-4f8c-ba32-72ba91ff947a"
   keda_enabled                            = true
   kms_policy_arn                          = "arn:aws:iam::767398031518:policy/stg-rachit-kubernetes-pvc-kms-policy" ## eks module will create kms_policy_arn
   eks_cluster_name                        = "stg-rachit"
@@ -70,7 +70,7 @@ module "eks-addons" {
   amazon_eks_aws_ebs_csi_driver_enabled         = true
   eks_cluster_propotional_autoscaler_enabled    = true
   cert_manager_install_letsencrypt_http_issuers = true
-  velero_enabled                                = true
+  velero_enabled                                = false
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_notification_token        = "xoxb-379541400966-iibMHnnoaPzVl"
