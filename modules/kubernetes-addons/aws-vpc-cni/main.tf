@@ -78,3 +78,25 @@ data "aws_iam_policy_document" "ipv6_policy" {
     resources = ["arn:${var.addon_context.aws_partition_id}:ec2:*:*:network-interface/*"]
   }
 }
+
+
+
+resource "kubectl_manifest" "update_aws_vpc_cni" {
+  yaml_body = <<-EOT
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: aws-node
+      namespace: kube-system
+    spec:
+      template:
+        spec:
+          containers:
+            - name: aws-node
+              env:
+                - name: ENABLE_PREFIX_DELEGATION
+                  value: "true"
+  EOT
+
+  depends_on = [aws_eks_addon.vpc_cni]
+}
