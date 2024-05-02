@@ -13,6 +13,7 @@ controller:
     requests:
       cpu: 50m
       memory: 150Mi
+  allowSnippetAnnotations: true
   autoscaling:
     enabled: true
     minReplicas: 2
