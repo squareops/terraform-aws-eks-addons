@@ -1,8 +1,3 @@
-output "environment" {
-  description = "Environment Name for the EKS cluster"
-  value       = local.environment
-}
-
 output "nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
   value       = module.eks-addons.nginx_ingress_controller_dns_hostname

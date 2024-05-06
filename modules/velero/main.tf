@@ -1,28 +1,69 @@
+resource "aws_s3_bucket_object_lock_configuration" "object_lock_logging" {
+  count  = var.s3_bucket_enable_object_lock_velero ? 1 : 0
+  bucket = var.velero_config.backup_bucket_name
+  rule {
+    default_retention {
+      mode  = var.velero_config.s3_bucket_object_lock_mode_velero
+      days  = var.velero_config.s3_bucket_object_lock_days_velero > 0 ? var.velero_config.s3_bucket_object_lock_days_velero : null
+      years = var.velero_config.s3_bucket_object_lock_years_velero > 0 ? var.velero_config.s3_bucket_object_lock_years_velero : null
+    }
+  }
+}
 #velero bucket lifecycle policy
 resource "aws_s3_bucket_lifecycle_configuration" "velero_bucket_policy" {
-
-  bucket = var.velero_config.backup_bucket_name
-
+  for_each = var.s3_bucket_lifecycle_rules_velero
+  bucket   = var.velero_config.backup_bucket_name
   rule {
-    id     = "archive"
-    status = "Enabled"
-    filter {
-      and {
-        prefix = "archive/"
-        tags = {
-          rule      = "archival"
-          autoclean = "true"
-        }
+    id = each.value.lifecycle_configuration_rule_name
+    dynamic "transition" {
+      for_each = each.value.enable_glacier_transition ? [1] : []
+      content {
+        days          = each.value.glacier_transition_days
+        storage_class = "GLACIER"
       }
     }
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
+    dynamic "transition" {
+      for_each = each.value.enable_deeparchive_transition ? [1] : []
+      content {
+        days          = each.value.deeparchive_transition_days
+        storage_class = "DEEP_ARCHIVE"
+      }
     }
-
-    expiration {
-      days = var.velero_config.retention_period_in_days
+    dynamic "transition" {
+      for_each = each.value.enable_standard_ia_transition ? [1] : []
+      content {
+        days          = each.value.standard_transition_days
+        storage_class = "STANDARD_IA"
+      }
     }
+    dynamic "transition" {
+      for_each = each.value.enable_one_zone_ia ? [1] : []
+      content {
+        days          = each.value.one_zone_ia_days
+        storage_class = "ONEZONE_IA"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_intelligent_tiering ? [1] : []
+      content {
+        days          = each.value.intelligent_tiering_days
+        storage_class = "INTELLIGENT_TIERING"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_glacier_ir ? [1] : []
+      content {
+        days          = each.value.glacier_ir_days
+        storage_class = "GLACIER_IR"
+      }
+    }
+    dynamic "expiration" {
+      for_each = each.value.enable_current_object_expiration ? [1] : []
+      content {
+        days = each.value.expiration_days
+      }
+    }
+    status = each.value.status ? "Enabled" : "Disabled"
   }
 }
 
