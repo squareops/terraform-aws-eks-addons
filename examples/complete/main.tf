@@ -22,6 +22,8 @@ module "eks-addons" {
   eks_cluster_name                        = "cluster_name"
   reloader_enabled                        = true
   kubernetes_dashboard_enabled            = true
+  grafana_ingress_load_balancer           = "" #default is nlb ,other value is "alb".if alb is enable then you have to give alb_acm_certificate_arn also.
+  alb_acm_certificate_arn                 = ""
   k8s_dashboard_hostname                  = "dashboard.prod.in"
   karpenter_enabled                       = true
   private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
