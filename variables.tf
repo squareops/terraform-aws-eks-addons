@@ -386,7 +386,7 @@ variable "k8s_dashboard_hostname" {
   type        = string
 }
 
-variable "grafana_ingress_load_balancer" {
+variable "k8s_dashboard_ingress_load_balancer" {
   description = "Controls whether to enable ALB Ingress or not."
   type        = string
   default     = "nlb"

@@ -513,16 +513,16 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
   metadata {
     name      = "k8s-dashboard-ingress"
     namespace = "kubernetes-dashboard"
-    annotations = var.grafana_ingress_load_balancer == "alb" ? {
+    annotations = var.k8s_dashboard_ingress_load_balancer == "alb" ? {
       "kubernetes.io/ingress.class"               = "alb"
       "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
       "alb.ingress.kubernetes.io/target-type"     = "ip"
       "alb.ingress.kubernetes.io/certificate-arn" = var.alb_acm_certificate_arn,
-      "alb.ingress.kubernetes.io/healthcheck-path"     = "/dashboard/"
+      "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTPS"
       "alb.ingress.kubernetes.io/backend-protocol"     = "HTTPS"
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
-      "alb.ingress.kubernetes.io/actions.ssl-redirect" = "443"
+      "alb.ingress.kubernetes.io/ssl-redirect" = "443"
   } : {
       "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
       "kubernetes.io/ingress.class"   = "nginx"
@@ -541,7 +541,8 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       host = var.k8s_dashboard_hostname
       http {
         path {
-          path = var.grafana_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path = var.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path_type = var.k8s_dashboard_ingress_load_balancer == "alb" ? "Prefix" : "ImplementationSpecific"
           backend {
             service {
               name = "kubernetes-dashboard"
@@ -554,8 +555,8 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       }
     }
     tls {
-      secret_name = var.grafana_ingress_load_balancer == "alb" ? "" : "tls-k8s-dashboard"
-      hosts       = var.grafana_ingress_load_balancer == "alb" ? [] : [var.k8s_dashboard_hostname]
+      secret_name = var.k8s_dashboard_ingress_load_balancer == "alb" ? "" : "tls-k8s-dashboard"
+      hosts       = var.k8s_dashboard_ingress_load_balancer == "alb" ? [] : [var.k8s_dashboard_hostname]
     }
   }
 }
