@@ -1,26 +1,20 @@
-
 image:
   registry: ghcr.io
   repository: kubeshop/botkube
   pullPolicy: IfNotPresent
-  tag: v0.16.0
-
+  tag: v1.10.0
 
 sources:
   'k8s-all-events':
     displayName: "Backup Status"
-    kubernetes:
+    botkube/kubernetes:
+     config:
       namespaces: &k8s-events-namespaces
-        include:
-          - "velero"
       event:
         types:
           - all
       resources:
         - type: velero.io/v1/backups
-          namespaces:
-            include:
-              - "velero"
           event:
             types:
               - all
@@ -28,23 +22,21 @@ sources:
             includeDiff: true
             fields:
               - status.phase
+
 communications:
   'default-group':
-    slack:
+    socketSlack:
       enabled: true
       channels:
         'default':
           name: '${slack_channel_name}'
-          notification:
-            disabled: false
           bindings:
             executors:
-              - kubectl-read-only
+              - k8s-default-tools
             sources:
               - k8s-all-events
-      token: '${slack_token}'
-      notification:
-        type: short
+      botToken: '${slack_botToken}'
+      appToken: '${slack_appToken}'
 
 settings:
-  clusterName: ${cluster_id}
+  clusterName: test-atmoslytask
