@@ -73,7 +73,8 @@ module "eks-addons" {
   velero_enabled                                = true
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
-    slack_notification_token        = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_appToken                  = "xoxb-sgsehger-ddfnrndfnf"
     slack_notification_channel_name = "slack-notification-channel"
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
