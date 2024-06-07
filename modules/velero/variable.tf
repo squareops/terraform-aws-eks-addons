@@ -26,7 +26,8 @@ variable "velero_config" {
   description = "velero configurations"
   type        = any
   default = {
-    slack_token              = ""
+    slack_appToken           = ""
+    slack_botToken           = ""
     slack_channel_name       = ""
     retention_period_in_days = 45
     namespaces               = ""
