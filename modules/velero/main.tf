@@ -287,8 +287,8 @@ resource "helm_release" "velero-notification" {
   values = [
     templatefile("${path.module}/velero_notification/values.yaml", {
       cluster_id         = var.cluster_id,
-      slack_botToken       = var.velero_config.slack_botToken,
-      slack_slack_appToken = var.velero_config.slack_appToken,
+      slack_botToken     = var.velero_config.slack_botToken,
+      slack_appToken     = var.velero_config.slack_appToken,
       slack_channel_name = var.velero_config.slack_notification_channel_name
     })
   ]

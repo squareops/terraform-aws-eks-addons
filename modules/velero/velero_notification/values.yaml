@@ -39,4 +39,4 @@ communications:
       appToken: '${slack_appToken}'
 
 settings:
-  clusterName: test-atmoslytask
+  clusterName: '${cluster_id}'
