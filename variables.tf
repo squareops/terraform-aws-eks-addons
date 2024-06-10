@@ -398,4 +398,3 @@ variable "alb_acm_certificate_arn" {
   type        = string
   default     = ""
 }
-

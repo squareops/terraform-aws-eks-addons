@@ -514,34 +514,34 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
     name      = "k8s-dashboard-ingress"
     namespace = "kubernetes-dashboard"
     annotations = var.k8s_dashboard_ingress_load_balancer == "alb" ? {
-      "kubernetes.io/ingress.class"               = "alb"
-      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"     = "ip"
-      "alb.ingress.kubernetes.io/certificate-arn" = var.alb_acm_certificate_arn,
+      "kubernetes.io/ingress.class"                    = "alb"
+      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"          = "ip"
+      "alb.ingress.kubernetes.io/certificate-arn"      = var.alb_acm_certificate_arn,
       "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTPS"
       "alb.ingress.kubernetes.io/backend-protocol"     = "HTTPS"
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
-      "alb.ingress.kubernetes.io/ssl-redirect" = "443"
-  } : {
-      "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
-      "kubernetes.io/ingress.class"   = "nginx"
-      "kubernetes.io/tls-acme"       = "false"
-      "nginx.ingress.kubernetes.io/backend-protocol" = "HTTPS"
-      "nginx.ingress.kubernetes.io/rewrite-target" = "/$2"
+      "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
+      } : {
+      "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
+      "kubernetes.io/ingress.class"                       = "nginx"
+      "kubernetes.io/tls-acme"                            = "false"
+      "nginx.ingress.kubernetes.io/backend-protocol"      = "HTTPS"
+      "nginx.ingress.kubernetes.io/rewrite-target"        = "/$2"
       "nginx.ingress.kubernetes.io/configuration-snippet" = <<-EOF
         if ($uri = "/dashboard") {
           rewrite ^(/dashboard)$ $1/ redirect;
         }
       EOF
-  }
+    }
   }
   spec {
     rule {
       host = var.k8s_dashboard_hostname
       http {
         path {
-          path = var.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path      = var.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
           path_type = var.k8s_dashboard_ingress_load_balancer == "alb" ? "Prefix" : "ImplementationSpecific"
           backend {
             service {

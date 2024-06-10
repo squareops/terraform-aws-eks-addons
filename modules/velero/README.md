@@ -50,7 +50,7 @@ No requirements.
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment identifier for the EKS cluster | `string` | `""` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region for the EKS cluster | `string` | `"us-east-2"` | no |
-| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | velero configurations | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_cron_time": "",<br>  "slack_channel_name": "",<br>  "slack_token": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
+| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | velero configurations | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_cron_time": "",<br>  "slack_appToken": "",<br>  "slack_botToken": "",<br>  "slack_channel_name": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
 
 ## Outputs
 

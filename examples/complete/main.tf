@@ -22,7 +22,7 @@ module "eks-addons" {
   eks_cluster_name                        = "cluster_name"
   reloader_enabled                        = true
   kubernetes_dashboard_enabled            = true
-  k8s_dashboard_ingress_load_balancer     = "" #default is nlb ,other value is "alb".if alb is enable then you have to give alb_acm_certificate_arn also.
+  k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
   alb_acm_certificate_arn                 = ""
   k8s_dashboard_hostname                  = "dashboard.prod.in"
   karpenter_enabled                       = true
