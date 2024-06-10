@@ -22,6 +22,8 @@ module "eks-addons" {
   eks_cluster_name                        = "cluster_name"
   reloader_enabled                        = true
   kubernetes_dashboard_enabled            = true
+  k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+  alb_acm_certificate_arn                 = ""
   k8s_dashboard_hostname                  = "dashboard.prod.in"
   karpenter_enabled                       = true
   private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
@@ -71,7 +73,8 @@ module "eks-addons" {
   velero_enabled                                = true
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
-    slack_notification_token        = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_appToken                  = "xoxb-sgsehger-ddfnrndfnf"
     slack_notification_channel_name = "slack-notification-channel"
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"

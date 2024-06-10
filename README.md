@@ -9,73 +9,76 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 
 ## Usage Example
 ```hcl
-module "eks_addons" {
-  source                              = "squareops/eks-addons/aws"
-  name                                = "skaf"
-  vpc_id                              = "vpc-06e37f0786b7eskaf"
-  environment                         = "production"
-  ipv6_enabled                        = true
-  kms_key_arn                         = "arn:aws:kms:region:222222222222:key/kms_key_arn"
-  keda_enabled                        = true
-  kms_policy_arn                      = "arn:aws:iam::222222222222:policy/kms_policy_arn" ## eks module will create kms_policy_arn
-  eks_cluster_name                    = "cluster_name"
-  reloader_enabled                    = true
-  karpenter_enabled                   = true
-  private_subnet_ids                  = [""]
-  single_az_sc_config                 = [{ name = "infra-service-sc", zone = "zone-name" }]
-  coredns_hpa_enabled                 = true
-  kubernetes_dashboard_enabled        = true
-  k8s_dashboard_hostname              = "dashboard.prod.in"
-  kubeclarity_enabled                 = true
-  kubeclarity_hostname                = "kubeclarity.prod.in"
-  kubecost_enabled                    = true
-  kubecost_hostname                   = "kubecost.prod.in"
-  defectdojo_enabled                  = true
-  defectdojo_hostname                 = "defectdojo.prod.in"
-  cert_manager_enabled                = true
-  worker_iam_role_name                = "worker_iam_role_name"
-  worker_iam_role_arn                 = "worker_iam_role_arn"
-  ingress_nginx_enabled               = true
-  metrics_server_enabled              = true
-  external_secrets_enabled            = true
-  amazon_eks_vpc_cni_enabled          = true
-  cluster_autoscaler_enabled          = true
-  service_monitor_crd_enabled         = true
-  enable_aws_load_balancer_controller = true
-  falco_enabled                       = true
-  slack_webhook                       = ""
-  istio_enabled                       = true
+module "eks-addons" {
+  source                                  = "squareops/eks-addons/aws"
+  name                                    = local.name
+  vpc_id                                  = "vpc-abcd5245c2331xyz"
+  environment                             = local.environment
+  ipv6_enabled                            = local.ipv6_enabled
+  kms_key_arn                             = "arn:aws:kms:us-east-2:xxxxxxxxxx:key/mrk-abd9394bda5947cc864adc657d90386f"
+  keda_enabled                            = true
+  kms_policy_arn                          = "arn:aws:iam::xxxxxxxxxxxx:policy/policy_name" ## eks module will create kms_policy_arn
+  eks_cluster_name                        = "cluster_name"
+  reloader_enabled                        = true
+  kubernetes_dashboard_enabled            = true
+  k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+  alb_acm_certificate_arn                 = ""
+  k8s_dashboard_hostname                  = "dashboard.prod.in"
+  karpenter_enabled                       = true
+  private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
+  single_az_ebs_gp3_storage_class_enabled = true
+  single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
+  coredns_hpa_enabled                     = true
+  kubeclarity_enabled                     = true
+  kubeclarity_hostname                    = "kubeclarity.prod.in"
+  kubecost_enabled                        = false
+  kubecost_hostname                       = "kubecost.prod.in"
+  defectdojo_enabled                      = true
+  defectdojo_hostname                     = "defectdojo.prod.in"
+  cert_manager_enabled                    = true
+  worker_iam_role_name                    = "node-role"
+  worker_iam_role_arn                     = "arn:aws:iam::xxxxxxxxxx:role/node-role"
+  ingress_nginx_enabled                   = true
+  metrics_server_enabled                  = true
+  external_secrets_enabled                = true
+  amazon_eks_vpc_cni_enabled              = true
+  cluster_autoscaler_enabled              = true
+  service_monitor_crd_enabled             = true
+  aws_load_balancer_controller_enabled    = true
+  falco_enabled                           = true
+  slack_webhook                           = "xoxb-379541400966-iibMHnnoaPzVl"
+  istio_enabled                           = true
   istio_config = {
     ingress_gateway_enabled       = true
-    egress_gateway_enabled        = false
+    egress_gateway_enabled        = true
     envoy_access_logs_enabled     = true
     prometheus_monitoring_enabled = true
-    istio_values_yaml             = ""
+    istio_values_yaml             = file("./config/istio.yaml")
   }
   karpenter_provisioner_enabled = true
   karpenter_provisioner_config = {
-    private_subnet_name    = "private_subnet_name"
+    private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
     instance_capacity_type = ["spot"]
     excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]   ## Instance hypervisor is picked up only if IPv6 enable is chosen
+    instance_hypervisor    = ["nitro"]
   }
-  cert_manager_letsencrypt_email                = "email@example.com"
+  cert_manager_letsencrypt_email                = "email@email.com"
   internal_ingress_nginx_enabled                = true
   efs_storage_class_enabled                     = true
   aws_node_termination_handler_enabled          = true
   amazon_eks_aws_ebs_csi_driver_enabled         = true
   cluster_propotional_autoscaler_enabled        = true
-  single_az_ebs_gp3_storage_class_enabled       = true
   cert_manager_install_letsencrypt_http_issuers = true
   velero_enabled                                = true
   velero_config = {
-    namespaces                      = "my-application" ## If you want full cluster backup, leave it blank else provide namespace.
-    slack_notification_token        = "xoxb-slack-token"
-    slack_notification_channel_name = "slack-notifications-channel"
+    namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
+    slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
+    slack_appToken                  = "xoxb-sgsehger-ddfnrndfnf"
+    slack_notification_channel_name = "slack-notification-channel"
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
-    velero_backup_name              = "my-application-backup"
-    backup_bucket_name              = "velero-cluster-backup"
+    velero_backup_name              = "application-backup"
+    backup_bucket_name              = "velero-bucket"
   }
 }
 
@@ -300,6 +303,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
 | <a name="input_amazon_eks_aws_ebs_csi_driver_enabled"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_enabled](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_enabled) | Whether to enable the EKS Managed AWS EBS CSI Driver add-on or not. | `bool` | `false` | no |
 | <a name="input_amazon_eks_vpc_cni_enabled"></a> [amazon\_eks\_vpc\_cni\_enabled](#input\_amazon\_eks\_vpc\_cni\_enabled) | Enable or disable the installation of the Amazon EKS VPC CNI addon. | `bool` | `false` | no |
 | <a name="input_aws_load_balancer_controller_enabled"></a> [aws\_load\_balancer\_controller\_enabled](#input\_aws\_load\_balancer\_controller\_enabled) | Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes. | `bool` | `false` | no |
@@ -329,6 +333,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
 | <a name="input_istio_enabled"></a> [istio\_enabled](#input\_istio\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_k8s_dashboard_hostname"></a> [k8s\_dashboard\_hostname](#input\_k8s\_dashboard\_hostname) | Specify the hostname for the k8s dashboard. | `string` | `""` | no |
+| <a name="input_k8s_dashboard_ingress_load_balancer"></a> [k8s\_dashboard\_ingress\_load\_balancer](#input\_k8s\_dashboard\_ingress\_load\_balancer) | Controls whether to enable ALB Ingress or not. | `string` | `"nlb"` | no |
 | <a name="input_karpenter_enabled"></a> [karpenter\_enabled](#input\_karpenter\_enabled) | Enable or disable Karpenter, a Kubernetes-native, multi-tenant, and auto-scaling solution for containerized workloads on Kubernetes. | `bool` | `false` | no |
 | <a name="input_karpenter_provisioner_config"></a> [karpenter\_provisioner\_config](#input\_karpenter\_provisioner\_config) | Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types. | `any` | <pre>{<br>  "excluded_instance_type": [<br>    "nano",<br>    "micro",<br>    "small"<br>  ],<br>  "instance_capacity_type": [<br>    "spot"<br>  ],<br>  "instance_hypervisor": [<br>    "nitro"<br>  ],<br>  "private_subnet_name": ""<br>}</pre> | no |
 | <a name="input_karpenter_provisioner_enabled"></a> [karpenter\_provisioner\_enabled](#input\_karpenter\_provisioner\_enabled) | Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler. | `bool` | `false` | no |
@@ -353,7 +358,7 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_single_az_sc_config"></a> [single\_az\_sc\_config](#input\_single\_az\_sc\_config) | Name and regions for storage class in Key-Value pair. | `list(any)` | `[]` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | The Slack webhook URL used for notifications. | `string` | `""` | no |
 | <a name="input_storageClassName"></a> [storageClassName](#input\_storageClassName) | Specify the hostname for the kubecsot. | `string` | `"infra-service-sc"` | no |
-| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_backup_cron_time": "",<br>  "slack_notification_channel_name": "",<br>  "slack_notification_token": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
+| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_backup_cron_time": "",<br>  "slack_appToken": "",<br>  "slack_botToken": "",<br>  "slack_notification_channel_name": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
 | <a name="input_velero_enabled"></a> [velero\_enabled](#input\_velero\_enabled) | Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters. | `bool` | `false` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the VPC where the cluster and its nodes will be provisioned | `string` | `""` | no |
 | <a name="input_worker_iam_role_arn"></a> [worker\_iam\_role\_arn](#input\_worker\_iam\_role\_arn) | Specify the IAM role Arn for the nodes | `string` | `""` | no |

@@ -283,11 +283,12 @@ resource "helm_release" "velero-notification" {
   repository = "https://charts.botkube.io/"
   chart      = "botkube"
   namespace  = "velero"
-  version    = "0.16.0"
+  version    = "1.10.0"
   values = [
     templatefile("${path.module}/velero_notification/values.yaml", {
       cluster_id         = var.cluster_id,
-      slack_token        = var.velero_config.slack_notification_token,
+      slack_botToken     = var.velero_config.slack_botToken,
+      slack_appToken     = var.velero_config.slack_appToken,
       slack_channel_name = var.velero_config.slack_notification_channel_name
     })
   ]
