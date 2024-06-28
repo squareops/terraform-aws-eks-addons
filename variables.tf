@@ -51,6 +51,22 @@ variable "cert_manager_install_letsencrypt_r53_issuers" {
   default     = false
   type        = bool
 }
+variable "cert_manager_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
+}
+
+variable "cert_manager_domain_names" {
+  description = "Domain names of the Route53 hosted zone to use with cert-manager"
+  type        = list(string)
+  default     = []
+}
+variable "cert_manager_kubernetes_svc_image_pull_secrets" {
+  description = "list(string) of kubernetes imagePullSecrets"
+  type        = list(string)
+  default     = []
+}
 
 variable "eks_cluster_name" {
   description = "Fetch Cluster ID of the cluster"
@@ -99,12 +115,19 @@ variable "aws_load_balancer_controller_enabled" {
   default     = false
   type        = bool
 }
+variable "argocd_manage_add_ons" {
+  description = "Enable managing add-on configuration via ArgoCD App of Apps"
+  type        = bool
+  default     = false
+}
+
 
 variable "aws_load_balancer_version" {
   description = "Specify the version of the AWS Load Balancer Controller for Ingress"
   default     = "1.4.4"
   type        = string
 }
+
 
 variable "ingress_nginx_version" {
   description = "Specify the version of the NGINX Ingress Controller"
@@ -177,11 +200,21 @@ variable "worker_iam_role_arn" {
   default     = ""
   type        = string
 }
+variable "data_plane_wait_arn" {
+  description = "Addon deployment will not proceed until this value is known. Set to node group/Fargate profile ARN to wait for data plane to be ready before provisioning addons"
+  type        = string
+  default     = ""
+}
 
 variable "aws_node_termination_handler_enabled" {
   description = "Enable or disable node termination handler"
   default     = false
   type        = bool
+}
+variable "aws_node_termination_handler_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
 }
 
 variable "amazon_eks_vpc_cni_enabled" {
@@ -270,6 +303,11 @@ variable "node_termination_handler_version" {
   default     = "0.21.0"
   type        = string
 }
+variable "auto_scaling_group_names" {
+  description = "List of self-managed node groups autoscaling group names"
+  type        = list(string)
+  default     = []
+}
 
 variable "kubeclarity_hostname" {
   description = "Specify the hostname for the Kubeclarity. "
@@ -317,6 +355,130 @@ variable "core_dns_hpa_config" {
     targetMemoryUtilizationPercentage = "150Mi"
   }
   type = any
+}
+variable "enable_amazon_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS add-on"
+  type        = bool
+  default     = false
+}
+variable "enable_self_managed_coredns" {
+  description = "Enable self-managed CoreDNS add-on"
+  type        = bool
+  default     = false
+}
+variable "enable_coredns_autoscaler" {
+  description = "Enable CoreDNS autoscaler add-on"
+  type        = bool
+  default     = false
+}
+
+variable "coredns_autoscaler_helm_config" {
+  description = "CoreDNS Autoscaler Helm Chart config"
+  type        = any
+  default     = {}
+}
+#-----------EKS MANAGED ADD-ONS------------
+variable "enable_ipv6" {
+  description = "Enable Ipv6 network. Attaches new VPC CNI policy to the IRSA role"
+  type        = bool
+  default     = false
+}
+
+variable "amazon_eks_vpc_cni_config" {
+  description = "ConfigMap of Amazon EKS VPC CNI add-on"
+  type        = any
+  default     = {}
+}
+
+variable "enable_amazon_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS add-on"
+  type        = bool
+  default     = false
+}
+
+variable "amazon_eks_coredns_config" {
+  description = "Configuration for Amazon CoreDNS EKS add-on"
+  type        = any
+  default     = {}
+}
+
+variable "enable_self_managed_coredns" {
+  description = "Enable self-managed CoreDNS add-on"
+  type        = bool
+  default     = false
+}
+
+variable "self_managed_coredns_helm_config" {
+  description = "Self-managed CoreDNS Helm chart config"
+  type        = any
+  default     = {}
+}
+
+variable "remove_default_coredns_deployment" {
+  description = "Determines whether the default deployment of CoreDNS is removed and ownership of kube-dns passed to Helm"
+  type        = bool
+  default     = false
+}
+
+variable "enable_coredns_cluster_proportional_autoscaler" {
+  description = "Enable cluster-proportional-autoscaler for CoreDNS"
+  type        = bool
+  default     = true
+}
+
+variable "coredns_cluster_proportional_autoscaler_helm_config" {
+  description = "Helm provider config for the CoreDNS cluster-proportional-autoscaler"
+  default     = {}
+  type        = any
+}
+
+
+variable "amazon_eks_kube_proxy_config" {
+  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
+  type        = any
+  default     = {}
+}
+
+variable "amazon_eks_aws_ebs_csi_driver_config" {
+  description = "configMap for AWS EBS CSI Driver add-on"
+  type        = any
+  default     = {}
+}
+
+variable "enable_amazon_eks_vpc_cni" {
+  description = "Enable VPC CNI add-on"
+  type        = bool
+  default     = false
+}
+
+variable "enable_amazon_eks_kube_proxy" {
+  description = "Enable Kube Proxy add-on"
+  type        = bool
+  default     = false
+}
+
+variable "enable_amazon_eks_aws_ebs_csi_driver" {
+  description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
+  type        = bool
+  default     = false
+}
+
+variable "enable_self_managed_aws_ebs_csi_driver" {
+  description = "Enable self-managed aws-ebs-csi-driver add-on; enable_self_managed_aws_ebs_csi_driver and enable_amazon_eks_aws_ebs_csi_driver are mutually exclusive"
+  type        = bool
+  default     = false
+}
+
+variable "self_managed_aws_ebs_csi_driver_helm_config" {
+  description = "Self-managed aws-ebs-csi-driver Helm chart config"
+  type        = any
+  default     = {}
+}
+
+variable "custom_image_registry_uri" {
+  description = "Custom image registry URI map of `{region = dkr.endpoint }`"
+  type        = map(string)
+  default     = {}
 }
 
 variable "metrics_server_vpa_config" {
@@ -397,4 +559,37 @@ variable "alb_acm_certificate_arn" {
   description = "ARN of the ACM certificate to be used for ALB Ingress."
   type        = string
   default     = ""
+}
+variable "tags" {
+  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
+  type        = map(string)
+  default     = {}
+}
+variable "irsa_iam_role_path" {
+  description = "IAM role path for IRSA roles"
+  type        = string
+  default     = "/"
+}
+
+variable "irsa_iam_permissions_boundary" {
+  description = "IAM permissions boundary for IRSA roles"
+  type        = string
+  default     = ""
+}
+variable "eks_oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
+  type        = string
+  default     = null
+}
+
+variable "eks_cluster_endpoint" {
+  description = "Endpoint for your Kubernetes API server"
+  type        = string
+  default     = null
+}
+
+variable "eks_cluster_version" {
+  description = "The Kubernetes version for the cluster"
+  type        = string
+  default     = null
 }

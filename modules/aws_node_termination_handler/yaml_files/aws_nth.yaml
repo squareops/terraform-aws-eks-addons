@@ -1,0 +1,13 @@
+enableSqsTerminationDraining: false
+enablePrometheusServer: ${enable_service_monitor}
+
+podAnnotations:
+  co.elastic.logs/enabled: "true"
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 60Mi
+  requests:
+    cpu: 10m
+    memory: 30Mi

@@ -13,6 +13,7 @@ locals {
 module "eks-addons" {
   source                                  = "squareops/eks-addons/aws"
   name                                    = local.name
+  tags                                    = local.additional_tags
   vpc_id                                  = "vpc-abcd5245c2331xyz"
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled

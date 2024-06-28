@@ -1,98 +1,98 @@
 #-----------------AWS Managed EKS Add-ons----------------------
 
-module "aws_vpc_cni" {
-  source = "./aws-vpc-cni"
+# module "aws_vpc_cni" {
+#   source = "./aws-vpc-cni"
 
-  count = var.enable_amazon_eks_vpc_cni ? 1 : 0
+#   count = var.enable_amazon_eks_vpc_cni ? 1 : 0
 
-  enable_ipv6 = var.enable_ipv6
-  addon_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.amazon_eks_vpc_cni_config,
-  )
+#   enable_ipv6 = var.enable_ipv6
+#   addon_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.amazon_eks_vpc_cni_config,
+#   )
 
-  addon_context = local.addon_context
-}
+#   addon_context = local.addon_context
+# }
 
-module "aws_coredns" {
-  source = "./aws-coredns"
+# module "aws_coredns" {
+#   source = "./aws-coredns"
 
-  count = var.enable_amazon_eks_coredns || var.enable_self_managed_coredns ? 1 : 0
+#   count = var.enable_amazon_eks_coredns || var.enable_self_managed_coredns ? 1 : 0
 
-  addon_context = local.addon_context
+#   addon_context = local.addon_context
 
-  # Amazon EKS CoreDNS addon
-  enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
-  addon_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.amazon_eks_coredns_config,
-  )
+#   # Amazon EKS CoreDNS addon
+#   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
+#   addon_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.amazon_eks_coredns_config,
+#   )
 
-  # Self-managed CoreDNS addon via Helm chart
-  enable_self_managed_coredns = var.enable_self_managed_coredns
-  helm_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.self_managed_coredns_helm_config,
-    {
-      # Putting after because we don't want users to overwrite this - internal use only
-      image_registry = local.amazon_container_image_registry_uris[data.aws_region.current.name]
-    }
-  )
+#   # Self-managed CoreDNS addon via Helm chart
+#   enable_self_managed_coredns = var.enable_self_managed_coredns
+#   helm_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.self_managed_coredns_helm_config,
+#     {
+#       # Putting after because we don't want users to overwrite this - internal use only
+#       image_registry = local.amazon_container_image_registry_uris[data.aws_region.current.name]
+#     }
+#   )
 
-  # CoreDNS cluster proportioanl autoscaler
-  enable_cluster_proportional_autoscaler      = var.enable_coredns_cluster_proportional_autoscaler
-  cluster_proportional_autoscaler_helm_config = var.coredns_cluster_proportional_autoscaler_helm_config
+#   # CoreDNS cluster proportioanl autoscaler
+#   enable_cluster_proportional_autoscaler      = var.enable_coredns_cluster_proportional_autoscaler
+#   cluster_proportional_autoscaler_helm_config = var.coredns_cluster_proportional_autoscaler_helm_config
 
-  remove_default_coredns_deployment      = var.remove_default_coredns_deployment
-  eks_cluster_certificate_authority_data = data.aws_eks_cluster.eks_cluster.certificate_authority[0].data
-}
+#   remove_default_coredns_deployment      = var.remove_default_coredns_deployment
+#   eks_cluster_certificate_authority_data = data.aws_eks_cluster.eks_cluster.certificate_authority[0].data
+# }
 
-module "aws_kube_proxy" {
-  source = "./aws-kube-proxy"
+# module "aws_kube_proxy" {
+#   source = "./aws-kube-proxy"
 
-  count = var.enable_amazon_eks_kube_proxy ? 1 : 0
+#   count = var.enable_amazon_eks_kube_proxy ? 1 : 0
 
-  addon_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.amazon_eks_kube_proxy_config,
-  )
+#   addon_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.amazon_eks_kube_proxy_config,
+#   )
 
-  addon_context = local.addon_context
-}
+#   addon_context = local.addon_context
+# }
 
-module "aws_ebs_csi_driver" {
-  source = "./aws-ebs-csi-driver"
+# module "aws_ebs_csi_driver" {
+#   source = "./aws-ebs-csi-driver"
 
-  count = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
+#   count = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
 
-  # Amazon EKS aws-ebs-csi-driver addon
-  enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
-  addon_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.amazon_eks_aws_ebs_csi_driver_config,
-  )
+#   # Amazon EKS aws-ebs-csi-driver addon
+#   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
+#   addon_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.amazon_eks_aws_ebs_csi_driver_config,
+#   )
 
-  addon_context = local.addon_context
+#   addon_context = local.addon_context
 
-  # Self-managed aws-ebs-csi-driver addon via Helm chart
-  enable_self_managed_aws_ebs_csi_driver = var.enable_self_managed_aws_ebs_csi_driver
-  helm_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-    },
-    var.self_managed_aws_ebs_csi_driver_helm_config,
-  )
-}
+#   # Self-managed aws-ebs-csi-driver addon via Helm chart
+#   enable_self_managed_aws_ebs_csi_driver = var.enable_self_managed_aws_ebs_csi_driver
+#   helm_config = merge(
+#     {
+#       kubernetes_version = local.eks_cluster_version
+#     },
+#     var.self_managed_aws_ebs_csi_driver_helm_config,
+#   )
+# }
 
 #-----------------Kubernetes Add-ons----------------------
 
@@ -114,35 +114,35 @@ module "aws_cloudwatch_metrics" {
   addon_context     = local.addon_context
 }
 
-module "aws_load_balancer_controller" {
-  count             = var.enable_aws_load_balancer_controller ? 1 : 0
-  source            = "./aws-load-balancer-controller"
-  helm_config       = var.aws_load_balancer_controller_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
-}
+# module "aws_load_balancer_controller" {
+#   count             = var.enable_aws_load_balancer_controller ? 1 : 0
+#   source            = "./aws-load-balancer-controller"
+#   helm_config       = var.aws_load_balancer_controller_helm_config
+#   manage_via_gitops = var.argocd_manage_add_ons
+#   addon_context     = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
+# }
 
-module "aws_node_termination_handler" {
-  count                   = var.enable_aws_node_termination_handler ? 1 : 0
-  source                  = "./aws-node-termination-handler"
-  helm_config             = var.aws_node_termination_handler_helm_config
-  irsa_policies           = var.aws_node_termination_handler_irsa_policies
-  autoscaling_group_names = var.auto_scaling_group_names
-  addon_context           = local.addon_context
-}
+# module "aws_node_termination_handler" {
+#   count                   = var.enable_aws_node_termination_handler ? 1 : 0
+#   source                  = "./aws-node-termination-handler"
+#   helm_config             = var.aws_node_termination_handler_helm_config
+#   irsa_policies           = var.aws_node_termination_handler_irsa_policies
+#   autoscaling_group_names = var.auto_scaling_group_names
+#   addon_context           = local.addon_context
+# }
 
-module "cert_manager" {
-  count                             = var.enable_cert_manager ? 1 : 0
-  source                            = "./cert-manager"
-  helm_config                       = var.cert_manager_helm_config
-  manage_via_gitops                 = var.argocd_manage_add_ons
-  irsa_policies                     = var.cert_manager_irsa_policies
-  addon_context                     = local.addon_context
-  domain_names                      = var.cert_manager_domain_names
-  install_letsencrypt_issuers       = var.cert_manager_install_letsencrypt_issuers
-  letsencrypt_email                 = var.cert_manager_letsencrypt_email
-  kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
-}
+# module "cert_manager" {
+#   count                             = var.enable_cert_manager ? 1 : 0
+#   source                            = "./cert-manager"
+#   helm_config                       = var.cert_manager_helm_config
+#   manage_via_gitops                 = var.argocd_manage_add_ons
+#   irsa_policies                     = var.cert_manager_irsa_policies
+#   addon_context                     = local.addon_context
+#   domain_names                      = var.cert_manager_domain_names
+#   install_letsencrypt_issuers       = var.cert_manager_install_letsencrypt_issuers
+#   letsencrypt_email                 = var.cert_manager_letsencrypt_email
+#   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
+# }
 
 module "cert_manager_csi_driver" {
   count             = var.enable_cert_manager_csi_driver ? 1 : 0
@@ -160,24 +160,24 @@ module "cert_manager_istio_csr" {
   addon_context     = local.addon_context
 }
 
-module "cluster_autoscaler" {
-  source = "./cluster-autoscaler"
+# module "cluster_autoscaler" {
+#   source = "./cluster-autoscaler"
 
-  count = var.enable_cluster_autoscaler ? 1 : 0
+#   count = var.enable_cluster_autoscaler ? 1 : 0
 
-  eks_cluster_version = local.eks_cluster_version
-  helm_config         = var.cluster_autoscaler_helm_config
-  manage_via_gitops   = var.argocd_manage_add_ons
-  addon_context       = local.addon_context
-}
+#   eks_cluster_version = local.eks_cluster_version
+#   helm_config         = var.cluster_autoscaler_helm_config
+#   manage_via_gitops   = var.argocd_manage_add_ons
+#   addon_context       = local.addon_context
+# }
 
-module "coredns_autoscaler" {
-  count             = var.enable_amazon_eks_coredns && var.enable_coredns_autoscaler && length(var.coredns_autoscaler_helm_config) > 0 ? 1 : 0
-  source            = "./cluster-proportional-autoscaler"
-  helm_config       = var.coredns_autoscaler_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
+# module "coredns_autoscaler" {
+#   count             = var.enable_amazon_eks_coredns && var.enable_coredns_autoscaler && length(var.coredns_autoscaler_helm_config) > 0 ? 1 : 0
+#   source            = "./cluster-proportional-autoscaler"
+#   helm_config       = var.coredns_autoscaler_helm_config
+#   manage_via_gitops = var.argocd_manage_add_ons
+#   addon_context     = local.addon_context
+# }
 
 module "crossplane" {
   count               = var.enable_crossplane ? 1 : 0
@@ -252,21 +252,21 @@ module "kubernetes_dashboard" {
   addon_context     = local.addon_context
 }
 
-module "metrics_server" {
-  count             = var.enable_metrics_server ? 1 : 0
-  source            = "./metrics-server"
-  helm_config       = var.metrics_server_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
+# module "metrics_server" {
+#   count             = var.enable_metrics_server ? 1 : 0
+#   source            = "./metrics-server"
+#   helm_config       = var.metrics_server_helm_config
+#   manage_via_gitops = var.argocd_manage_add_ons
+#   addon_context     = local.addon_context
+# }
 
-module "reloader" {
-  count             = var.enable_reloader ? 1 : 0
-  source            = "./reloader"
-  helm_config       = var.reloader_helm_config
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
+# module "reloader" {
+#   count             = var.enable_reloader ? 1 : 0
+#   source            = "./reloader"
+#   helm_config       = var.reloader_helm_config
+#   manage_via_gitops = var.argocd_manage_add_ons
+#   addon_context     = local.addon_context
+# }
 
 module "strimzi_kafka_operator" {
   count             = var.enable_strimzi_kafka_operator ? 1 : 0
@@ -354,18 +354,18 @@ module "velero" {
   backup_s3_bucket  = var.velero_backup_s3_bucket
 }
 
-module "external_secrets" {
-  source = "./external-secrets"
+# module "external_secrets" {
+#   source = "./external-secrets"
 
-  count = var.enable_external_secrets ? 1 : 0
+#   count = var.enable_external_secrets ? 1 : 0
 
-  helm_config                           = var.external_secrets_helm_config
-  manage_via_gitops                     = var.argocd_manage_add_ons
-  addon_context                         = local.addon_context
-  irsa_policies                         = var.external_secrets_irsa_policies
-  external_secrets_ssm_parameter_arns   = var.external_secrets_ssm_parameter_arns
-  external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
-}
+#   helm_config                           = var.external_secrets_helm_config
+#   manage_via_gitops                     = var.argocd_manage_add_ons
+#   addon_context                         = local.addon_context
+#   irsa_policies                         = var.external_secrets_irsa_policies
+#   external_secrets_ssm_parameter_arns   = var.external_secrets_ssm_parameter_arns
+#   external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
+# }
 
 module "kubecost" {
   source = "./kubecost"

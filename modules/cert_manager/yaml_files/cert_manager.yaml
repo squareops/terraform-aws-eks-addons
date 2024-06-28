@@ -1,0 +1,69 @@
+installCRDs: true
+
+## Node affinity for particular node in which labels key is "Infra-Services" and value is "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 300Mi
+  requests:
+    cpu: 10m
+    memory: 150Mi
+
+webhook:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi
+
+  podAnnotations:
+    co.elastic.logs/enabled: "true"
+
+cainjector:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 250Mi
+    requests:
+      cpu: 10m
+      memory: 200Mi
+
+  podAnnotations:
+    co.elastic.logs/enabled: "true"
+prometheus:
+  enabled: ${enable_service_monitor}
+  servicemonitor:
+    enabled: ${enable_service_monitor}
+    labels:
+      release: "prometheus-operator"
