@@ -15,7 +15,7 @@ resource "aws_eks_addon" "coredns" {
   cluster_name             = var.addon_context.eks_cluster_id
   addon_name               = local.name
   addon_version            = try(var.addon_config.addon_version, data.aws_eks_addon_version.this.version)
-  resolve_conflicts        = try(var.addon_config.resolve_conflicts, "OVERWRITE")
+  resolve_conflicts_on_update = "PRESERVE"
   service_account_role_arn = try(var.addon_config.service_account_role_arn, null)
   preserve                 = try(var.addon_config.preserve, true)
 
@@ -163,7 +163,7 @@ resource "null_resource" "modify_kube_dns" {
 #---------------------------------------------------------------
 
 module "cluster_proportional_autoscaler" {
-  source = "../cluster-proportional-autoscaler"
+  source = "../cluster_propotional_autoscaler/tf_files"
 
   count = var.enable_cluster_proportional_autoscaler ? 1 : 0
 

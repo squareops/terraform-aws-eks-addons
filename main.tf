@@ -124,7 +124,7 @@ module "aws_load_balancer_controller" {
   helm_config       = {
     version = var.aws_load_balancer_version
     values = [
-      file("${path.module}/example/complete/config/aws_alb.yaml")
+      file("${path.module}/examples/complete/config/aws_alb.yaml")
     ]
   }
   manage_via_gitops = var.argocd_manage_add_ons
@@ -138,7 +138,7 @@ module "aws_node_termination_handler" {
   helm_config             =  {
     version = var.node_termination_handler_version
     values = [
-      templatefile("${path.module}/example/complete/config/aws_node_termination_handler.yaml", {
+      templatefile("${path.module}/examples/complete/config/aws_node_termination_handler.yaml", {
         enable_service_monitor = var.service_monitor_crd_enabled
       })
     ]
@@ -155,7 +155,7 @@ module "cert_manager" {
   source                            = "./modules/cert_manager/tf_files/"
   helm_config                       = {
     values = [
-      file("${path.module}/example/complete/config/cert_manager.yaml")
+      file("${path.module}/examples/complete/config/cert_manager.yaml")
     ]
   }
   manage_via_gitops                 = var.argocd_manage_add_ons
@@ -167,6 +167,19 @@ module "cert_manager" {
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
 }
 
+resource "helm_release" "cert_manager_le_http" {
+  depends_on = [module.cert_manager]
+  count      = var.cert_manager_install_letsencrypt_http_issuers ? 1 : 0
+  name       = "cert-manager-le-http"
+  chart      = "${path.module}/modules/cert-manager-le-http"
+  version    = "0.1.0"
+  set {
+    name  = "email"
+    value = var.cert_manager_letsencrypt_email
+    type  = "string"
+  }
+}
+
 ## CLUSTER AUTOSCALER
 module "cluster_autoscaler" {
   source = "./modules/cluster_autoscaler/tf_files"
@@ -176,7 +189,7 @@ module "cluster_autoscaler" {
   eks_cluster_version = local.eks_cluster_version
   helm_config         = {
     version = var.cluster_autoscaler_chart_version
-    values = [templatefile("${path.module}/example/complete/config/cluster_autoscaler.yaml", {
+    values = [templatefile("${path.module}/examples/complete/config/cluster_autoscaler.yaml", {
       aws_region     = data.aws_region.current.name
       eks_cluster_id = var.eks_cluster_name
     })]
@@ -192,7 +205,7 @@ module "coredns_autoscaler" {
   source            = "./modules/cluster_propotional_autoscaler/tf_files"
   helm_config       =  {
     values = [
-      file("${path.module}/example/complete/config/cluster_propotional_autoscaler.yaml")
+      file("${path.module}/examples/complete/config/cluster_propotional_autoscaler.yaml")
     ]
   }
   manage_via_gitops = var.argocd_manage_add_ons
@@ -202,12 +215,11 @@ module "coredns_autoscaler" {
 
 ## EXTERNAL SECRET
 module "external_secrets" {
-  source = "./modules/external-secrets"
-
+  source = "./modules/external-secret/tf_files"
   count = var.external_secrets_enabled ? 1 : 0
 
   helm_config                           = {
-    values = [file("${path.module}/example/complete/config/external-secret.yaml")
+    values = [file("${path.module}/examples/complete/config/external-secret.yaml")
     ]
   }
   manage_via_gitops                     = var.argocd_manage_add_ons
@@ -224,7 +236,7 @@ module "reloader" {
   source            = "./modules/reloader/tf_files"
   helm_config       = {
     values = [
-      templatefile("${path.module}/example/complete/config/reloader.yaml", {
+      templatefile("${path.module}/examples/complete/config/reloader.yaml", {
         enable_service_monitor = var.service_monitor_crd_enabled
       })
     ]
@@ -242,7 +254,7 @@ module "metrics_server" {
   source            = "./modules/metrics_server/tf_files"
   helm_config       = {
     version = var.metrics_server_helm_version
-    values  = [file("${path.module}/example/complete/config/metrics_server.yaml")]
+    values  = [file("${path.module}/examples/complete/config/metrics_server.yaml")]
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -372,18 +384,7 @@ module "k8s_addons" {
   # }
 }
 
-resource "helm_release" "cert_manager_le_http" {
-  depends_on = [module.k8s_addons]
-  count      = var.cert_manager_install_letsencrypt_http_issuers ? 1 : 0
-  name       = "cert-manager-le-http"
-  chart      = "${path.module}/modules/cert-manager-le-http"
-  version    = "0.1.0"
-  set {
-    name  = "email"
-    value = var.cert_manager_letsencrypt_email
-    type  = "string"
-  }
-}
+
 
 # OPEN: Default label needs to be removed from gp2 storageclass in order to make gp3 as default choice for EBS volume provisioning.
 module "single_az_sc" {
@@ -630,7 +631,6 @@ resource "helm_release" "coredns-hpa" {
     })
   ]
 }
-
 ## VPA_CRDS
 resource "helm_release" "vpa-crds" {
   count      = var.metrics_server_enabled ? 1 : 0

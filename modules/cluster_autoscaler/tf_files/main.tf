@@ -13,11 +13,11 @@ module "helm_addon" {
   helm_config = merge({
     name        = local.name
     chart       = local.name
-    version     = "9.34.1"
+    version     = "9.37.0"
     repository  = "https://kubernetes.github.io/autoscaler"
     namespace   = local.namespace
     description = "Cluster AutoScaler helm Chart deployment configuration."
-    values = [templatefile("${path.module}/values.yaml", {
+    values = [templatefile("${path.module}/../yaml_files/values.yaml", {
       aws_region     = var.addon_context.aws_region_name
       eks_cluster_id = var.addon_context.eks_cluster_id
       image_tag      = "v${var.eks_cluster_version}.0"

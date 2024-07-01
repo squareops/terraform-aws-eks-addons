@@ -11,7 +11,7 @@ locals {
 }
 
 module "eks-addons" {
-  source                                  = "squareops/eks-addons/aws"
+  source                                  = "../.."
   name                                    = local.name
   tags                                    = local.additional_tags
   vpc_id                                  = "vpc-abcd5245c2331xyz"

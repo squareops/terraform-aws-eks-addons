@@ -103,6 +103,24 @@ variable "external_secrets_enabled" {
   default     = false
   type        = bool
 }
+variable "external_secrets_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
+}
+
+variable "external_secrets_ssm_parameter_arns" {
+  description = "List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets"
+  type        = list(string)
+  default     = ["arn:aws:ssm:*:*:parameter/*"]
+}
+
+variable "external_secrets_secrets_manager_arns" {
+  description = "List of Secrets Manager ARNs that contain secrets to mount using External Secrets"
+  type        = list(string)
+  default     = ["arn:aws:secretsmanager:*:*:secret:*"]
+}
+
 
 variable "ingress_nginx_enabled" {
   description = "Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services."
@@ -390,22 +408,10 @@ variable "amazon_eks_vpc_cni_config" {
   default     = {}
 }
 
-variable "enable_amazon_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS add-on"
-  type        = bool
-  default     = false
-}
-
 variable "amazon_eks_coredns_config" {
   description = "Configuration for Amazon CoreDNS EKS add-on"
   type        = any
   default     = {}
-}
-
-variable "enable_self_managed_coredns" {
-  description = "Enable self-managed CoreDNS add-on"
-  type        = bool
-  default     = false
 }
 
 variable "self_managed_coredns_helm_config" {

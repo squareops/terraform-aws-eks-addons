@@ -7,7 +7,7 @@ locals {
     name        = local.name
     chart       = local.name
     repository  = "https://aws.github.io/eks-charts"
-    version     = "1.6.2"
+    version     = "1.8.1"
     namespace   = "kube-system"
     values      = local.default_helm_values
     description = "aws-load-balancer-controller Helm Chart for ingress resources"
@@ -18,7 +18,7 @@ locals {
     var.helm_config
   )
 
-  default_helm_values = [templatefile("${path.module}/values.yaml", {
+  default_helm_values = [templatefile("${path.module}/../yaml_files/values.yaml", {
     aws_region     = var.addon_context.aws_region_name,
     eks_cluster_id = var.addon_context.eks_cluster_id,
     repository     = "${var.addon_context.default_repository}/amazon/aws-load-balancer-controller"

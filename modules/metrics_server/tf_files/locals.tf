@@ -6,7 +6,7 @@ locals {
     name        = local.name
     chart       = local.name
     repository  = "https://kubernetes-sigs.github.io/metrics-server/"
-    version     = "3.11.0"
+    version     = "3.12.1"
     namespace   = "kube-system"
     description = "Metric server helm Chart deployment configuration"
   }
