@@ -6,11 +6,11 @@ provider "aws" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = "cluster-name"
+  name = "test-atmosly-task-ipv4"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = "cluster-name"
+  name = "test-atmosly-task-ipv4"
 }
 
 provider "kubernetes" {

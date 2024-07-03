@@ -61,9 +61,9 @@ cainjector:
 
   podAnnotations:
     co.elastic.logs/enabled: "true"
-prometheus:
-  enabled: ${enable_service_monitor}
-  servicemonitor:
-    enabled: ${enable_service_monitor}
-    labels:
-      release: "prometheus-operator"
+# prometheus:
+#   enabled: ${enable_service_monitor}
+#   servicemonitor:
+#     enabled: ${enable_service_monitor}
+#     labels:
+#       release: "prometheus-operator"

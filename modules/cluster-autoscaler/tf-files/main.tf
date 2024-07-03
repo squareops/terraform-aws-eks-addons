@@ -17,7 +17,7 @@ module "helm_addon" {
     repository  = "https://kubernetes.github.io/autoscaler"
     namespace   = local.namespace
     description = "Cluster AutoScaler helm Chart deployment configuration."
-    values = [templatefile("${path.module}/../yaml_files/values.yaml", {
+    values = [templatefile("${path.module}/../yaml-files/values.yaml", {
       aws_region     = var.addon_context.aws_region_name
       eks_cluster_id = var.addon_context.eks_cluster_id
       image_tag      = "v${var.eks_cluster_version}.0"

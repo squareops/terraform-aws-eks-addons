@@ -9,7 +9,7 @@ module "helm_addon" {
       repository = "https://kubernetes-sigs.github.io/cluster-proportional-autoscaler"
       version    = "1.1.0"
       namespace  = "kube-system"
-      values = [templatefile("${path.module}/../yaml_files/values.yaml", {
+      values = [templatefile("${path.module}/../yaml-files/values.yaml", {
         operating_system = "linux"
       })]
       description = "Cluster Proportional Autoscaler Helm Chart"

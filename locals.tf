@@ -6,28 +6,27 @@ locals {
 
   # Configuration for managing add-ons via ArgoCD.
   argocd_addon_config = {
-    awsEfsCsiDriver           = var.enable_aws_efs_csi_driver ? module.aws_efs_csi_driver[0].argocd_gitops_config : null
-    awsLoadBalancerController = var.aws_load_balancer_controller_enabled ? module.aws_load_balancer_controller[0].argocd_gitops_config : null
-    certManager               = var.cert_manager_enabled ? module.cert_manager[0].argocd_gitops_config : null
-    clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster_autoscaler[0].argocd_gitops_config : null
-    corednsAutoscaler         = var.enable_amazon_eks_coredns && var.enable_coredns_autoscaler && length(var.coredns_autoscaler_helm_config) > 0 ? module.coredns_autoscaler[0].argocd_gitops_config : null
-    ingressNginx              = var.enable_ingress_nginx ? module.ingress_nginx[0].argocd_gitops_config : null
-    keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
-    metricsServer             = var.metrics_server_enabled ? module.metrics_server[0].argocd_gitops_config : null
-    tetrateIstio              = var.enable_tetrate_istio ? module.tetrate_istio[0].argocd_gitops_config : null
-    vault                     = var.enable_vault ? module.vault[0].argocd_gitops_config : null
-    vpa                       = var.enable_vpa ? module.vpa[0].argocd_gitops_config : null
-    karpenter                 = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
-    kubernetesDashboard       = var.enable_kubernetes_dashboard ? module.kubernetes_dashboard[0].argocd_gitops_config : null
-    awsCloudWatchMetrics      = var.enable_aws_cloudwatch_metrics ? module.aws_cloudwatch_metrics[0].argocd_gitops_config : null
-    externalDns               = var.enable_external_dns ? module.external_dns[0].argocd_gitops_config : null
-    externalSecrets           = var.external_secrets_enabled ? module.external_secrets[0].argocd_gitops_config : null
-    velero                    = var.enable_velero ? module.velero[0].argocd_gitops_config : null
-    kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
-    strimziKafkaOperator      = var.enable_strimzi_kafka_operator ? module.strimzi_kafka_operator[0].argocd_gitops_config : null
-    kyverno                   = var.enable_kyverno ? { enable = true } : null
-    kyverno_policies          = var.enable_kyverno ? { enable = true } : null
-    kyverno_policy_reporter   = var.enable_kyverno ? { enable = true } : null
+    # # awsEfsCsiDriver           = var.enable_aws_efs_csi_driver ? module.aws_efs_csi_driver[0].argocd_gitops_config : null
+    # awsLoadBalancerController = var.aws_load_balancer_controller_enabled ? module.aws_load_balancer_controller[0].argocd_gitops_config : null
+    # certManager               = var.cert_manager_enabled ? module.cert_manager[0].argocd_gitops_config : null
+    # clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster_autoscaler[0].argocd_gitops_config : null
+    # # ingressNginx              = var.enable_ingress_nginx ? module.ingress_nginx[0].argocd_gitops_config : null
+    # # keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
+    # metricsServer             = var.metrics_server_enabled ? module.metrics_server[0].argocd_gitops_config : null
+    # # tetrateIstio              = var.enable_tetrate_istio ? module.tetrate_istio[0].argocd_gitops_config : null
+    # # vault                     = var.enable_vault ? module.vault[0].argocd_gitops_config : null
+    # # vpa                       = var.enable_vpa ? module.vpa[0].argocd_gitops_config : null
+    # # karpenter                 = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
+    # # kubernetesDashboard       = var.enable_kubernetes_dashboard ? module.kubernetes_dashboard[0].argocd_gitops_config : null
+    # # awsCloudWatchMetrics      = var.enable_aws_cloudwatch_metrics ? module.aws_cloudwatch_metrics[0].argocd_gitops_config : null
+    # # externalDns               = var.enable_external_dns ? module.external_dns[0].argocd_gitops_config : null
+    # externalSecrets           = var.external_secrets_enabled ? module.external_secrets[0].argocd_gitops_config : null
+    # # velero                    = var.enable_velero ? module.velero[0].argocd_gitops_config : null
+    # kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
+    # # strimziKafkaOperator      = var.enable_strimzi_kafka_operator ? module.strimzi_kafka_operator[0].argocd_gitops_config : null
+    # # kyverno                   = var.enable_kyverno ? { enable = true } : null
+    # # kyverno_policies          = var.enable_kyverno ? { enable = true } : null
+    # # kyverno_policy_reporter   = var.enable_kyverno ? { enable = true } : null
   }
 
   addon_context = {

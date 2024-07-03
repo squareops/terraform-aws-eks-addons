@@ -10,7 +10,7 @@ module "helm_addon" {
 resource "helm_release" "cert_manager_ca" {
   count     = var.manage_via_gitops ? 0 : 1
   name      = "cert-manager-ca"
-  chart     = "${path.module}/../yaml_files/cert-manager-ca"
+  chart     = "${path.module}/../yaml-files/cert-manager-ca"
   version   = "0.2.0"
   namespace = local.helm_config["namespace"]
 
@@ -20,8 +20,8 @@ resource "helm_release" "cert_manager_ca" {
 resource "helm_release" "cert_manager_letsencrypt" {
   count     = var.manage_via_gitops || !var.install_letsencrypt_issuers ? 0 : 1
   name      = "cert-manager-letsencrypt"
-  chart     = "${path.module}/../yaml_files/cert-manager-letsencrypt"
-  version   = "0.1.0"
+  chart     = "${path.module}/../yaml-files/cert-manager-letsencrypt"
+  version   = "0.1.2"
   namespace = local.helm_config["namespace"]
 
   set {
