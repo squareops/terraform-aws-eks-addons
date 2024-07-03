@@ -263,7 +263,7 @@
 # # module "reloader" {
 # #   count             = var.enable_reloader ? 1 : 0
 # #   source            = "./reloader"
-# #   helm_config       = var.reloader_helm_config
+# #   helm_config       = var.[file("${path.module}/examples/complete/config/metrics-server.yaml")]
 # #   manage_via_gitops = var.argocd_manage_add_ons
 # #   addon_context     = local.addon_context
 # # }

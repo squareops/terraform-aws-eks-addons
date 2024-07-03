@@ -27,13 +27,22 @@ variable "cluster_autoscaler_chart_version" {
   default     = "9.29.0"
   type        = string
 }
+variable "cluster_autoscaler_helm_config" {
+  description = "Cluster Autoscaler Helm Chart config"
+  type        = any
+  default     = []
+}
 
 variable "metrics_server_enabled" {
   description = "Enable or disable the metrics server add-on for EKS cluster."
   default     = false
   type        = bool
 }
-
+variable "metrics_server_helm_config" {
+  description = "Metrics Server Helm Chart config"
+  type        = any
+  default     = {}
+}
 variable "metrics_server_helm_version" {
   description = "Version of the metrics server helm chart"
   default     = "3.11.0"
@@ -50,6 +59,12 @@ variable "cert_manager_install_letsencrypt_r53_issuers" {
   description = "Enable or disable the creation of Route53 issuer while installing cert manager."
   default     = false
   type        = bool
+}
+
+variable "cert_manager_helm_config" {
+  description = "Cert Manager Helm Chart config"
+  type        = any
+  default     = {}
 }
 variable "cert_manager_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
@@ -120,6 +135,11 @@ variable "external_secrets_secrets_manager_arns" {
   type        = list(string)
   default     = ["arn:aws:secretsmanager:*:*:secret:*"]
 }
+variable "external_secrets_helm_config" {
+  type        = any
+  default     = {}
+  description = "External Secrets operator Helm Chart config"
+}
 
 
 variable "ingress_nginx_enabled" {
@@ -132,6 +152,13 @@ variable "aws_load_balancer_controller_enabled" {
   description = "Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes."
   default     = false
   type        = bool
+}
+
+variable "aws_load_balancer_controller_helm_config" {
+  description = "Configuration for the AWS Load Balancer Controller Helm release"
+  type = object({
+    values  = list(string)
+  })
 }
 variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"
@@ -206,7 +233,11 @@ variable "reloader_enabled" {
   default     = false
   type        = bool
 }
-
+variable "reloader_helm_config" {
+  description = "Reloader Helm Chart config"
+  type        = any
+  default     = {}
+}
 variable "worker_iam_role_name" {
   description = "Specify the IAM role for the nodes that will be provisioned through karpenter"
   default     = ""
@@ -228,6 +259,11 @@ variable "aws_node_termination_handler_enabled" {
   description = "Enable or disable node termination handler"
   default     = false
   type        = bool
+}
+variable "aws_node_termination_handler_helm_config" {
+  description = "AWS Node Termination Handler Helm Chart config"
+  type        = any
+  default     = {}
 }
 variable "aws_node_termination_handler_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"

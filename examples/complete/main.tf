@@ -21,12 +21,27 @@ module "eks-addons" {
   keda_enabled                            = false
   kms_policy_arn                          = "arn:aws:iam::767398031518:policy/test-atmosly-task-ipv4-kubernetes-pvc-kms-policy" ## eks module will create kms_policy_arn
   eks_cluster_name                        = "test-atmosly-task-ipv4"
+  ## Service Monitoring
+  service_monitor_crd_enabled             = false
   # Config reloader
   reloader_enabled                        = false
+  reloader_helm_config                    = [
+      templatefile("${path.module}/config/reloader.yaml", {
+        enable_service_monitor = false # This line applies configurations only when ADDONS "service_monitor_crd_enabled" is set to true.
+
+      })
+    ]
   kubernetes_dashboard_enabled            = false
   k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
   alb_acm_certificate_arn                 = ""
   k8s_dashboard_hostname                  = "dashboard.prod.in"
+  ## aws load balancer controller
+  aws_load_balancer_controller_enabled    = false
+  aws_load_balancer_controller_helm_config = {
+    values = [
+      file("${path.module}/config/aws-alb.yaml")
+    ]
+  }
   karpenter_enabled                       = false
   private_subnet_ids                      = ["subnet-05c042969aea94a74", "subnet-00f87508b7b1e507c"]
   single_az_ebs_gp3_storage_class_enabled = false
@@ -39,8 +54,13 @@ module "eks-addons" {
   defectdojo_enabled                      = false
   defectdojo_hostname                     = "defectdojo.prod.in"
   ## Cert_Manager
-  cert_manager_enabled                    = true
-  cert_manager_install_letsencrypt_http_issuers = true
+  cert_manager_enabled                    = false
+  cert_manager_helm_config                = {
+    values = [
+      file("${path.module}/config/cert-manager.yaml")
+    ]
+  }
+  cert_manager_install_letsencrypt_http_issuers = false
   cert_manager_letsencrypt_email                = "email@email.com"
   
   worker_iam_role_name                    = "test-atmosly-task-ipv4-node-role"
@@ -48,14 +68,21 @@ module "eks-addons" {
   ingress_nginx_enabled                   = false
   ## Metric Server
   metrics_server_enabled                  = false
+  metrics_server_helm_config              = [file("${path.module}/config/metrics-server.yaml")]
   ## External Secrets
   external_secrets_enabled                = false
+  external_secrets_helm_config            = {
+    values = [file("${path.module}/config/external-secret.yaml")
+    ]
+  }
   ## cluster autoscaler
   cluster_autoscaler_enabled              = false
-  ## Service Mon
-  service_monitor_crd_enabled             = false
-  ## aws load balancer controller
-  aws_load_balancer_controller_enabled    = false
+  cluster_autoscaler_helm_config          = [
+    templatefile("${path.module}/config/cluster-autoscaler.yaml", {
+      aws_region     = local.region
+      eks_cluster_id = "cluster-name"
+    })]
+
   falco_enabled                           = false
   slack_webhook                           = "xoxb-379541400966-iibMHnnoaPzVl"
   istio_enabled                           = false
@@ -78,6 +105,11 @@ module "eks-addons" {
   efs_storage_class_enabled                     = false
   #Node termination handler
   aws_node_termination_handler_enabled          = false
+  aws_node_termination_handler_helm_config      = [
+      templatefile("${path.module}/config/aws-node-termination-handler.yaml", {
+        enable_service_monitor = false # This line applies configurations only when ADDONS "service_monitor_crd_enabled" is set to true.
+      })
+    ]
 
 
  
