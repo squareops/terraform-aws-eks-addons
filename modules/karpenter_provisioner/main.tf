@@ -3,7 +3,7 @@ resource "helm_release" "karpenter_provisioner" {
   chart   = "${path.module}/karpenter-provisioner/"
   timeout = 600
   values = var.ipv6_enabled == true ? [
-    templatefile("${path.module}/karpenter-provisioner/ipv6-values.yaml", {
+    templatefile("${path.module}/config/ipv6-values.yaml", {
       subnet_selector_name                 = var.subnet_selector_name,
       sg_selector_name                     = var.sg_selector_name,
       karpenter_ec2_capacity_type          = "[${join(",", [for s in var.karpenter_ec2_capacity_type : format("%s", s)])}]",
@@ -11,7 +11,7 @@ resource "helm_release" "karpenter_provisioner" {
       instance_hypervisor                  = "[${join(",", var.instance_hypervisor)}]"
     })
     ] : [
-    templatefile("${path.module}/karpenter-provisioner/ipv4-values.yaml", {
+    templatefile("${path.module}/config/ipv4-values.yaml", {
       subnet_selector_name                 = var.subnet_selector_name,
       sg_selector_name                     = var.sg_selector_name,
       karpenter_ec2_capacity_type          = "[${join(",", [for s in var.karpenter_ec2_capacity_type : format("%s", s)])}]",

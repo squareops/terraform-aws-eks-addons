@@ -100,6 +100,17 @@ variable "private_subnet_ids" {
   default     = [""]
   type        = list(string)
 }
+variable "aws_efs_csi_driver_helm_config" {
+  description = "AWS EFS CSI driver Helm Chart config"
+  type        = any
+  default     = {}
+}
+
+variable "aws_efs_csi_driver_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
+}
 
 variable "keda_enabled" {
   description = "Enable or disable Kubernetes Event-driven Autoscaling (KEDA) add-on for autoscaling workloads."
@@ -117,6 +128,35 @@ variable "external_secrets_enabled" {
   description = "Enable or disable External Secrets operator add-on for managing external secrets."
   default     = false
   type        = bool
+}
+variable "ingress_nginx_helm_config" {
+  description = "Configure ingress-nginx to setup addons"
+  type = object({
+    version = any
+    ingress_values_yaml = any
+  })
+
+  default = {
+    version = ""
+    ingress_values_yaml = ""
+  }
+}
+
+variable "internal_nginx_config" {
+  description = "Configure internal-ingress-nginx addons"
+  type = object({
+    internal_ingress_yaml_file = any
+  })
+  default = {
+    internal_ingress_yaml_file = ""
+  }
+}
+
+variable "karpenter_helm_config" {
+  description = "Configure karpenter addons"
+  type = object({
+    values = any
+  })
 }
 variable "external_secrets_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
