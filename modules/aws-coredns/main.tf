@@ -163,7 +163,7 @@ resource "null_resource" "modify_kube_dns" {
 #---------------------------------------------------------------
 
 module "cluster_proportional_autoscaler" {
-  source = "../cluster_propotional_autoscaler/tf-files"
+  source = "../cluster_propotional_autoscaler"
 
   count = var.enable_cluster_proportional_autoscaler ? 1 : 0
 

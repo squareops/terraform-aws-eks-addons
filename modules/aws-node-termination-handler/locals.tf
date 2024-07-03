@@ -19,7 +19,7 @@ locals {
     var.helm_config
   )
 
-  default_helm_values = [templatefile("${path.module}/../yaml-files/values.yaml", {
+  default_helm_values = [templatefile("${path.module}/config/values.yaml", {
     autoscaling_group_names = var.autoscaling_group_names
   })]
 

@@ -14,7 +14,7 @@ locals {
     values      = local.default_helm_values
   }
 
-  default_helm_values = [templatefile("${path.module}/../yaml-files/values.yaml", {})]
+  default_helm_values = [templatefile("${path.module}/config/values.yaml", {})]
 
   helm_config = merge(
     local.default_helm_config,

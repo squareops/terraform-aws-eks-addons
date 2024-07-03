@@ -8,7 +8,7 @@ locals {
 }
 
 module "helm_addon" {
-  source = "../../helm-addon"
+  source = "../helm-addon"
 
   # https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/Chart.yaml
   helm_config = merge(
