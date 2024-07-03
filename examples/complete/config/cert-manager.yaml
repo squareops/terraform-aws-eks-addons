@@ -63,8 +63,8 @@ cainjector:
     co.elastic.logs/enabled: "true"
 # we have to install ServiceMonitor CRD first
 prometheus:
-  enabled: true
+  enabled: ${enable_service_monitor}
   servicemonitor:
-    enabled: true
+    enabled: ${enable_service_monitor}
     labels:
       release: "prometheus-operator"
