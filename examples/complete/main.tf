@@ -47,7 +47,7 @@ module "eks-addons" {
     values = [
       templatefile("${path.module}/config/karpenter.yaml", {
         eks_cluster_id            = local.cluster-name,
-        eks_cluster_endpoint      = data.aws_eks_cluster.eks.endpoint
+        eks_cluster_endpoint      = data.aws_eks_cluster.eks_cluster_endpoint
         node_iam_instance_profile = "" # enter profile for 
       })
     ]
