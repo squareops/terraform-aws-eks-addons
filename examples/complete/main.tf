@@ -29,7 +29,6 @@ module "eks-addons" {
   reloader_helm_config                    = [
       templatefile("${path.module}/config/reloader.yaml", {
         enable_service_monitor = false # This line applies configurations only when ADDONS "service_monitor_crd_enabled" is set to false.
-
       })
     ]
   kubernetes_dashboard_enabled            = false
@@ -58,6 +57,11 @@ module "eks-addons" {
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
   # coredns HPA
   coredns_hpa_enabled                     = false
+  coredns_hpa_helm_config = {
+    values = [
+      file("${path.module}/config/coredns_hpa.yaml")
+    ]
+  }
   kubeclarity_enabled                     = false
   kubeclarity_hostname                    = "kubeclarity.prod.in"
   kubecost_enabled                        = false

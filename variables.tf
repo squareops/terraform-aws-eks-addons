@@ -27,10 +27,11 @@ variable "cluster_autoscaler_chart_version" {
   default     = "9.29.0"
   type        = string
 }
+
 variable "cluster_autoscaler_helm_config" {
-  description = "Cluster Autoscaler Helm Chart config"
+  description = "CoreDNS Autoscaler Helm Chart config"
   type        = any
-  default     = []
+  default     = {}
 }
 
 variable "metrics_server_enabled" {
@@ -164,6 +165,11 @@ variable "external_secrets_irsa_policies" {
   default     = []
 }
 
+variable "coredns_hpa_helm_config" {
+  description = "CoreDNS Autoscaler Helm Chart config"
+  type        = any
+  default     = {}
+}
 variable "external_secrets_ssm_parameter_arns" {
   description = "List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets"
   type        = list(string)
@@ -439,17 +445,7 @@ variable "cluster_issuer" {
   type        = string
 }
 
-variable "core_dns_hpa_config" {
-  description = "Configuration to provide settings of hpa over core dns"
-  default = {
-    minReplicas                       = 2
-    maxReplicas                       = 10
-    corednsdeploymentname             = "coredns"
-    targetCPUUtilizationPercentage    = 80
-    targetMemoryUtilizationPercentage = "150Mi"
-  }
-  type = any
-}
+
 variable "enable_amazon_eks_coredns" {
   description = "Enable Amazon EKS CoreDNS add-on"
   type        = bool
