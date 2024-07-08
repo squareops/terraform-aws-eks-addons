@@ -1,9 +1,14 @@
-
-
-
 resource "kubernetes_namespace" "internal_nginx" {
   metadata {
     name = "internal-ingress-nginx"
+  }
+}
+data "kubernetes_service" "internal-nginx-ingress" {
+  depends_on = [helm_release.internal_nginx]
+  count      = var.internal_ingress_nginx_enabled ? 1 : 0
+  metadata {
+    name      = "internal-ingress-nginx-controller"
+    namespace = "internal-ingress-nginx"
   }
 }
 resource "helm_release" "internal_nginx" {
@@ -23,11 +28,3 @@ resource "helm_release" "internal_nginx" {
   ]
 }
 
-data "kubernetes_service" "internal-nginx-ingress" {
-  depends_on = [helm_release.internal_nginx]
-  count      = var.internal_ingress_nginx_enabled ? 1 : 0
-  metadata {
-    name      = "internal-ingress-nginx-controller"
-    namespace = "internal-ingress-nginx"
-  }
-}

@@ -7,3 +7,5 @@ prometheus:
   enabled: ${enable_service_monitor}
   servicemonitor:
     enabled: ${enable_service_monitor}
+    labels:
+      release: "prometheus-operator"

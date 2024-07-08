@@ -173,6 +173,11 @@ module "metrics-server" {
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
 }
+module "vpa-crds" {
+  count      = var.metrics_server_enabled ? 1 : 0
+  source = "./modules/vpa-crds"
+  helm-config = var.vpa_config.values[0]
+}
 
 ## Coredns Hpa
 module "coredns_hpa" {
@@ -192,8 +197,6 @@ module "aws-efs-csi-driver" {
 }
 
 ## INTERNAL NGINX INGRESS
-
-
 module "internal-nginx-ingress" {
   count = var.internal_ingress_nginx_enabled ? 1 : 0
   source            = "./modules/internal-nginx-ingress"
@@ -203,17 +206,16 @@ module "internal-nginx-ingress" {
 }
 
 # NGINX INGRESS
-
 module "ingress-nginx" {
   count             = var.enable_ingress_nginx ? 1 : 0
   source            = "./modules/nginx-ingress"
   helm_config       = var.ingress_nginx_helm_config.values
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
-  enable_service_monitor = var.enable_service_monitor
+  enable_service_monitor = var.ingress_nginx_helm_config.enable_service_monitor
 }
 
-# # EFS Storage class
+## EFS Storage class
 module "aws-efs-storage-class" {
   source      = "./modules/aws-efs-storage-class"
   count       = var.efs_storage_class_enabled ? 1 : 0
@@ -405,11 +407,7 @@ module "single-az-sc" {
 #   }
 # }
 
-module "vpa-crds" {
-  count      = var.metrics_server_enabled ? 1 : 0
-  source = "./modules/vpa-crds"
-  helm-config = var.vpa_config.values[0]
-}
+
 # resource "helm_release" "metrics-server-vpa" {
 #   count      = var.metrics_server_enabled ? 1 : 0
 #   depends_on = [helm_release.vpa-crds]

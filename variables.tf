@@ -128,6 +128,7 @@ variable "ingress_nginx_helm_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
     values = any
+    enable_service_monitor = bool
   })
 }
 

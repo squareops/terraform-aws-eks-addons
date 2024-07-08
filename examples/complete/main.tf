@@ -83,15 +83,14 @@ module "eks-addons" {
   cert_manager_letsencrypt_email                = "email@email.com"
 
   ingress_nginx_enabled                   = true #akanksha
-  enable_service_monitor                  = true # enable monitoring in nginx ingress
   ingress_nginx_helm_config = {
     values = [file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx-ingress.yaml" : "nginx-ingress_ipv6.yaml"}")]
+    enable_service_monitor                  = true # enable monitoring in nginx ingress
   }
 
   ## Metric Server
   metrics_server_enabled                  = true #divyunshu
   metrics_server_helm_config              = [file("${path.module}/config/metrics-server.yaml")]
-
   vpa_config = {
     values = [file("${path.module}/config/vpa-crd.yaml")]
   }
