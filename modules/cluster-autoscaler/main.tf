@@ -23,6 +23,12 @@ module "helm_addon" {
       image_tag      = "v${var.eks_cluster_version}.0"
     })]
     },
+    {
+    values = [templatefile("${path.module}/config/cluster_autoscaler.yaml", {
+      aws_region     = var.addon_context.aws_region_name
+      eks_cluster_id = var.addon_context.eks_cluster_id
+    })]
+    },
     var.helm_config
   )
 

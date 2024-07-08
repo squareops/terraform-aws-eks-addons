@@ -26,3 +26,9 @@ variable "addon_context" {
     irsa_iam_permissions_boundary  = string
   })
 }
+
+variable "enable_service_monitor" {
+  description = "Enable or disable Service Monitor add-on for monitoring Kubernetes services."
+  default     = false
+  type        = bool
+}

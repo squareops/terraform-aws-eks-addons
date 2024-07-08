@@ -21,6 +21,12 @@ module "helm_addon" {
       create_namespace = true
       description      = "Reloader Helm Chart deployment configuration"
     },
+    {
+      values = templatefile("${path.module}/config/reloader.yaml" , 
+         {
+         enable_service_monitor = var.enable_service_monitor
+         })
+    },
     var.helm_config
   )
 

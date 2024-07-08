@@ -31,3 +31,9 @@ variable "irsa_policies" {
   type        = list(string)
   default     = []
 }
+
+variable "enable_service_monitor" {
+  description = "Enable Service monitor for Kubernetes Services"
+  type = bool
+  default = false
+}

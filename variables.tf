@@ -1,9 +1,3 @@
-variable "amazon_eks_aws_ebs_csi_driver_enabled" {
-  description = "Whether to enable the EKS Managed AWS EBS CSI Driver add-on or not."
-  default     = false
-  type        = bool
-}
-
 variable "single_az_ebs_gp3_storage_class_enabled" {
   description = "Whether to enable the Single AZ storage class or not."
   default     = false
@@ -132,31 +126,27 @@ variable "external_secrets_enabled" {
 variable "ingress_nginx_helm_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
-    version = any
-    ingress_values_yaml = any
+    values = any
   })
-
-  default = {
-    version = ""
-    ingress_values_yaml = ""
-  }
 }
 
+variable "vpa_config" {
+  description = "Configure VPA CRD to setup addon"
+  type = object({
+    values = list(string)
+  })
+}
 variable "internal_nginx_config" {
   description = "Configure internal-ingress-nginx addons"
   type = object({
-    internal_ingress_yaml_file = any
+    values = any
   })
-  default = {
-    internal_ingress_yaml_file = ""
-  }
 }
 
 variable "karpenter_helm_config" {
-  description = "Configure karpenter addons"
-  type = object({
-    values = any
-  })
+  description = "Karpenter autoscaler add-on config"
+  type        = any
+  default     = {}
 }
 variable "external_secrets_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
@@ -674,4 +664,34 @@ variable "eks_cluster_version" {
   description = "The Kubernetes version for the cluster"
   type        = string
   default     = null
+}
+
+variable "enable_ingress_nginx" {
+  description = "Enable Ingress Nginx add-on"
+  type        = bool
+  default     = false
+}
+
+variable "enable_karpenter" {
+  description = "Enable Karpenter autoscaler add-on"
+  type        = bool
+  default     = false
+}
+
+variable "karpenter_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
+}
+
+variable "karpenter_node_iam_instance_profile" {
+  description = "Karpenter Node IAM Instance profile id"
+  type        = string
+  default     = ""
+}
+
+variable "enable_service_monitor" {
+  description = "Enable monitoring in nginx ingress add-on"
+  type        = bool
+  default     = false
 }

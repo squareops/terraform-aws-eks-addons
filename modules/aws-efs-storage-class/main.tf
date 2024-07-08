@@ -104,7 +104,7 @@ resource "aws_security_group_rule" "cidr_ingress" {
 
 module "security_group_efs" {
   source      = "terraform-aws-modules/security-group/aws"
-  version     = "~> 4"
+  version     = "~> 5"
   name        = format("%s-%s-%s", var.environment, var.name, "efs-sg")
   description = "Complete PostgreSQL example security group"
   vpc_id      = var.vpc_id

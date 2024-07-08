@@ -4,20 +4,38 @@ data "aws_eks_cluster" "eks" {
   name = var.eks_cluster_name
 }
 
-module "service_monitor_crd" {
+module "service-monitor-crd" {
   count  = var.service_monitor_crd_enabled ? 1 : 0
-  source = "./modules/service_monitor_crd"
+  source = "./modules/service-monitor-crd"
 }
 
-resource "aws_iam_instance_profile" "karpenter_profile" {
+# resource "aws_iam_instance_profile" "karpenter_profile" {
+#   count       = var.karpenter_enabled ? 1 : 0
+#   role        = var.worker_iam_role_name
+#   name_prefix = var.eks_cluster_name
+#   tags = merge(
+#     { "Name"        = format("%s-%s-karpenter-profile", var.environment, var.name)
+#       "Environment" = var.environment
+#     }
+#   )
+# }
+
+# karpenter_node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
+
+module "karpenter" {
   count       = var.karpenter_enabled ? 1 : 0
-  role        = var.worker_iam_role_name
-  name_prefix = var.eks_cluster_name
-  tags = merge(
-    { "Name"        = format("%s-%s-karpenter-profile", var.environment, var.name)
-      "Environment" = var.environment
-    }
-  )
+  source = "./modules/karpenter"
+  worker_iam_role_name = var.worker_iam_role_name
+  eks_cluster_name = var.eks_cluster_name
+  helm_config               = var.karpenter_helm_config
+  irsa_policies             = var.karpenter_irsa_policies
+  node_iam_instance_profile = var.karpenter_node_iam_instance_profile
+  manage_via_gitops         = var.argocd_manage_add_ons
+  addon_context             = local.addon_context
+  eks_cluster_endpoint = data.aws_eks_cluster.eks.endpoint
+  eks_cluster_id = var.eks_cluster_name
+  environment = var.environment
+  name = var.name
 }
 
 ## AWS LOAD BALANCER 
@@ -43,6 +61,7 @@ module "aws-node-termination-handler" {
   irsa_policies           = var.aws_node_termination_handler_irsa_policies
   autoscaling_group_names = var.auto_scaling_group_names
   addon_context           = local.addon_context
+  enable_service_monitor = var.enable_service_monitor
 }
 
 
@@ -137,7 +156,7 @@ module "coredns_hpa" {
 }
 
 ## EFS CSI DRIVER
-module "aws_efs_csi_driver" {
+module "aws-efs-csi-driver" {
   count             = var.efs_storage_class_enabled ? 1 : 0
   source            = "./modules/aws-efs-csi-driver"
   helm_config       = var.aws_efs_csi_driver_helm_config
@@ -147,84 +166,59 @@ module "aws_efs_csi_driver" {
 }
 
 ## INTERNAL NGINX INGRESS
-module "internal-ingress-nginx" {
+
+
+module "internal-nginx-ingress" {
   count = var.internal_ingress_nginx_enabled ? 1 : 0
-  depends_on = [kubernetes_namespace.internal_nginx]
   source            = "./modules/internal-nginx-ingress"
   ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
-  internal_ingress_yaml_file = var.internal_nginx_config.internal_ingress_yaml_file
+  internal_ingress_config = var.internal_nginx_config.values
+  enable_service_monitor = var.enable_service_monitor
 }
 
+# NGINX INGRESS
 
+module "ingress-nginx" {
+  count             = var.enable_ingress_nginx ? 1 : 0
+  source            = "./modules/nginx-ingress"
+  helm_config       = var.ingress_nginx_helm_config.values
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+  enable_service_monitor = var.enable_service_monitor
+}
 
+# # EFS Storage class
+module "aws-efs-storage-class" {
+  source      = "./modules/aws-efs-storage-class"
+  count       = var.efs_storage_class_enabled ? 1 : 0
+  name        = var.name
+  vpc_id      = var.vpc_id
+  environment = var.environment 
+  kms_key_arn = var.kms_key_arn
+  subnets     = var.private_subnet_ids
+}
 
-
-
-
-
-# module "k8s_addons" {
-#   depends_on     = [module.service_monitor_crd]
-#   source         = "./modules/kubernetes-addons"
-#   eks_cluster_id = var.eks_cluster_name
-#   #keda
-#   enable_keda = var.keda_enabled
-#   keda_helm_config = {
-#     version = "2.10.2"
-#     values  = [file("${path.module}/modules/keda/keda.yaml")]
-#   }
-#   #Ingress Nginx Controller
-#   enable_ingress_nginx = var.ingress_nginx_enabled
-#   ingress_nginx_helm_config = {
-#     version = var.ingress_nginx_version
-#     values = [
-#       templatefile("${path.module}/modules/nginx_ingress/${data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx_ingress.yaml" : "nginx_ingress_ipv6.yaml"}", {
-#         enable_service_monitor = var.service_monitor_crd_enabled
-
-#       })
-#     ]
-#   }
-  # enable_karpenter = var.karpenter_enabled
-  # karpenter_helm_config = {
-  #   values = [
-  #     templatefile("${path.module}/modules/karpenter/karpenter.yaml", {
-  #       eks_cluster_id            = var.eks_cluster_name,
-  #       node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
-  #       eks_cluster_endpoint      = data.aws_eks_cluster.eks.endpoint
-  #     })
-  #   ]
-  # }
-  # karpenter_node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
-# }
-
-
+## Karpenter-provisioner
+module "karpenter-provisioner" {
+  depends_on = [ module.karpenter ]
+  source                               = "./modules/karpenter-provisioner"
+  count                                = var.karpenter_provisioner_enabled ? 1 : 0
+  ipv6_enabled                         = var.ipv6_enabled
+  sg_selector_name                     = var.eks_cluster_name
+  subnet_selector_name                 = var.karpenter_provisioner_config.private_subnet_name
+  karpenter_ec2_capacity_type          = var.karpenter_provisioner_config.instance_capacity_type
+  excluded_karpenter_ec2_instance_type = var.karpenter_provisioner_config.excluded_instance_type
+  instance_hypervisor                  = var.karpenter_provisioner_config.instance_hypervisor
+}
 
 #OPEN: Default label needs to be removed from gp2 storageclass in order to make gp3 as default choice for EBS volume provisioning.
-# module "single_az_sc" {
-#   for_each                             = { for sc in var.single_az_sc_config : sc.name => sc }
-#   source                               = "./modules/aws-ebs-storage-class"
-#   kms_key_id                           = var.kms_key_arn
-#   availability_zone                    = each.value.zone
-#   single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
-#   single_az_ebs_gp3_storage_class_name = each.value.name
-# }
-
-# # EFS
-# module "efs" {
-#   source      = "./modules/efs"
-#   count       = var.efs_storage_class_enabled ? 1 : 0
-#   name        = var.name
-#   vpc_id      = var.vpc_id
-#   environment = var.environment
-#   kms_key_arn = var.kms_key_arn
-#   subnets     = var.private_subnet_ids
-# }
-
-data "kubernetes_service" "nginx-ingress" {
-  count      = var.ingress_nginx_enabled ? 1 : 0
-  metadata {
-    name      = "ingress-nginx-controller"
-    namespace = "ingress-nginx"
-  }
+module "single-az-sc" {
+  for_each                             = { for sc in var.single_az_sc_config : sc.name => sc }
+  source                               = "./modules/aws-ebs-storage-class"
+  kms_key_id                           = var.kms_key_arn
+  availability_zone                    = each.value.zone
+  single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
+  single_az_ebs_gp3_storage_class_name = each.value.name
 }
 
 # module "velero" {
@@ -260,47 +254,8 @@ data "kubernetes_service" "nginx-ingress" {
 #   }
 # }
 
-module "karpenter_provisioner" {
-  source                               = "./modules/karpenter_provisioner"
-  count                                = var.karpenter_provisioner_enabled ? 1 : 0
-  ipv6_enabled                         = var.ipv6_enabled
-  sg_selector_name                     = var.eks_cluster_name
-  subnet_selector_name                 = var.karpenter_provisioner_config.private_subnet_name
-  karpenter_ec2_capacity_type          = var.karpenter_provisioner_config.instance_capacity_type
-  excluded_karpenter_ec2_instance_type = var.karpenter_provisioner_config.excluded_instance_type
-  instance_hypervisor                  = var.karpenter_provisioner_config.instance_hypervisor
-}
 
-resource "kubernetes_namespace" "internal_nginx" {
-  count = var.internal_ingress_nginx_enabled ? 1 : 0
-  metadata {
-    name = "internal-ingress-nginx"
-  }
-}
 
-# resource "helm_release" "internal_nginx" {
-#   depends_on = [kubernetes_namespace.internal_nginx]
-#   count      = var.internal_ingress_nginx_enabled ? 1 : 0
-#   name       = "internal-ingress-nginx"
-#   chart      = "ingress-nginx"
-#   version    = "4.9.1"
-#   namespace  = "internal-ingress-nginx"
-#   repository = "https://kubernetes.github.io/ingress-nginx"
-#   values = [
-#     templatefile("${path.module}/modules/internal_nginx_ingress/${data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family == "ipv4" ? "ingress.yaml" : "ingress_ipv6.yaml"}", {
-#       enable_service_monitor = var.service_monitor_crd_enabled
-#     })
-#   ]
-# }
-
-# data "kubernetes_service" "internal-nginx-ingress" {
-#   depends_on = [helm_release.internal_nginx]
-#   count      = var.internal_ingress_nginx_enabled ? 1 : 0
-#   metadata {
-#     name      = "internal-ingress-nginx-controller"
-#     namespace = "internal-ingress-nginx"
-#   }
-# }
 
 # ##KUBECLARITY
 # resource "kubernetes_namespace" "kube_clarity" {
@@ -424,39 +379,11 @@ resource "kubernetes_namespace" "internal_nginx" {
 #   }
 # }
 
-# # #HPA_CROEDNS
-# # resource "helm_release" "coredns-hpa" {
-# #   count     = var.coredns_hpa_enabled ? 1 : 0
-# #   name      = "corednshpa"
-# #   namespace = "kube-system"
-# #   chart     = "${path.module}/modules/core_dns_hpa/"
-# #   timeout   = 600
-# #   values = [
-# #     templatefile("${path.module}/modules/core_dns_hpa/values.yaml", {
-# #       minReplicas                       = var.core_dns_hpa_config.minReplicas,
-# #       maxReplicas                       = var.core_dns_hpa_config.maxReplicas,
-# #       corednsdeploymentname             = var.core_dns_hpa_config.corednsdeploymentname,
-# #       targetCPUUtilizationPercentage    = var.core_dns_hpa_config.targetCPUUtilizationPercentage,
-# #       targetMemoryUtilizationPercentage = var.core_dns_hpa_config.targetMemoryUtilizationPercentage
-# #     })
-# #   ]
-# # }
-
-
-# ## VPA_CRDS
-# resource "helm_release" "vpa-crds" {
-#   count      = var.metrics_server_enabled ? 1 : 0
-#   name       = "vertical-pod-autoscaler"
-#   namespace  = "kube-system"
-#   repository = "https://cowboysysop.github.io/charts/"
-#   chart      = "vertical-pod-autoscaler"
-#   version    = "9.6.0"
-#   timeout    = 600
-#   values = [
-#     file("${path.module}/modules/vpa_crds/values.yaml")
-#   ]
-# }
-
+module "vpa-crds" {
+  count      = var.metrics_server_enabled ? 1 : 0
+  source = "./modules/vpa-crds"
+  helm-config = var.vpa_config.values[0]
+}
 # resource "helm_release" "metrics-server-vpa" {
 #   count      = var.metrics_server_enabled ? 1 : 0
 #   depends_on = [helm_release.vpa-crds]

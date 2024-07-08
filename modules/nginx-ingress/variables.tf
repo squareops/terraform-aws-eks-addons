@@ -1,7 +1,13 @@
-variable "addon_config" {
-  description = "Amazon EKS Managed Add-on config for EBS CSI Driver"
+variable "helm_config" {
+  description = "Ingress NGINX Helm Configuration"
   type        = any
   default     = {}
+}
+
+variable "manage_via_gitops" {
+  description = "Determines if the add-on should be managed via GitOps."
+  type        = bool
+  default     = false
 }
 
 variable "addon_context" {
@@ -16,25 +22,17 @@ variable "addon_context" {
     eks_oidc_issuer_url            = string
     eks_oidc_provider_arn          = string
     tags                           = map(string)
-    irsa_iam_role_path             = string
-    irsa_iam_permissions_boundary  = string
   })
 }
 
-variable "enable_amazon_eks_aws_ebs_csi_driver" {
-  description = "Enable EKS Managed AWS EBS CSI Driver add-on"
-  type        = bool
+variable "ingress_nginx_enabled" {
+  description = "Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services."
   default     = false
+  type        = bool
 }
 
-variable "enable_self_managed_aws_ebs_csi_driver" {
-  description = "Enable self-managed aws-ebs-csi-driver add-on"
-  type        = bool
+variable "enable_service_monitor" {
+  description = "Enable or disable Service Monitor add-on for monitoring Kubernetes services."
   default     = false
-}
-
-variable "helm_config" {
-  description = "Self-managed aws-ebs-csi-driver Helm chart config"
-  type        = any
-  default     = {}
+  type        = bool
 }

@@ -7,16 +7,24 @@ resource "kubernetes_namespace" "internal_nginx" {
   }
 }
 
+data "aws_eks_cluster" "eks" {
+  name = "test-eks"
+}
+
 resource "helm_release" "internal_nginx" {
+  depends_on = [kubernetes_namespace.internal_nginx]
   name       = "internal-ingress-nginx"
   chart      = "ingress-nginx"
-  version    = "4.9.1"
+  version    = "4.10.1"
   namespace  = "internal-ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"
  # internal_nginx_values_yaml              = var.internal_nginx.internal_nginx_values_yaml
   values = [
-    file("${path.module}/config/${var.ip_family == "ipv4" ? "ingress.yaml" : "ingress_ipv6.yaml"}"),
-     var.internal_ingress_yaml_file
+    templatefile("${path.module}/config/${data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family == "ipv4" ? "ingress.yaml" : "ingress_ipv6.yaml"}" , 
+      { 
+        enable_service_monitor = var.enable_service_monitor 
+      }),
+     var.internal_ingress_config
   ]
 }
 

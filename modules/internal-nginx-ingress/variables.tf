@@ -10,7 +10,7 @@ variable "service_monitor_crd_enabled" {
   type        = bool
 }
 
-variable "internal_ingress_yaml_file" {
+variable "internal_ingress_config" {
   description = "values file from outside the module"
   default =  ""
   type = any
@@ -20,4 +20,10 @@ variable "ip_family" {
   description = "ip family ipv4 and ipv6"
   type = string
   default = "ipv4"
+}
+
+variable "enable_service_monitor" {
+  description = "Enable or disable Service Monitor add-on for monitoring Kubernetes services."
+  default     = false
+  type        = bool
 }

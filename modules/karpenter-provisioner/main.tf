@@ -1,6 +1,6 @@
 resource "helm_release" "karpenter_provisioner" {
   name    = "karpenter-provisioner"
-  chart   = "${path.module}/karpenter-provisioner/"
+  chart   = "${path.module}/config/"
   timeout = 600
   values = var.ipv6_enabled == true ? [
     templatefile("${path.module}/config/ipv6-values.yaml", {
