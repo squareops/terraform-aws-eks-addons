@@ -3,7 +3,7 @@ resource "helm_release" "cert-manager-le-http-issuer" {
   chart      = "${path.module}/config/"
   version    = "0.1.0"
     values = [          
-    "${path.root}/config/values.yaml"
+    file("${path.module}/config/values.yaml")
   ]
   set {
     name  = "email"
