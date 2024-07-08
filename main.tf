@@ -79,6 +79,7 @@ module "cert-manager" {
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
 }
 
+## Cert Managwer le-http-issuer
 module "cert-manager-le-http-issuer" {
   count      = var.cert_manager_install_letsencrypt_http_issuers ? 1 : 0
   source = "./modules/cert-manager-le-http-issuer"
@@ -141,18 +142,12 @@ module "metrics-server" {
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
 }
+
+## Coredns Hpa
 module "coredns_hpa" {
   count     = var.coredns_hpa_enabled ? 1 : 0
   source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
-  release_name                      = "corednshpa"
-  namespace                         = "kube-system"
-  chart_path                        = "${path.module}/modules/core-dns-hpa/config"
-  timeout                           = 600
-  min_replicas                      = var.core_dns_hpa_config.minReplicas
-  max_replicas                      = var.core_dns_hpa_config.maxReplicas
-  corednsdeploymentname             = var.core_dns_hpa_config.corednsdeploymentname
-  target_cpu_utilization_percentage = var.core_dns_hpa_config.targetCPUUtilizationPercentage
-  target_memory_utilization_percentage = var.core_dns_hpa_config.targetMemoryUtilizationPercentage
+  helm_config = var.coredns_hpa_helm_config
 }
 
 ## EFS CSI DRIVER
