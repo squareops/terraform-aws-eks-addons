@@ -1,4 +1,14 @@
-## Node affinity for particular node in which labels key is "Infra-Services" and value is "true"
+controller:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+podAnnotations:
+  co.elastic.logs/enabled: "true"
 
 affinity:
   nodeAffinity:
@@ -9,12 +19,3 @@ affinity:
           operator: In
           values:
           - "true"
-## Using limits and requests
-
-resources:
-  limits:
-    cpu: 50m
-    memory: 300Mi
-  requests:
-    cpu: 10m
-    memory: 100Mi
