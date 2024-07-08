@@ -14,7 +14,9 @@ locals {
     values      = local.default_helm_values
   }
 
-  default_helm_values = [templatefile("${path.module}/config/values.yaml", {})]
+  default_helm_values = [templatefile("${path.module}/config/values.yaml", {
+    enable_service_monitor = var.helm_config.enable_service_monitor
+  })]
 
   helm_config = merge(
     local.default_helm_config,

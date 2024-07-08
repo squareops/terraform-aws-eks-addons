@@ -9,18 +9,49 @@ module "service-monitor-crd" {
   source = "./modules/service-monitor-crd"
 }
 
-# resource "aws_iam_instance_profile" "karpenter_profile" {
-#   count       = var.karpenter_enabled ? 1 : 0
-#   role        = var.worker_iam_role_name
-#   name_prefix = var.eks_cluster_name
-#   tags = merge(
-#     { "Name"        = format("%s-%s-karpenter-profile", var.environment, var.name)
-#       "Environment" = var.environment
-#     }
-#   )
-# }
+module "aws_vpc_cni" {
+  source = "./modules/aws-vpc-cni"
 
-# karpenter_node_iam_instance_profile = var.karpenter_enabled ? aws_iam_instance_profile.karpenter_profile[0].name : ""
+  count = var.amazon_eks_vpc_cni_enabled ? 1 : 0
+
+  enable_ipv6 = var.enable_ipv6
+  addon_config = merge(
+    {
+      kubernetes_version = local.eks_cluster_version
+      additional_iam_policies = [var.kms_policy_arn]
+    },
+    var.amazon_eks_vpc_cni_config,
+  )
+
+  addon_context = local.addon_context
+}
+module "aws_ebs_csi_driver" {
+  source = "./modules/aws-ebs-csi-driver"
+
+  count = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
+
+  # Amazon EKS aws-ebs-csi-driver addon
+  enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
+  addon_config = merge(
+    {
+      kubernetes_version = local.eks_cluster_version
+    },
+    var.amazon_eks_aws_ebs_csi_driver_config,
+  )
+
+  addon_context = local.addon_context
+
+  # Self-managed aws-ebs-csi-driver addon via Helm chart
+  enable_self_managed_aws_ebs_csi_driver = var.enable_self_managed_aws_ebs_csi_driver
+  helm_config = merge(
+    {
+      kubernetes_version = local.eks_cluster_version
+    },
+    var.self_managed_aws_ebs_csi_driver_helm_config,
+  )
+}
+
+
 
 module "karpenter" {
   count       = var.karpenter_enabled ? 1 : 0

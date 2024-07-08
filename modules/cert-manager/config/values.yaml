@@ -2,3 +2,8 @@ extraArgs:
   - --enable-certificate-owner-ref=true
 
 installCRDs: true
+
+prometheus:
+  enabled: ${enable_service_monitor}
+  servicemonitor:
+    enabled: ${enable_service_monitor}

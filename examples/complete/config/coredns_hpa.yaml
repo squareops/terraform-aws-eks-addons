@@ -1,8 +1,9 @@
+values.yaml:
 corednsdeploymentname: "coredns"
 minReplicas: 2
-maxReplicas: 
+maxReplicas: 4  # Adjust according to your scaling requirements
 targetCPUUtilizationPercentage: 80
-targetMemoryUtilizationPercentage: "150mi"
+targetMemoryUtilizationPercentage: 150Mi
 
 affinity:
   nodeAffinity:
