@@ -1,5 +1,5 @@
 enableSqsTerminationDraining: false
-enablePrometheusServer: "true"
+enablePrometheusServer: ${enable_service_monitor}
 
 podAnnotations:
   co.elastic.logs/enabled: "true"
