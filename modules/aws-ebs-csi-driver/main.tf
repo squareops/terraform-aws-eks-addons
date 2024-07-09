@@ -32,14 +32,14 @@ module "helm_addon" {
   count  = var.enable_self_managed_aws_ebs_csi_driver && !var.enable_amazon_eks_aws_ebs_csi_driver ? 1 : 0
 
   # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/charts/aws-ebs-csi-driver/Chart.yaml
-  helm_config = merge({
+  helm_config = {
     name        = local.name
     description = "The Amazon Elastic Block Store Container Storage Interface (CSI) Driver provides a CSI interface used by Container Orchestrators to manage the lifecycle of Amazon EBS volumes."
     chart       = local.name
-    version     = "2.27.0"
+    version     = "2.32.0"
     repository  = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
     namespace   = local.namespace
-    values = [
+    values = concat([
       <<-EOT
       image:
         repository: public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver
@@ -47,10 +47,8 @@ module "helm_addon" {
       controller:
         k8sTagClusterId: ${var.addon_context.eks_cluster_id}
       EOT
-    ]
-    },
-    var.helm_config
-  )
+    ],[file("${path.module}/config/values.yaml")],var.helm_config.values)
+    }
 
   set_values = [
     {

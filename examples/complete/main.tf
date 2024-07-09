@@ -35,7 +35,7 @@ module "eks-addons" {
   service_monitor_crd_enabled             = false   
   ## Keda
   keda_enabled                            = false 
-  # Config reloader
+  ## Config reloader
   reloader_enabled                        = false 
   reloader_helm_config                    = [file("${path.module}/config/reloader.yaml")]
 
@@ -55,10 +55,11 @@ module "eks-addons" {
   karpenter_helm_config = {
     values = [file("${path.module}/config/karpenter.yaml")]
   }
+  ## GP3
   single_az_ebs_gp3_storage_class_enabled = false 
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
 
-  # coredns HPA
+  ## coredns HPA
   coredns_hpa_enabled                     = false 
   coredns_hpa_helm_config                = {
    values = [file("${path.module}/config/coredns_hpa.yaml")] 
@@ -72,7 +73,8 @@ module "eks-addons" {
   }
   cert_manager_install_letsencrypt_http_issuers = false 
   cert_manager_letsencrypt_email                = "email@email.com"
-
+ 
+  ## Ingress nginx
   ingress_nginx_enabled                   = false 
   ingress_nginx_helm_config = {
     values = [file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx-ingress.yaml" : "nginx-ingress_ipv6.yaml"}")]
@@ -96,7 +98,7 @@ module "eks-addons" {
   cluster_autoscaler_enabled              = false 
   cluster_autoscaler_helm_config          = [file("${path.module}/config/cluster-autoscaler.yaml")]
 
-  # Kubernetes Provisioner
+  ## Kubernetes Provisioner
   karpenter_provisioner_enabled = false 
   karpenter_provisioner_config = {
     private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
@@ -105,15 +107,19 @@ module "eks-addons" {
     instance_hypervisor    = ["nitro"]
   }
   
-  # Internal Ingress Nginx
+  ## Internal Ingress Nginx
   internal_ingress_nginx_enabled                = false 
   internal_nginx_config = {
     values = file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "internal-ingress.yaml" : "internal-ingress-ipv6.yaml"}") 
   }
+  ## Efs storage class
   efs_storage_class_enabled                     = false 
-  #Node termination handler
+  ## Node termination handler
   aws_node_termination_handler_enabled          = false 
-  aws_node_termination_handler_helm_config      = [file("${path.module}/config/aws-node-termination-handler.yaml")]
+  aws_node_termination_handler_helm_config      = {
+    values = [file("${path.module}/config/aws-node-termination-handler.yaml")]
+    enable_service_monitor = false
+  }
   # Velero
   velero_enabled                                = false #aman
   velero_config = {

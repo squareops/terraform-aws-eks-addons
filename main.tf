@@ -91,12 +91,12 @@ module "aws-node-termination-handler" {
   source                  = "./modules/aws-node-termination-handler"
   helm_config             =  {
     version = var.node_termination_handler_version
-    values = var.aws_node_termination_handler_helm_config
+    values = var.aws_node_termination_handler_helm_config.values
   }
   irsa_policies           = var.aws_node_termination_handler_irsa_policies
   autoscaling_group_names = var.auto_scaling_group_names
   addon_context           = local.addon_context
-  enable_service_monitor = var.enable_service_monitor
+  enable_service_monitor = var.aws_node_termination_handler_helm_config.enable_service_monitor
 }
 
 
@@ -257,7 +257,6 @@ module "single-az-sc" {
 ## kubernetes dashboard
 
 module "kubernetes-dashboard" {
-  depends_on = [ module.ingress-nginx ]
   count = var.kubernetes_dashboard_enabled ? 1 : 0
   source = "./modules/kubernetes-dashboard" 
   k8s_dashboard_hostname = var.k8s_dashboard_hostname
