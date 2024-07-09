@@ -17,11 +17,6 @@ resource "kubernetes_namespace_v1" "this" {
     name = local.namespace
   }
 }
-
-data "aws_eks_cluster" "eks" {
-  name = "test-eks"
-}
-
 module "helm_addon" {
   source = "../helm-addon"
 
@@ -33,9 +28,7 @@ module "helm_addon" {
       version     = "4.10.1"
       namespace   = try(kubernetes_namespace_v1.this[0].metadata[0].name, local.namespace)
       description = "The NGINX HelmChart Ingress Controller deployment configuration"
-    },
-    {
-      values = templatefile("${path.module}/config/${data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx-ingress.yaml" : "nginx-ingress_ipv6.yaml"}" , 
+      values = templatefile("${path.module}/config/${var.ip_family == "ipv4" ? "nginx_ingress.yaml" : "nginx_ingress_ipv6.yaml"}" , 
          {
          enable_service_monitor = var.enable_service_monitor
          })

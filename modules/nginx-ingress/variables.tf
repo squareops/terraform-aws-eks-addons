@@ -36,3 +36,8 @@ variable "enable_service_monitor" {
   default     = false
   type        = bool
 }
+variable "ip_family" {
+  description = "ip family ipv4 and ipv6"
+  type = string
+  default = "ipv4"
+}

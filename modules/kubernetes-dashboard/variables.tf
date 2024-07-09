@@ -1,9 +1,3 @@
-variable "kubernetes_dashboard_enabled" {
-  description = "Determines whether k8s-dashboard is enabled or not"
-  default     = false
-  type        = bool
-}
-
 variable "k8s_dashboard_ingress_load_balancer" {
   description = "Controls whether to enable ALB Ingress or not."
   type        = string

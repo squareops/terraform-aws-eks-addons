@@ -663,12 +663,6 @@ variable "eks_cluster_version" {
   default     = null
 }
 
-variable "enable_ingress_nginx" {
-  description = "Enable Ingress Nginx add-on"
-  type        = bool
-  default     = false
-}
-
 variable "enable_karpenter" {
   description = "Enable Karpenter autoscaler add-on"
   type        = bool

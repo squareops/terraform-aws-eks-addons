@@ -207,12 +207,13 @@ module "internal-nginx-ingress" {
 
 # NGINX INGRESS
 module "ingress-nginx" {
-  count             = var.enable_ingress_nginx ? 1 : 0
+  count             = var.ingress_nginx_enabled ? 1 : 0
   source            = "./modules/nginx-ingress"
-  helm_config       = var.ingress_nginx_helm_config.values
+  helm_config       = var.ingress_nginx_helm_config
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
   enable_service_monitor = var.ingress_nginx_helm_config.enable_service_monitor
+  ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
 }
 
 ## EFS Storage class
@@ -247,6 +248,32 @@ module "single-az-sc" {
   availability_zone                    = each.value.zone
   single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
   single_az_ebs_gp3_storage_class_name = each.value.name
+}
+
+## kubernetes dashboard
+
+module "kubernetes-dashboard" {
+  depends_on = [ 
+    module.ingress-nginx , 
+    module.aws_vpc_cni , 
+    module.cert-manager , 
+    module.cert-manager-le-http-issuer , 
+    module.aws-load-balancer-controller ,
+    module.internal-nginx-ingress ,
+    module.aws_ebs_csi_driver,
+    module.coredns_hpa,
+    module.karpenter,
+    module.karpenter-provisioner,
+    module.aws-node-termination-handler,
+    module.external-secrets,
+    module.cluster-autoscaler,
+    module.metrics-server
+     ]
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+  source = "./modules/kubernetes-dashboard" 
+  k8s_dashboard_hostname = var.k8s_dashboard_hostname
+  alb_acm_certificate_arn = var.alb_acm_certificate_arn
+  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
 }
 
 # module "velero" {
@@ -482,13 +509,4 @@ module "single-az-sc" {
 #   ]
 # }
 
-## kubernetes dashboard
 
-module "kubernetes-dashboard" {
-  count = var.kubernetes_dashboard_enabled ? 1 : 0
-  source = "./modules/kubernetes-dashboard" 
-  k8s_dashboard_hostname = var.k8s_dashboard_hostname
-  alb_acm_certificate_arn = var.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
-  kubernetes_dashboard_enabled = var.kubernetes_dashboard_enabled
-}

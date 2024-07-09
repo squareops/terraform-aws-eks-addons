@@ -8,18 +8,18 @@ locals {
     Department = "Engineering"
   }
   ipv6_enabled = false
-  cluster-name = "test-eks"
+  cluster-name = "test-atmosly-task-ipv4"
 }
 
 module "eks-addons" {
   source                                  = "../.."
   name                                    = local.name
   tags                                    = local.additional_tags
-  vpc_id                                  = "vpc-0943ebc7b1b51070d"
-  private_subnet_ids                      = ["subnet-05494368cb0b657a9", "subnet-02b82ee7c197cc5cf"]
+  vpc_id                                  = "vpc-05d9856349f0186b1"
+  private_subnet_ids                      = ["subnet-04727d8f7bfa71857", "subnet-065e3b1bc8b8e4e5a"]
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:us-west-2:381491984451:key/mrk-c321a0be4a724ded9300900002cac9f0"
+  kms_key_arn                             = "arn:aws:kms:us-west-2:381491984451:key/mrk-21dc110db9544746875cd8364b0351e8"
   kms_policy_arn                          = "arn:aws:iam::767398031518:policy/test-atmosly-task-ipv4-kubernetes-pvc-kms-policy" ## eks module will create kms_policy_arn
   worker_iam_role_name                    = "test-atmosly-task-ipv4-node-role"
   worker_iam_role_arn                     = "arn:aws:iam::767398031518:role/test-atmosly-task-ipv4-node-role"
@@ -34,9 +34,9 @@ module "eks-addons" {
   ## Service Monitoring
   service_monitor_crd_enabled             = true #akanksha  
   ## Keda
-  keda_enabled                            = true #akanksha
+  keda_enabled                            = false #akanksha
   # Config reloader
-  reloader_enabled                        = true #divyanshu
+  reloader_enabled                        = false #divyanshu
   reloader_helm_config                    = [file("${path.module}/config/reloader.yaml")]
 
   kubernetes_dashboard_enabled            = true #akanksha (have to do)
@@ -77,7 +77,7 @@ module "eks-addons" {
   cert_manager_enabled                    = true #divyanshu
   cert_manager_helm_config                = {
     values = [file("${path.module}/config/cert-manager.yaml")]
-    enable_service_monitor = true
+    enable_service_monitor = false
   }
   cert_manager_install_letsencrypt_http_issuers = true #divyanshu
   cert_manager_letsencrypt_email                = "email@email.com"
@@ -85,7 +85,7 @@ module "eks-addons" {
   ingress_nginx_enabled                   = true #akanksha
   ingress_nginx_helm_config = {
     values = [file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx-ingress.yaml" : "nginx-ingress_ipv6.yaml"}")]
-    enable_service_monitor                  = true # enable monitoring in nginx ingress
+    enable_service_monitor                  = false # enable monitoring in nginx ingress
   }
 
   ## Metric Server
@@ -132,7 +132,7 @@ module "eks-addons" {
   internal_nginx_config = {
     values = file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "internal-ingress.yaml" : "internal-ingress-ipv6.yaml"}") 
   }
-  efs_storage_class_enabled                     = true #akanksha
+  efs_storage_class_enabled                     = false #akanksha
   #Node termination handler
   aws_node_termination_handler_enabled          = true #divyanshu
   aws_node_termination_handler_helm_config      = [file("${path.module}/config/aws-node-termination-handler.yaml")]
