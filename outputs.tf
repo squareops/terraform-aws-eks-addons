@@ -5,7 +5,7 @@ output "environment" {
 
 output "nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
-  value       = var.ingress_nginx_enabled ? module.internal-nginx-ingress[0].internal_nginx_ingress_controller_dns_hostname : null
+  value       = var.enable_public_nlb ? module.ingress-nginx.nginx_ingress_controller_dns_hostname : null
 }
 
 

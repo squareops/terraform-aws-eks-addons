@@ -124,7 +124,7 @@ variable "external_secrets_enabled" {
   default     = false
   type        = bool
 }
-variable "ingress_nginx_helm_config" {
+variable "ingress_nginx_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
     values = any
@@ -138,7 +138,7 @@ variable "vpa_config" {
     values = list(string)
   })
 }
-variable "internal_nginx_config" {
+variable "ingress_nginx_private_config" {
   description = "Configure internal-ingress-nginx addons"
   type = object({
     values = any
@@ -176,13 +176,6 @@ variable "external_secrets_helm_config" {
   type        = any
   default     = {}
   description = "External Secrets operator Helm Chart config"
-}
-
-
-variable "ingress_nginx_enabled" {
-  description = "Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services."
-  default     = false
-  type        = bool
 }
 
 variable "aws_load_balancer_controller_enabled" {
@@ -383,10 +376,10 @@ variable "karpenter_provisioner_config" {
   type = any
 }
 
-variable "internal_ingress_nginx_enabled" {
-  description = "Enable or disable the deployment of an internal ingress controller for Kubernetes."
-  default     = false
-  type        = bool
+variable "enable_public_nlb" {
+  description = "Control wheather to install public nlb or private nlb. Default is private"
+  type = bool
+  default = false
 }
 
 variable "node_termination_handler_version" {

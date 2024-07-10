@@ -10,7 +10,7 @@ locals {
     awsLoadBalancerController = var.aws_load_balancer_controller_enabled ? module.aws-load-balancer-controller[0].argocd_gitops_config : null
     certManager               = var.cert_manager_enabled ? module.cert-manager[0].argocd_gitops_config : null
     clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster-autoscaler[0].argocd_gitops_config : null
-    ingressNginx              = var.ingress_nginx_enabled ? module.ingress-nginx[0].argocd_gitops_config : null
+    #ingressNginx              = var.enable_public_nlb ? module.ingress-nginx.argocd_gitops_config : null
     # keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
     metricsServer             = var.metrics_server_enabled ? module.metrics-server[0].argocd_gitops_config : null
     vpa                       = var.metrics_server_enabled ? module.vpa-crds[0].argocd_gitops_config : null

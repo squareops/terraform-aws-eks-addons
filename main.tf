@@ -4,11 +4,6 @@ data "aws_eks_cluster" "eks" {
   name = var.eks_cluster_name
 }
 
-module "service-monitor-crd" {
-  count  = var.service_monitor_crd_enabled ? 1 : 0
-  source = "./modules/service-monitor-crd"
-}
-
 ## VPC-CNI
 module "aws_vpc_cni" {
   source = "./modules/aws-vpc-cni"
@@ -56,21 +51,25 @@ module "aws_ebs_csi_driver" {
 }
 
 
-## karpenter
-module "karpenter" {
-  count       = var.karpenter_enabled ? 1 : 0
-  source = "./modules/karpenter"
-  worker_iam_role_name = var.worker_iam_role_name
-  eks_cluster_name = var.eks_cluster_name
-  helm_config               = var.karpenter_helm_config
-  irsa_policies             = var.karpenter_irsa_policies
-  node_iam_instance_profile = var.karpenter_node_iam_instance_profile
-  manage_via_gitops         = var.argocd_manage_add_ons
-  addon_context             = local.addon_context
-  eks_cluster_endpoint = data.aws_eks_cluster.eks.endpoint
-  eks_cluster_id = var.eks_cluster_name
-  environment = var.environment
-  name = var.name
+## EFS Storage class
+module "aws-efs-filesystem-with-storage-class" {
+  source      = "./modules/aws-efs-filesystem-with-storage-class"
+  count       = var.efs_storage_class_enabled ? 1 : 0
+  name        = var.name
+  vpc_id      = var.vpc_id
+  environment = var.environment 
+  kms_key_arn = var.kms_key_arn
+  subnets     = var.private_subnet_ids
+}
+
+## EFS CSI DRIVER
+module "aws-efs-csi-driver" {
+  count             = var.efs_storage_class_enabled ? 1 : 0
+  source            = "./modules/aws-efs-csi-driver"
+  helm_config       = var.aws_efs_csi_driver_helm_config
+  irsa_policies     = var.aws_efs_csi_driver_irsa_policies
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
 }
 
 ## AWS LOAD BALANCER 
@@ -99,7 +98,6 @@ module "aws-node-termination-handler" {
   enable_service_monitor = var.aws_node_termination_handler_helm_config.enable_service_monitor
 }
 
-
 ## CERT MANAGER
 module "cert-manager" {
   count                             = var.cert_manager_enabled ? 1 : 0
@@ -120,6 +118,13 @@ module "cert-manager-le-http-issuer" {
   source = "./modules/cert-manager-le-http-issuer"
   depends_on = [ module.cert-manager ]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
+}
+
+## Coredns Hpa
+module "coredns_hpa" {
+  count     = var.coredns_hpa_enabled ? 1 : 0
+  source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
+  helm_config = var.coredns_hpa_helm_config
 }
 
 ## CLUSTER AUTOSCALER
@@ -151,85 +156,44 @@ module "external-secrets" {
   external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
 }
 
-
-## RELOADER
-module "reloader" {
-  count             = var.reloader_enabled ? 1 : 0
-  source            = "./modules/reloader"
-  helm_config       = {
-    values = var.reloader_helm_config.values
-    namespace        = "kube-system"
-    create_namespace = false
-    enable_service_monitor = var.reloader_helm_config.enable_service_monitor
-  }
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
-
-
-## METRIC SERVER
-module "metrics-server" {
-  count             = var.metrics_server_enabled ? 1 : 0
-  source            = "./modules/metrics-server"
-  helm_config       = {
-    version = var.metrics_server_helm_version
-    values  = var.metrics_server_helm_config
-  }
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
-module "vpa-crds" {
-  count      = var.metrics_server_enabled ? 1 : 0
-  source = "./modules/vpa-crds"
-  helm-config = var.vpa_config.values[0]
-}
-
-## Coredns Hpa
-module "coredns_hpa" {
-  count     = var.coredns_hpa_enabled ? 1 : 0
-  source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
-  helm_config = var.coredns_hpa_helm_config
-}
-
-## EFS CSI DRIVER
-module "aws-efs-csi-driver" {
-  count             = var.efs_storage_class_enabled ? 1 : 0
-  source            = "./modules/aws-efs-csi-driver"
-  helm_config       = var.aws_efs_csi_driver_helm_config
-  irsa_policies     = var.aws_efs_csi_driver_irsa_policies
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = local.addon_context
-}
-
-## INTERNAL NGINX INGRESS
-module "internal-nginx-ingress" {
-  count = var.internal_ingress_nginx_enabled ? 1 : 0
-  source            = "./modules/internal-nginx-ingress"
-  ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
-  internal_ingress_config = var.internal_nginx_config.values
-  enable_service_monitor = var.enable_service_monitor
-}
-
 # NGINX INGRESS
 module "ingress-nginx" {
-  count             = var.ingress_nginx_enabled ? 1 : 0
   source            = "./modules/ingress-nginx"
-  helm_config       = var.ingress_nginx_helm_config
+  depends_on = [ module.aws_vpc_cni, module.service-monitor-crd ]
+  enable_public_nlb = var.enable_public_nlb
+  helm_config       = var.ingress_nginx_config
+  internal_ingress_config = var.ingress_nginx_private_config.values
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
-  enable_service_monitor = var.ingress_nginx_helm_config.enable_service_monitor
+  enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
   ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
 }
 
-## EFS Storage class
-module "aws-efs-filesystem-with-storage-class" {
-  source      = "./modules/aws-efs-filesystem-with-storage-class"
-  count       = var.efs_storage_class_enabled ? 1 : 0
-  name        = var.name
-  vpc_id      = var.vpc_id
-  environment = var.environment 
-  kms_key_arn = var.kms_key_arn
-  subnets     = var.private_subnet_ids
+## kubernetes dashboard
+
+module "kubernetes-dashboard" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+  source = "./modules/kubernetes-dashboard" 
+  k8s_dashboard_hostname = var.k8s_dashboard_hostname
+  alb_acm_certificate_arn = var.alb_acm_certificate_arn
+  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
+}
+
+## karpenter
+module "karpenter" {
+  count       = var.karpenter_enabled ? 1 : 0
+  source = "./modules/karpenter"
+  worker_iam_role_name = var.worker_iam_role_name
+  eks_cluster_name = var.eks_cluster_name
+  helm_config               = var.karpenter_helm_config
+  irsa_policies             = var.karpenter_irsa_policies
+  node_iam_instance_profile = var.karpenter_node_iam_instance_profile
+  manage_via_gitops         = var.argocd_manage_add_ons
+  addon_context             = local.addon_context
+  eks_cluster_endpoint = data.aws_eks_cluster.eks.endpoint
+  eks_cluster_id = var.eks_cluster_name
+  environment = var.environment
+  name = var.name
 }
 
 ## Karpenter-provisioner
@@ -245,6 +209,34 @@ module "karpenter-provisioner" {
   instance_hypervisor                  = var.karpenter_provisioner_config.instance_hypervisor
 }
 
+
+## METRIC SERVER
+module "metrics-server" {
+  count             = var.metrics_server_enabled ? 1 : 0
+  source            = "./modules/metrics-server"
+  helm_config       = {
+    version = var.metrics_server_helm_version
+    values  = var.metrics_server_helm_config
+  }
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}
+
+
+## RELOADER
+module "reloader" {
+  count             = var.reloader_enabled ? 1 : 0
+  source            = "./modules/reloader"
+  helm_config       = {
+    values = var.reloader_helm_config.values
+    namespace        = "kube-system"
+    create_namespace = false
+    enable_service_monitor = var.reloader_helm_config.enable_service_monitor
+  }
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}
+
 #OPEN: Default label needs to be removed from gp2 storageclass in order to make gp3 as default choice for EBS volume provisioning.
 module "single-az-sc" {
   for_each                             = { for sc in var.single_az_sc_config : sc.name => sc }
@@ -255,16 +247,17 @@ module "single-az-sc" {
   single_az_ebs_gp3_storage_class_name = each.value.name
 }
 
-## kubernetes dashboard
-
-module "kubernetes-dashboard" {
-  count = var.kubernetes_dashboard_enabled ? 1 : 0
-  source = "./modules/kubernetes-dashboard" 
-  k8s_dashboard_hostname = var.k8s_dashboard_hostname
-  alb_acm_certificate_arn = var.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
+# Service Monitor CRD
+module "service-monitor-crd" {
+  count  = var.service_monitor_crd_enabled ? 1 : 0
+  source = "./modules/service-monitor-crd"
 }
 
+module "vpa-crds" {
+  count      = var.metrics_server_enabled ? 1 : 0
+  source = "./modules/vpa-crds"
+  helm-config = var.vpa_config.values[0]
+}
 
 ###################### PHASE 2 #############################
 
@@ -389,7 +382,7 @@ resource "kubernetes_secret" "kubecost" {
 
 resource "kubernetes_ingress_v1" "kubecost" {
   count                  = var.kubecost_enabled ? 1 : 0
-  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost]
+  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost, module.ingress-nginx]
   wait_for_load_balancer = true
   metadata {
     name      = "kubecost"
@@ -500,5 +493,3 @@ resource "helm_release" "falco" {
     })
   ]
 }
-
-

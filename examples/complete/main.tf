@@ -20,12 +20,12 @@ module "eks-addons" {
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
   kms_key_arn                             = "arn:aws:kms:us-west-2:381491984451:key/mrk-9cc312cd9e4a4aba9681740e5faaf16c"
-  kms_policy_arn                          = "arn:aws:iam::381491984451:policy/test-eks-kubernetes-pvc-kms-police" ## eks module will create kms_policy_arn
+  kms_policy_arn                          = "arn:aws:iam::381491984451:policy/test-eks-kubernetes-pvc-kms-policy" ## eks module will create kms_policy_arn
   worker_iam_role_name                    = "test-eks-node-role"
   worker_iam_role_arn                     = "arn:aws:iam::381491984451:role/test-eks-node-role"
   eks_cluster_name                        = data.aws_eks_cluster.cluster.name
   ## default addons
-  amazon_eks_vpc_cni_enabled              = false
+  amazon_eks_vpc_cni_enabled              = true
   amazon_eks_vpc_cni_config  = {
     addon_version = "v1.18.2-eksbuild.1"
   }
@@ -37,7 +37,7 @@ module "eks-addons" {
     addon_version           = ""
   }
   ## Service Monitoring
-  service_monitor_crd_enabled             = false   
+  service_monitor_crd_enabled             = true   
   ## Keda
   keda_enabled                            = false 
   ## Config reloader
@@ -82,10 +82,15 @@ module "eks-addons" {
   }
  
   ## Ingress nginx
-  ingress_nginx_enabled                   = false 
-  ingress_nginx_helm_config = {
+
+  enable_public_nlb                       = true
+  ingress_nginx_config = {
     values = [file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "nginx-ingress.yaml" : "nginx-ingress_ipv6.yaml"}")]
-    enable_service_monitor                  = false # enable monitoring in nginx ingress
+    enable_service_monitor                  = true # enable monitoring in nginx ingress
+  }
+
+  ingress_nginx_private_config = {
+    values = file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "internal-ingress.yaml" : "internal-ingress-ipv6.yaml"}") 
   }
 
   ## Metric Server
@@ -112,12 +117,6 @@ module "eks-addons" {
     instance_capacity_type = ["spot"]
     excluded_instance_type = ["nano", "micro", "small"]
     instance_hypervisor    = ["nitro"]
-  }
-  
-  ## Internal Ingress Nginx
-  internal_ingress_nginx_enabled                = false 
-  internal_nginx_config = {
-    values = file("${path.module}/config/${data.aws_eks_cluster.cluster.kubernetes_network_config[0].ip_family == "ipv4" ? "internal-ingress.yaml" : "internal-ingress-ipv6.yaml"}") 
   }
   ## Efs storage class
   efs_storage_class_enabled                     = false 
