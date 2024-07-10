@@ -213,7 +213,7 @@ module "internal-nginx-ingress" {
 # NGINX INGRESS
 module "ingress-nginx" {
   count             = var.ingress_nginx_enabled ? 1 : 0
-  source            = "./modules/nginx-ingress"
+  source            = "./modules/ingress-nginx"
   helm_config       = var.ingress_nginx_helm_config
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -222,8 +222,8 @@ module "ingress-nginx" {
 }
 
 ## EFS Storage class
-module "aws-efs-storage-class" {
-  source      = "./modules/aws-efs-storage-class"
+module "aws-efs-filesystem-with-storage-class" {
+  source      = "./modules/aws-efs-filesystem-with-storage-class"
   count       = var.efs_storage_class_enabled ? 1 : 0
   name        = var.name
   vpc_id      = var.vpc_id

@@ -15,7 +15,7 @@ output "ebs_encryption_enable" {
 }
 
 output "efs_id" {
-  value       = var.efs_storage_class_enabled ? module.aws-efs-storage-class.*.id : null
+  value       = var.efs_storage_class_enabled ? module.aws-efs-filesystem-with-storage-class.*.id : null
   description = "ID of the Amazon Elastic File System (EFS) that has been created for the EKS cluster."
 }
 

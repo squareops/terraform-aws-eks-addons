@@ -43,6 +43,6 @@ variable "ip_family" {
 }
 
 
-variable "enable_public_nlb" {
-  description = "Control wheather "
-}
+# variable "enable_public_nlb" {
+#   description = "Control wheather "
+# }

@@ -15,8 +15,8 @@ module "eks-addons" {
   source                                  = "../.."
   name                                    = local.name
   tags                                    = local.additional_tags
-  vpc_id                                  = "vpc-0553b21082cc41365"
-  private_subnet_ids                      = ["subnet-0b605f34614dcadcd", "subnet-0d96f0e8be6cb064f"]
+  vpc_id                                  = "vpc-0c6d04346ffa3d4f1"
+  private_subnet_ids                      = ["subnet-09f41e9122d091d57", "subnet-05b9a4afd03c029d5"]
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
   kms_key_arn                             = "arn:aws:kms:us-west-2:381491984451:key/mrk-9cc312cd9e4a4aba9681740e5faaf16c"
