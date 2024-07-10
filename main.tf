@@ -116,10 +116,10 @@ module "cert-manager" {
 
 ## Cert Managwer le-http-issuer
 module "cert-manager-le-http-issuer" {
-  count      = var.cert_manager_install_letsencrypt_http_issuers ? 1 : 0
+  count      = var.cert_manager_enabled ? 1 : 0
   source = "./modules/cert-manager-le-http-issuer"
   depends_on = [ module.cert-manager ]
-  cert_manager_letsencrypt_email = var.cert_manager_letsencrypt_email
+  cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
 }
 
 ## CLUSTER AUTOSCALER
@@ -157,9 +157,10 @@ module "reloader" {
   count             = var.reloader_enabled ? 1 : 0
   source            = "./modules/reloader"
   helm_config       = {
-    values = var.reloader_helm_config
+    values = var.reloader_helm_config.values
     namespace        = "kube-system"
     create_namespace = false
+    enable_service_monitor = var.reloader_helm_config.enable_service_monitor
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -265,7 +266,7 @@ module "kubernetes-dashboard" {
 }
 
 
-####################### PHASE 2 #############################
+###################### PHASE 2 #############################
 
 module "velero" {
   source        = "./modules/velero"

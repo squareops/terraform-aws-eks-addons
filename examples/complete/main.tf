@@ -26,10 +26,15 @@ module "eks-addons" {
   eks_cluster_name                        = data.aws_eks_cluster.cluster.name
   ## default addons
   amazon_eks_vpc_cni_enabled              = false
+  amazon_eks_vpc_cni_config  = {
+    addon_version = "v1.18.2-eksbuild.1"
+  }
+
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver         = false
   amazon_eks_aws_ebs_csi_driver_config          = {
     values                  = [file("${path.module}/config/ebs-csi.yaml")]
+    addon_version           = ""
   }
   ## Service Monitoring
   service_monitor_crd_enabled             = false   
@@ -37,7 +42,10 @@ module "eks-addons" {
   keda_enabled                            = false 
   ## Config reloader
   reloader_enabled                        = false 
-  reloader_helm_config                    = [file("${path.module}/config/reloader.yaml")]
+  reloader_helm_config                    = {
+    values = [file("${path.module}/config/reloader.yaml")]
+    enable_service_monitor = false
+  }
 
   kubernetes_dashboard_enabled            = false 
   k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
@@ -59,7 +67,7 @@ module "eks-addons" {
   single_az_ebs_gp3_storage_class_enabled = false 
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
 
-  ## coredns HPA
+  ## coredns HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled                     = false 
   coredns_hpa_helm_config                = {
    values = [file("${path.module}/config/coredns_hpa.yaml")] 
@@ -70,9 +78,8 @@ module "eks-addons" {
   cert_manager_helm_config                = {
     values = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor = false
+    cert_manager_letsencrypt_email                = "email@email.com"
   }
-  cert_manager_install_letsencrypt_http_issuers = false 
-  cert_manager_letsencrypt_email                = "email@email.com"
  
   ## Ingress nginx
   ingress_nginx_enabled                   = false 

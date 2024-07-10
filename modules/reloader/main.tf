@@ -24,7 +24,7 @@ module "helm_addon" {
     {
       values = templatefile("${path.module}/config/reloader.yaml" , 
          {
-         enable_service_monitor = var.enable_service_monitor
+         enable_service_monitor = var.helm_config.enable_service_monitor
          })
     },
     var.helm_config
