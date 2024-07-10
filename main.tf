@@ -4,32 +4,11 @@ data "aws_eks_cluster" "eks" {
   name = var.eks_cluster_name
 }
 
-## VPC-CNI
-module "aws_vpc_cni" {
-  source = "./modules/aws-vpc-cni"
+## EBS CSI DRIVER
 
-  count = var.amazon_eks_vpc_cni_enabled ? 1 : 0
-
-  enable_ipv6 = var.enable_ipv6
-  addon_config = merge(
-    {
-      kubernetes_version = local.eks_cluster_version
-      additional_iam_policies = [var.kms_policy_arn]
-    },
-    var.amazon_eks_vpc_cni_config,
-  )
-
-  addon_context = local.addon_context
-}
-
-## Ebs Csi Driver
-
-module "aws_ebs_csi_driver" {
+module "aws-ebs-csi-driver" {
   source = "./modules/aws-ebs-csi-driver"
-
   count = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
-
-  # Amazon EKS aws-ebs-csi-driver addon
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   addon_config = merge(
     {
@@ -37,10 +16,7 @@ module "aws_ebs_csi_driver" {
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
-
   addon_context = local.addon_context
-
-  # Self-managed aws-ebs-csi-driver addon via Helm chart
   enable_self_managed_aws_ebs_csi_driver = var.enable_self_managed_aws_ebs_csi_driver
   helm_config = merge(
     {
@@ -50,8 +26,7 @@ module "aws_ebs_csi_driver" {
   )
 }
 
-
-## EFS Storage class
+## EFS FILESYSTEM WITH Storage class
 module "aws-efs-filesystem-with-storage-class" {
   source      = "./modules/aws-efs-filesystem-with-storage-class"
   count       = var.efs_storage_class_enabled ? 1 : 0
@@ -72,7 +47,7 @@ module "aws-efs-csi-driver" {
   addon_context     = local.addon_context
 }
 
-## AWS LOAD BALANCER 
+## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   count             = var.aws_load_balancer_controller_enabled ? 1 : 0
   source= "./modules/aws-load-balancer-controller"
@@ -84,7 +59,7 @@ module "aws-load-balancer-controller" {
   addon_context     = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
 }
 
-## NODE TERMIANTION HANDLER
+## NODE TERMINATION HANDLER
 module "aws-node-termination-handler" {
   count                   = var.aws_node_termination_handler_enabled ? 1 : 0
   source                  = "./modules/aws-node-termination-handler"
@@ -98,7 +73,23 @@ module "aws-node-termination-handler" {
   enable_service_monitor = var.aws_node_termination_handler_helm_config.enable_service_monitor
 }
 
+## VPC-CNI
+module "aws_vpc_cni" {
+  source = "./modules/aws-vpc-cni"
+  count = var.amazon_eks_vpc_cni_enabled ? 1 : 0
+  enable_ipv6 = var.enable_ipv6
+  addon_config = merge(
+    {
+      kubernetes_version = local.eks_cluster_version
+      additional_iam_policies = [var.kms_policy_arn]
+    },
+    var.amazon_eks_vpc_cni_config,
+  )
+  addon_context = local.addon_context
+}
+
 ## CERT MANAGER
+
 module "cert-manager" {
   count                             = var.cert_manager_enabled ? 1 : 0
   source                            = "./modules/cert-manager"
@@ -112,7 +103,8 @@ module "cert-manager" {
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
 }
 
-## Cert Managwer le-http-issuer
+## CERT MANAGER LETSENCRYPT
+
 module "cert-manager-le-http-issuer" {
   count      = var.cert_manager_enabled ? 1 : 0
   source = "./modules/cert-manager-le-http-issuer"
@@ -120,19 +112,11 @@ module "cert-manager-le-http-issuer" {
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
 }
 
-## Coredns Hpa
-module "coredns_hpa" {
-  count     = var.coredns_hpa_enabled ? 1 : 0
-  source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
-  helm_config = var.coredns_hpa_helm_config
-}
-
 ## CLUSTER AUTOSCALER
+
 module "cluster-autoscaler" {
   source = "./modules/cluster-autoscaler"
-
   count = var.cluster_autoscaler_enabled ? 1 : 0
-
   eks_cluster_version = local.eks_cluster_version
   helm_config         = {
     version = var.cluster_autoscaler_chart_version
@@ -142,12 +126,19 @@ module "cluster-autoscaler" {
   addon_context       = local.addon_context
 }
 
+## COREDNS HPA
 
-## EXTERNAL SECRET
+module "coredns_hpa" {
+  count     = var.coredns_hpa_enabled ? 1 : 0
+  source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
+  helm_config = var.coredns_hpa_helm_config
+}
+
+## EXTERNAL SECRETS
+
 module "external-secrets" {
   source = "./modules/external-secret"
   count = var.external_secrets_enabled ? 1 : 0
-
   helm_config                           = var.external_secrets_helm_config
   manage_via_gitops                     = var.argocd_manage_add_ons
   addon_context                         = local.addon_context
@@ -167,16 +158,6 @@ module "ingress-nginx" {
   addon_context     = local.addon_context
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
   ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
-}
-
-## kubernetes dashboard
-
-module "kubernetes-dashboard" {
-  count = var.kubernetes_dashboard_enabled ? 1 : 0
-  source = "./modules/kubernetes-dashboard" 
-  k8s_dashboard_hostname = var.k8s_dashboard_hostname
-  alb_acm_certificate_arn = var.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
 }
 
 ## karpenter
@@ -207,6 +188,16 @@ module "karpenter-provisioner" {
   karpenter_ec2_capacity_type          = var.karpenter_provisioner_config.instance_capacity_type
   excluded_karpenter_ec2_instance_type = var.karpenter_provisioner_config.excluded_instance_type
   instance_hypervisor                  = var.karpenter_provisioner_config.instance_hypervisor
+}
+
+## Kubernetes Dashboard
+
+module "kubernetes-dashboard" {
+  count = var.kubernetes_dashboard_enabled ? 1 : 0
+  source = "./modules/kubernetes-dashboard" 
+  k8s_dashboard_hostname = var.k8s_dashboard_hostname
+  alb_acm_certificate_arn = var.alb_acm_certificate_arn
+  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
 }
 
 
@@ -293,9 +284,6 @@ data "kubernetes_service" "istio-ingress" {
     namespace = var.istio_config.ingress_gateway_namespace
   }
 }
-
-
-
 
 ##KUBECLARITY
 resource "kubernetes_namespace" "kube_clarity" {

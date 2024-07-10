@@ -34,7 +34,7 @@ module "eks-addons" {
   enable_amazon_eks_aws_ebs_csi_driver         = false
   amazon_eks_aws_ebs_csi_driver_config          = {
     values                  = [file("${path.module}/config/ebs-csi.yaml")]
-    addon_version           = ""
+    addon_version           = "v1.32.0"
   }
   ## Service Monitoring
   service_monitor_crd_enabled             = true   
