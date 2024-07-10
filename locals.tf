@@ -6,19 +6,19 @@ locals {
 
   # Configuration for managing add-ons via ArgoCD.
   argocd_addon_config = {
-    awsEfsCsiDriver           = var.efs_storage_class_enabled ? module.aws_efs_csi_driver[0].argocd_gitops_config : null
-    awsLoadBalancerController = var.aws_load_balancer_controller_enabled ? module.aws_load_balancer_controller[0].argocd_gitops_config : null
-    certManager               = var.cert_manager_enabled ? module.cert_manager[0].argocd_gitops_config : null
-    clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster_autoscaler[0].argocd_gitops_config : null
-    ingressNginx              = var.ingress_nginx_enabled ? module.ingress_nginx[0].argocd_gitops_config : null
+    awsEfsCsiDriver           = var.efs_storage_class_enabled ? module.aws-efs-csi-driver[0].argocd_gitops_config : null
+    awsLoadBalancerController = var.aws_load_balancer_controller_enabled ? module.aws-load-balancer-controller[0].argocd_gitops_config : null
+    certManager               = var.cert_manager_enabled ? module.cert-manager[0].argocd_gitops_config : null
+    clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster-autoscaler[0].argocd_gitops_config : null
+    ingressNginx              = var.ingress_nginx_enabled ? module.ingress-nginx[0].argocd_gitops_config : null
     # keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
-    metricsServer             = var.metrics_server_enabled ? module.metrics_server[0].argocd_gitops_config : null
-    vpa                       = var.metrics_server_enabled ? module.vpa[0].argocd_gitops_config : null
+    metricsServer             = var.metrics_server_enabled ? module.metrics-server[0].argocd_gitops_config : null
+    vpa                       = var.metrics_server_enabled ? module.vpa-crds[0].argocd_gitops_config : null
     karpenter                 = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
-    kubernetesDashboard       = var.kubernetes_dashboard_enabled ? module.kubernetes_dashboard[0].argocd_gitops_config : null
-    externalSecrets           = var.external_secrets_enabled ? module.external_secrets[0].argocd_gitops_config : null
+    kubernetesDashboard       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].argocd_gitops_config : null
+    externalSecrets           = var.external_secrets_enabled ? module.external-secrets[0].argocd_gitops_config : null
     velero                    = var.velero_enabled ? module.velero[0].argocd_gitops_config : null
-    kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
+    # kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
   }
 
   addon_context = {

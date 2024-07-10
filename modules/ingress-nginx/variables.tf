@@ -41,3 +41,8 @@ variable "ip_family" {
   type = string
   default = "ipv4"
 }
+
+
+variable "enable_public_nlb" {
+  description = "Control wheather "
+}

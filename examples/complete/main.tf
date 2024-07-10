@@ -15,14 +15,14 @@ module "eks-addons" {
   source                                  = "../.."
   name                                    = local.name
   tags                                    = local.additional_tags
-  vpc_id                                  = "vpc-xxxxxxx"
-  private_subnet_ids                      = ["subnet-xxxxxx", "subnet-xxxxx"]
+  vpc_id                                  = "vpc-0553b21082cc41365"
+  private_subnet_ids                      = ["subnet-0b605f34614dcadcd", "subnet-0d96f0e8be6cb064f"]
   environment                             = local.environment
   ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:us-west-2:xxxx:key/mrk-21dc110db9544746875cdxxxxxx"
-  kms_policy_arn                          = "arn:aws:iam::xxxxx:policy/xxxxx" ## eks module will create kms_policy_arn
-  worker_iam_role_name                    = ""
-  worker_iam_role_arn                     = "arn:aws:iam::xxx:role/xxxxx"
+  kms_key_arn                             = "arn:aws:kms:us-west-2:381491984451:key/mrk-9cc312cd9e4a4aba9681740e5faaf16c"
+  kms_policy_arn                          = "arn:aws:iam::381491984451:policy/test-eks-kubernetes-pvc-kms-police" ## eks module will create kms_policy_arn
+  worker_iam_role_name                    = "test-eks-node-role"
+  worker_iam_role_arn                     = "arn:aws:iam::381491984451:role/test-eks-node-role"
   eks_cluster_name                        = data.aws_eks_cluster.cluster.name
   ## default addons
   amazon_eks_vpc_cni_enabled              = false
@@ -50,16 +50,16 @@ module "eks-addons" {
   kubernetes_dashboard_enabled            = false 
   k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
   alb_acm_certificate_arn                 = ""
-  k8s_dashboard_hostname                  = "dashboard.prod.in"
+  k8s_dashboard_hostname                  = "dashboard-test.rnd.squareops.in"
 
   ## aws load balancer controller
-  aws_load_balancer_controller_enabled    = false 
+  aws_load_balancer_controller_enabled    = false
   aws_load_balancer_controller_helm_config = {
     values = [file("${path.module}/config/aws-alb.yaml")]
   }
 
   ## karpenter 
-  karpenter_enabled                       = false 
+  karpenter_enabled                       = false
   karpenter_helm_config = {
     values = [file("${path.module}/config/karpenter.yaml")]
   }

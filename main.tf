@@ -389,7 +389,7 @@ resource "kubernetes_secret" "kubecost" {
 
 resource "kubernetes_ingress_v1" "kubecost" {
   count                  = var.kubecost_enabled ? 1 : 0
-  depends_on             = [aws_eks_addon.kubecost, module.k8s_addons, kubernetes_secret.kubecost]
+  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost]
   wait_for_load_balancer = true
   metadata {
     name      = "kubecost"
@@ -429,7 +429,7 @@ resource "kubernetes_ingress_v1" "kubecost" {
 
 resource "helm_release" "metrics-server-vpa" {
   count      = var.metrics_server_enabled ? 1 : 0
-  depends_on = [helm_release.vpa-crds]
+  depends_on = [module.vpa-crds]
   name       = "metricsservervpa"
   namespace  = "kube-system"
   chart      = "${path.module}/modules/metrics_server_vpa/"
@@ -495,7 +495,7 @@ resource "helm_release" "falco" {
   timeout    = 600
   version    = "4.0.0"
   values = [
-    templatefile("${path.module}/modules/falco/values.yaml", {
+    templatefile("${path.module}/modules/falco/config/values.yaml", {
       slack_webhook = var.slack_webhook
     })
   ]
