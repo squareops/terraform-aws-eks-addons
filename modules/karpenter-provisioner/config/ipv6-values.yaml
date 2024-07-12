@@ -1,5 +1,16 @@
-subnet_selector_name: "${subnet_selector_name}"
-sg_selector_name: "${sg_selector_name}"
-karpenter_ec2_capacity_type: "${karpenter_ec2_capacity_type}"
-excluded_karpenter_ec2_instance_type: "${excluded_karpenter_ec2_instance_type}"
+private_subnet_selector_key: ${private_subnet_selector_key}
+private_subnet_selector_value: "${private_subnet_selector_value}"
+security_group_selector_key: ${security_group_selector_key}
+security_group_selector_value: "${security_group_selector_value}"
+karpenter_ec2_capacity_type: "${instance_capacity_type}"
+karpenter_ec2_instance_family: "${ec2_instance_family}"
+karpenter_ec2_instance_type: "${ec2_instance_type}"
+excluded_karpenter_ec2_instance_type: "${excluded_instance_type}"
+provisioner_name: "${provisioner_name}"
 karpenter_instance_hypervisor: "${instance_hypervisor}"
+instance_capacity_type: ["${capacity_type}"]
+
+spec:
+  labels:
+    ${karpenter_label}: "true"
+    eks.amazonaws.com/nodegroup: "Services-ng"
