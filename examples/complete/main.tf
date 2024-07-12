@@ -111,10 +111,17 @@ module "eks-addons" {
   ## Kubernetes Provisioner
   karpenter_provisioner_enabled = false 
   karpenter_provisioner_config = {
-    private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
-    instance_capacity_type = ["spot"]
-    excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]
+    provisioner_name = format("karpenter-provisioner-%s",local.name)
+    karpenter_label = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
+    provisioner_values           = file("./config/karpenter_management.yaml")
+    instance_capacity_type        = "spot"
+    excluded_instance_type        = ["nano", "micro", "small"]
+    ec2_instance_family           = ["t3"]
+    ec2_instance_type             = ["t3.medium"]
+    private_subnet_selector_key   = "Environment"
+    private_subnet_selector_value = "${local.environment}"
+    security_group_selector_key   = "aws:eks:cluster-name"
+    security_group_selector_value = "${local.environment}-${local.name}"
   }
   ## Efs storage class
   efs_storage_class_enabled                     = false 
