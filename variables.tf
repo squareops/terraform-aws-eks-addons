@@ -124,11 +124,18 @@ variable "external_secrets_enabled" {
   default     = false
   type        = bool
 }
+
+variable "enable_private_nlb" {
+  description = "Control wheather to install public nlb or private nlb. Default is private"
+  type = bool
+  default = false
+}
 variable "ingress_nginx_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
-    values = any
-    enable_service_monitor = bool
+    ingress_class_resource_name = string
+    enable_service_monitor     = bool
+    values                     = any
   })
 }
 
@@ -136,12 +143,6 @@ variable "vpa_config" {
   description = "Configure VPA CRD to setup addon"
   type = object({
     values = list(string)
-  })
-}
-variable "ingress_nginx_private_config" {
-  description = "Configure internal-ingress-nginx addons"
-  type = object({
-    values = any
   })
 }
 
@@ -376,7 +377,7 @@ variable "karpenter_provisioner_config" {
   type = any
 }
 
-variable "enable_public_nlb" {
+variable "ingress_nginx_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type = bool
   default = false

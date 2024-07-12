@@ -149,15 +149,18 @@ module "external-secrets" {
 
 # NGINX INGRESS
 module "ingress-nginx" {
+  count             = var.ingress_nginx_enabled ? 1 : 0
   source            = "./modules/ingress-nginx"
   depends_on = [ module.aws_vpc_cni, module.service-monitor-crd ]
-  enable_public_nlb = var.enable_public_nlb
   helm_config       = var.ingress_nginx_config
-  internal_ingress_config = var.ingress_nginx_private_config.values
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
-  enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
   ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
+  
+  # Template values for ingress-nginx and private-internal-nginx
+  enable_private_nlb = var.enable_private_nlb 
+  ingress_class_resource_name = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_resource_name}-nginx" : "${var.ingress_nginx_config.ingress_class_resource_name}-nginx"
+  enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 
 ## karpenter

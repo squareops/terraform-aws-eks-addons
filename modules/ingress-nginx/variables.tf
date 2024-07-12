@@ -46,7 +46,7 @@ variable "ip_family" {
 
 ################## Variables for private ingress nginx ##################
 
-variable "internal_ingress_nginx_enabled" {
+variable "enable_ingress_nginx" {
   description = "Enable or disable the deployment of an internal ingress controller for Kubernetes."
   default     = false
   type        = bool
@@ -66,8 +66,20 @@ variable "internal_ingress_config" {
 
 ##### Control variable for public and private type of ingress nginx 
 
-variable "enable_public_nlb" {
+variable "enable_private_nlb" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type = bool
   default = false
+}
+
+variable "nlb_scheme" {
+  description = "Internal or Internet facing Load Balancer Scheme"
+  type = any
+  default = "" # enter internet-facing / internal on basis of which nlb type required
+}
+
+variable "ingress_class_resource_name" {
+  description = "resource name for nginx and internal nginx"
+  type = any
+  default = ""
 }
