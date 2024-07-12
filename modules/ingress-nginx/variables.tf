@@ -42,28 +42,6 @@ variable "ip_family" {
   type = string
   default = "ipv4"
 }
-
-
-################## Variables for private ingress nginx ##################
-
-variable "enable_ingress_nginx" {
-  description = "Enable or disable the deployment of an internal ingress controller for Kubernetes."
-  default     = false
-  type        = bool
-}
-
-variable "service_monitor_crd_enabled" {
-  description = "Enable or disable the installation of Custom Resource Definitions (CRDs) for Prometheus Service Monitor. "
-  default     = false
-  type        = bool
-}
-
-variable "internal_ingress_config" {
-  description = "values file from outside the module"
-  default =  ""
-  type = any
-}
-
 ##### Control variable for public and private type of ingress nginx 
 
 variable "enable_private_nlb" {
@@ -72,14 +50,13 @@ variable "enable_private_nlb" {
   default = false
 }
 
-variable "nlb_scheme" {
-  description = "Internal or Internet facing Load Balancer Scheme"
-  type = any
-  default = "" # enter internet-facing / internal on basis of which nlb type required
-}
-
-variable "ingress_class_resource_name" {
+variable "ingress_class_name" {
   description = "resource name for nginx and internal nginx"
   type = any
   default = ""
+}
+
+variable "namespace" {
+  description = "Creates namespace for the controller need to install"
+  type = string
 }

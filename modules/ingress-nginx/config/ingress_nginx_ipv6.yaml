@@ -21,12 +21,12 @@ controller:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: dualstack
-      ingressClass: ${ingress_class_resource_name}
+      ingressClass: ${ingress_class_name}
 
   ingressClassResource:
     enabled: ${enable_private_nlb}
-    name: ${ingress_class_resource_name}
-  ingressClass: ${ingress_class_resource_name}
+    name: ${ingress_class_name}
+  ingressClass: ${ingress_class_name}
 
   resources:
     limits:

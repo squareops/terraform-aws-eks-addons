@@ -12,8 +12,8 @@ controller:
   
   ingressClassResource:
     enabled: true
-    name: ${ingress_class_resource_name}
-  ingressClass: ${ingress_class_resource_name}
+    name: ${ingress_class_name}
+  ingressClass: ${ingress_class_name}
 
   resources:
     limits:

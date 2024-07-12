@@ -158,8 +158,9 @@ module "ingress-nginx" {
   ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
   
   # Template values for ingress-nginx and private-internal-nginx
+  namespace = var.ingress_nginx_config.namespace
   enable_private_nlb = var.enable_private_nlb 
-  ingress_class_resource_name = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_resource_name}-nginx" : "${var.ingress_nginx_config.ingress_class_resource_name}-nginx"
+  ingress_class_name = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-nginx" : "${var.ingress_nginx_config.ingress_class_name}-nginx"
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 

@@ -133,10 +133,18 @@ variable "enable_private_nlb" {
 variable "ingress_nginx_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
-    ingress_class_resource_name = string
-    enable_service_monitor     = bool
-    values                     = any
+    ingress_class_name = string
+    enable_service_monitor      = bool
+    values                      = any
+    namespace                   = string
   })
+
+  default = {
+    ingress_class_name = "nginx"
+    enable_service_monitor      = false
+    values                      = {}
+    namespace                   = "ingress-nginx"
+  }
 }
 
 variable "vpa_config" {
@@ -144,6 +152,10 @@ variable "vpa_config" {
   type = object({
     values = list(string)
   })
+
+  default = {
+    values = []
+  }
 }
 
 variable "karpenter_helm_config" {
@@ -190,6 +202,9 @@ variable "aws_load_balancer_controller_helm_config" {
   type = object({
     values  = list(string)
   })
+  default = {
+    values = []
+  }
 }
 variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"

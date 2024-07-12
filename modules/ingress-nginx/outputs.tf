@@ -22,23 +22,3 @@ output "service_account" {
   description = "Name of Kubernetes service account"
   value       = module.helm_addon.service_account
 }
-
-# output "nginx_ingress_controller_dns_hostname" {
-#   description = "DNS hostname of the NGINX Ingress Controller."
-#   value       = var.enable_private_nlb ? data.kubernetes_service.nginx-ingress.status[0].load_balancer[0].ingress[0].hostname : null
-# }
-
-# output "internal_nginx_ingress_controller_dns_hostname" {
-#   description = "DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster."
-#   value       = var.enable_private_nlb && length(data.kubernetes_service.internal_nginx_ingress) > 0 ? data.kubernetes_service.internal_nginx_ingress[0].status[0].load_balancer[0].ingress[0].hostname : null
-
-# }
-
-
-output "enable_nginx_nlb_private_value" {
-  value = var.enable_private_nlb
-}
-
-output "ingress_class_resource_name" {
-  value = var.ingress_class_resource_name
-}
