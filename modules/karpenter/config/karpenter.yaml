@@ -7,8 +7,8 @@ settings:
         clusterName: ${eks_cluster_id}
         clusterEndpoint: ${eks_cluster_endpoint}
       featureGates:
-          driftEnabled: true 
-          
+          driftEnabled: true
+
 controller:
   resources:
     requests:

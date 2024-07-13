@@ -6,8 +6,8 @@ data "aws_eks_cluster" "eks" {
 
 ## EBS CSI DRIVER
 module "aws-ebs-csi-driver" {
-  source = "./modules/aws-ebs-csi-driver"
-  count = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
+  source                               = "./modules/aws-ebs-csi-driver"
+  count                                = var.enable_amazon_eks_aws_ebs_csi_driver || var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   addon_config = merge(
     {
@@ -15,7 +15,7 @@ module "aws-ebs-csi-driver" {
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
-  addon_context = local.addon_context
+  addon_context                          = local.addon_context
   enable_self_managed_aws_ebs_csi_driver = var.enable_self_managed_aws_ebs_csi_driver
   helm_config = merge(
     {
@@ -41,18 +41,18 @@ module "aws-efs-filesystem-with-storage-class" {
   count       = var.efs_storage_class_enabled ? 1 : 0
   name        = var.name
   vpc_id      = var.vpc_id
-  environment = var.environment 
+  environment = var.environment
   kms_key_arn = var.kms_key_arn
   subnets     = var.private_subnet_ids
 }
 
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
-  count             = var.aws_load_balancer_controller_enabled ? 1 : 0
-  source= "./modules/aws-load-balancer-controller"
-  helm_config       = {
+  count  = var.aws_load_balancer_controller_enabled ? 1 : 0
+  source = "./modules/aws-load-balancer-controller"
+  helm_config = {
     version = var.aws_load_balancer_version
-    values = var.aws_load_balancer_controller_helm_config.values
+    values  = var.aws_load_balancer_controller_helm_config.values
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
@@ -60,26 +60,26 @@ module "aws-load-balancer-controller" {
 
 ## NODE TERMINATION HANDLER
 module "aws-node-termination-handler" {
-  count                   = var.aws_node_termination_handler_enabled ? 1 : 0
-  source                  = "./modules/aws-node-termination-handler"
-  helm_config             =  {
+  count  = var.aws_node_termination_handler_enabled ? 1 : 0
+  source = "./modules/aws-node-termination-handler"
+  helm_config = {
     version = var.node_termination_handler_version
-    values = var.aws_node_termination_handler_helm_config.values
+    values  = var.aws_node_termination_handler_helm_config.values
   }
   irsa_policies           = var.aws_node_termination_handler_irsa_policies
   autoscaling_group_names = var.auto_scaling_group_names
   addon_context           = local.addon_context
-  enable_service_monitor = var.aws_node_termination_handler_helm_config.enable_service_monitor
+  enable_service_monitor  = var.aws_node_termination_handler_helm_config.enable_service_monitor
 }
 
 ## VPC-CNI
 module "aws_vpc_cni" {
-  source = "./modules/aws-vpc-cni"
-  count = var.amazon_eks_vpc_cni_enabled ? 1 : 0
+  source      = "./modules/aws-vpc-cni"
+  count       = var.amazon_eks_vpc_cni_enabled ? 1 : 0
   enable_ipv6 = var.enable_ipv6
   addon_config = merge(
     {
-      kubernetes_version = local.eks_cluster_version
+      kubernetes_version      = local.eks_cluster_version
       additional_iam_policies = [var.kms_policy_arn]
     },
     var.amazon_eks_vpc_cni_config,
@@ -91,7 +91,7 @@ module "aws_vpc_cni" {
 module "cert-manager" {
   count                             = var.cert_manager_enabled ? 1 : 0
   source                            = "./modules/cert-manager"
-  helm_config                       =  var.cert_manager_helm_config
+  helm_config                       = var.cert_manager_helm_config
   manage_via_gitops                 = var.argocd_manage_add_ons
   irsa_policies                     = var.cert_manager_irsa_policies
   addon_context                     = local.addon_context
@@ -103,36 +103,36 @@ module "cert-manager" {
 
 ## CERT MANAGER LETSENCRYPT
 module "cert-manager-le-http-issuer" {
-  count      = var.cert_manager_enabled ? 1 : 0
-  source = "./modules/cert-manager-le-http-issuer"
-  depends_on = [ module.cert-manager ]
+  count                          = var.cert_manager_enabled ? 1 : 0
+  source                         = "./modules/cert-manager-le-http-issuer"
+  depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
 }
 
 ## CLUSTER AUTOSCALER
 module "cluster-autoscaler" {
-  source = "./modules/cluster-autoscaler"
-  count = var.cluster_autoscaler_enabled ? 1 : 0
+  source              = "./modules/cluster-autoscaler"
+  count               = var.cluster_autoscaler_enabled ? 1 : 0
   eks_cluster_version = local.eks_cluster_version
-  helm_config         = {
+  helm_config = {
     version = var.cluster_autoscaler_chart_version
-    values = var.cluster_autoscaler_helm_config
+    values  = var.cluster_autoscaler_helm_config
   }
-  manage_via_gitops   = var.argocd_manage_add_ons
-  addon_context       = local.addon_context
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
 }
 
 ## COREDNS HPA
 module "coredns_hpa" {
-  count     = var.coredns_hpa_enabled ? 1 : 0
-  source = "./modules/core-dns-hpa"  # Replace with the actual path to your module
+  count       = var.coredns_hpa_enabled ? 1 : 0
+  source      = "./modules/core-dns-hpa" # Replace with the actual path to your module
   helm_config = var.coredns_hpa_helm_config
 }
 
 ## EXTERNAL SECRETS
 module "external-secrets" {
-  source = "./modules/external-secret"
-  count = var.external_secrets_enabled ? 1 : 0
+  source                                = "./modules/external-secret"
+  count                                 = var.external_secrets_enabled ? 1 : 0
   helm_config                           = var.external_secrets_helm_config
   manage_via_gitops                     = var.argocd_manage_add_ons
   addon_context                         = local.addon_context
@@ -145,60 +145,70 @@ module "external-secrets" {
 module "ingress-nginx" {
   count             = var.ingress_nginx_enabled ? 1 : 0
   source            = "./modules/ingress-nginx"
-  depends_on = [ module.aws_vpc_cni, module.service-monitor-crd ]
+  depends_on        = [module.aws_vpc_cni, module.service-monitor-crd]
   helm_config       = var.ingress_nginx_config
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
-  ip_family = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
-  
+  ip_family         = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
+
   # Template values for ingress-nginx and private-internal-nginx
-  namespace = var.ingress_nginx_config.namespace
-  enable_private_nlb = var.enable_private_nlb 
-  ingress_class_name = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-nginx" : "${var.ingress_nginx_config.ingress_class_name}-nginx"
+  namespace              = var.ingress_nginx_config.namespace
+  enable_private_nlb     = var.enable_private_nlb
+  ingress_class_name     = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-nginx" : "${var.ingress_nginx_config.ingress_class_name}-nginx"
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 
 ## KARPENTER
 module "karpenter" {
-  count       = var.karpenter_enabled ? 1 : 0
-  source = "./modules/karpenter"
-  worker_iam_role_name = var.worker_iam_role_name
-  eks_cluster_name = var.eks_cluster_name
+  count                     = var.karpenter_enabled ? 1 : 0
+  source                    = "./modules/karpenter"
+  worker_iam_role_name      = var.worker_iam_role_name
+  eks_cluster_name          = var.eks_cluster_name
   helm_config               = var.karpenter_helm_config
   irsa_policies             = var.karpenter_irsa_policies
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
   manage_via_gitops         = var.argocd_manage_add_ons
   addon_context             = local.addon_context
-  eks_cluster_endpoint = data.aws_eks_cluster.eks.endpoint
-  eks_cluster_id = var.eks_cluster_name
-  environment = var.environment
-  name = var.name
+  eks_cluster_endpoint      = data.aws_eks_cluster.eks.endpoint
+  eks_cluster_id            = var.eks_cluster_name
+  environment               = var.environment
+  name                      = var.name
 }
 
 ## Karpenter-provisioner
 module "karpenter-provisioner" {
-  depends_on = [ module.karpenter ]
-  source                               = "./modules/karpenter-provisioner"
-  count                                = var.karpenter_provisioner_enabled ? 1 : 0
-  ipv6_enabled                         = var.ipv6_enabled
-  karpenter_config                     = var.karpenter_helm_config
-
+  depends_on       = [module.karpenter]
+  source           = "./modules/karpenter-provisioner"
+  count            = var.karpenter_provisioner_enabled ? 1 : 0
+  ipv6_enabled     = var.ipv6_enabled
+  karpenter_config = var.karpenter_provisioner_config
 }
 
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
-  count = var.kubernetes_dashboard_enabled ? 1 : 0
-  source = "./modules/kubernetes-dashboard" 
-  k8s_dashboard_hostname = var.k8s_dashboard_hostname
-  alb_acm_certificate_arn = var.alb_acm_certificate_arn
+  count                               = var.kubernetes_dashboard_enabled ? 1 : 0
+  source                              = "./modules/kubernetes-dashboard"
+  k8s_dashboard_hostname              = var.k8s_dashboard_hostname
+  alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
+}
+
+## KEDA
+
+module "keda" {
+  source            = "./modules/keda"
+  count             = var.keda_enabled ? 1 : 0
+  helm_config       = var.keda_helm_config
+  irsa_policies     = var.keda_irsa_policies
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
 }
 
 ## METRIC SERVER
 module "metrics-server" {
-  count             = var.metrics_server_enabled ? 1 : 0
-  source            = "./modules/metrics-server"
-  helm_config       = {
+  count  = var.metrics_server_enabled ? 1 : 0
+  source = "./modules/metrics-server"
+  helm_config = {
     version = var.metrics_server_helm_version
     values  = var.metrics_server_helm_config
   }
@@ -208,12 +218,12 @@ module "metrics-server" {
 
 ## RELOADER
 module "reloader" {
-  count             = var.reloader_enabled ? 1 : 0
-  source            = "./modules/reloader"
-  helm_config       = {
-    values = var.reloader_helm_config.values
-    namespace        = "kube-system"
-    create_namespace = false
+  count  = var.reloader_enabled ? 1 : 0
+  source = "./modules/reloader"
+  helm_config = {
+    values                 = var.reloader_helm_config.values
+    namespace              = "kube-system"
+    create_namespace       = false
     enable_service_monitor = var.reloader_helm_config.enable_service_monitor
   }
   manage_via_gitops = var.argocd_manage_add_ons
@@ -238,13 +248,11 @@ module "service-monitor-crd" {
 
 ## VPA-CRDS
 module "vpa-crds" {
-  count      = var.metrics_server_enabled ? 1 : 0
-  source = "./modules/vpa-crds"
+  count       = var.metrics_server_enabled ? 1 : 0
+  source      = "./modules/vpa-crds"
   helm-config = var.vpa_config.values[0]
 }
 
-
-###################### PHASE 2 #############################
 
 module "velero" {
   source        = "./modules/velero"
@@ -475,5 +483,3 @@ resource "helm_release" "falco" {
     })
   ]
 }
-
-

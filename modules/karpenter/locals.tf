@@ -1,7 +1,7 @@
 
 locals {
-  name            = "karpenter"
-  service_account = try(var.helm_config.service_account, "karpenter")
+  name                   = "karpenter"
+  service_account        = try(var.helm_config.service_account, "karpenter")
   node_module_profile_id = resource.aws_iam_instance_profile.karpenter_profile.name
   set_values = [{
     name  = "serviceAccount.name"
@@ -33,11 +33,11 @@ locals {
     },
     {
       values = [
-      templatefile("${path.module}/config/karpenter.yaml", {
-        eks_cluster_id            = var.addon_context.eks_cluster_id,
-        eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
-        node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile 
-      })
+        templatefile("${path.module}/config/karpenter.yaml", {
+          eks_cluster_id            = var.addon_context.eks_cluster_id,
+          eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
+          node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
+        })
       ]
     },
     var.karpenter_helm_config

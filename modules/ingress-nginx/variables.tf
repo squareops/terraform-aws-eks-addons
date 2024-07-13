@@ -39,24 +39,24 @@ variable "enable_service_monitor" {
 }
 variable "ip_family" {
   description = "ip family ipv4 and ipv6"
-  type = string
-  default = "ipv4"
+  type        = string
+  default     = "ipv4"
 }
-##### Control variable for public and private type of ingress nginx 
+##### Control variable for public and private type of ingress nginx
 
 variable "enable_private_nlb" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "ingress_class_name" {
   description = "resource name for nginx and internal nginx"
-  type = any
-  default = ""
+  type        = any
+  default     = ""
 }
 
 variable "namespace" {
   description = "Creates namespace for the controller need to install"
-  type = string
+  type        = string
 }

@@ -7,7 +7,7 @@ karpenter_ec2_instance_family: "${ec2_instance_family}"
 karpenter_ec2_instance_type: "${ec2_instance_type}"
 excluded_karpenter_ec2_instance_type: "${excluded_instance_type}"
 provisioner_name: "${provisioner_name}"
-instance_capacity_type: ["${capacity_type}"]
+instance_capacity_type: "${instance_capacity_type}"
 
 
 spec:

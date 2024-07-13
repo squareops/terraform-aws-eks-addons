@@ -112,6 +112,17 @@ variable "keda_enabled" {
   type        = bool
   default     = false
 }
+variable "keda_helm_config" {
+  description = "KEDA Event-based autoscaler add-on config"
+  type        = any
+  default     = {}
+}
+variable "keda_irsa_policies" {
+  description = "Additional IAM policies for a IAM role for service accounts"
+  type        = list(string)
+  default     = []
+}
+
 
 variable "environment" {
   description = "Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster."
@@ -127,23 +138,23 @@ variable "external_secrets_enabled" {
 
 variable "enable_private_nlb" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 variable "ingress_nginx_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
-    ingress_class_name = string
-    enable_service_monitor      = bool
-    values                      = any
-    namespace                   = string
+    ingress_class_name     = string
+    enable_service_monitor = bool
+    values                 = any
+    namespace              = string
   })
 
   default = {
-    ingress_class_name = "nginx"
-    enable_service_monitor      = false
-    values                      = {}
-    namespace                   = "ingress-nginx"
+    ingress_class_name     = "nginx"
+    enable_service_monitor = false
+    values                 = {}
+    namespace              = "ingress-nginx"
   }
 }
 
@@ -200,7 +211,7 @@ variable "aws_load_balancer_controller_enabled" {
 variable "aws_load_balancer_controller_helm_config" {
   description = "Configuration for the AWS Load Balancer Controller Helm release"
   type = object({
-    values  = list(string)
+    values = list(string)
   })
   default = {
     values = []
@@ -216,13 +227,6 @@ variable "argocd_manage_add_ons" {
 variable "aws_load_balancer_version" {
   description = "Specify the version of the AWS Load Balancer Controller for Ingress"
   default     = "1.4.4"
-  type        = string
-}
-
-
-variable "ingress_nginx_version" {
-  description = "Specify the version of the NGINX Ingress Controller"
-  default     = "4.9.1"
   type        = string
 }
 
@@ -242,12 +246,6 @@ variable "cert_manager_letsencrypt_email" {
   description = "Specifies the email address to be used by cert-manager to request Let's Encrypt certificates"
   default     = ""
   type        = string
-}
-
-variable "cert_manager_install_letsencrypt_http_issuers" {
-  description = "Enable or disable the HTTP issuer for cert-manager"
-  default     = false
-  type        = bool
 }
 
 variable "kms_key_arn" {
@@ -394,8 +392,8 @@ variable "karpenter_provisioner_config" {
 
 variable "ingress_nginx_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "node_termination_handler_version" {

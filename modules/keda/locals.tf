@@ -11,6 +11,7 @@ locals {
       version     = "2.13.0"
       namespace   = local.name
       description = "Keda Event-based autoscaler for workloads on Kubernetes"
+      values      = [file("${path.module}/config/values.yaml")]
     },
     var.helm_config
   )

@@ -59,8 +59,8 @@ variable "eks_cluster_name" {
 
 variable "eks_cluster_id" {
   description = "Fetch cluster ID of the cluster"
-  default = ""
-  type = string
+  default     = ""
+  type        = string
 }
 
 variable "environment" {

@@ -18,7 +18,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_security_group_efs"></a> [security\_group\_efs](#module\_security\_group\_efs) | terraform-aws-modules/security-group/aws | ~> 4 |
+| <a name="module_security_group_efs"></a> [security\_group\_efs](#module\_security\_group\_efs) | terraform-aws-modules/security-group/aws | ~> 5 |
 
 ## Resources
 

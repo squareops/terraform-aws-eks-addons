@@ -1,11 +1,9 @@
 resource "kubernetes_namespace" "k8s-dashboard" {
-  
   metadata {
     name = "kubernetes-dashboard"
   }
 }
 resource "helm_release" "kubernetes-dashboard" {
-  
   depends_on = [kubernetes_namespace.k8s-dashboard]
   name       = "kubernetes-dashboard"
   namespace  = "kubernetes-dashboard"
@@ -17,7 +15,6 @@ resource "helm_release" "kubernetes-dashboard" {
 
 
 resource "kubernetes_ingress_v1" "k8s-ingress" {
-  
   depends_on             = [helm_release.kubernetes-dashboard]
   wait_for_load_balancer = true
   metadata {
@@ -72,7 +69,6 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
 }
 
 resource "kubernetes_service_account" "dashboard_admin_sa" {
-  
   depends_on = [helm_release.kubernetes-dashboard]
   metadata {
     name      = "kubernetes-dashboard-admin-sa"
@@ -81,7 +77,6 @@ resource "kubernetes_service_account" "dashboard_admin_sa" {
 }
 
 resource "kubernetes_secret_v1" "admin-user" {
-  
   metadata {
     name      = "admin-user-token"
     namespace = "kube-system"
@@ -97,7 +92,6 @@ resource "kubernetes_secret_v1" "admin-user" {
 }
 
 resource "kubernetes_cluster_role_binding_v1" "admin-user" {
-  
   metadata {
     name = "admin-user"
   }
@@ -117,7 +111,6 @@ resource "kubernetes_cluster_role_binding_v1" "admin-user" {
 }
 
 resource "kubernetes_cluster_role" "eks_read_only_role" {
-  
   metadata {
     name = "dashboard-viewonly"
   }
@@ -178,7 +171,6 @@ resource "kubernetes_cluster_role" "eks_read_only_role" {
 # Add more rules as needed for read-only access to other Kubernetes resources
 
 resource "kubernetes_service_account" "dashboard_read_only_sa" {
-  
   metadata {
     name      = "dashboard-read-only-sa"
     namespace = "kube-system"
@@ -186,7 +178,6 @@ resource "kubernetes_service_account" "dashboard_read_only_sa" {
 }
 
 resource "kubernetes_cluster_role_binding" "eks_read_only_role_binding" {
-  
   metadata {
     name = "eks-read-only-role-binding"
   }
@@ -210,7 +201,6 @@ resource "kubernetes_cluster_role_binding" "eks_read_only_role_binding" {
 }
 
 resource "kubernetes_secret_v1" "dashboard_read_only_sa_token" {
-  
   metadata {
     name      = "dashboard-read-only-sa-token"
     namespace = "kube-system"

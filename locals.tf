@@ -12,12 +12,12 @@ locals {
     clusterAutoscaler         = var.cluster_autoscaler_enabled ? module.cluster-autoscaler[0].argocd_gitops_config : null
     ingressNginx              = var.ingress_nginx_enabled ? module.ingress-nginx[0].argocd_gitops_config : null
     # keda                      = var.enable_keda ? module.keda[0].argocd_gitops_config : null
-    metricsServer             = var.metrics_server_enabled ? module.metrics-server[0].argocd_gitops_config : null
-    vpa                       = var.metrics_server_enabled ? module.vpa-crds[0].argocd_gitops_config : null
-    karpenter                 = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
-    kubernetesDashboard       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].argocd_gitops_config : null
-    externalSecrets           = var.external_secrets_enabled ? module.external-secrets[0].argocd_gitops_config : null
-    velero                    = var.velero_enabled ? module.velero[0].argocd_gitops_config : null
+    metricsServer       = var.metrics_server_enabled ? module.metrics-server[0].argocd_gitops_config : null
+    vpa                 = var.metrics_server_enabled ? module.vpa-crds[0].argocd_gitops_config : null
+    karpenter           = var.enable_karpenter ? module.karpenter[0].argocd_gitops_config : null
+    kubernetesDashboard = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].argocd_gitops_config : null
+    externalSecrets     = var.external_secrets_enabled ? module.external-secrets[0].argocd_gitops_config : null
+    velero              = var.velero_enabled ? module.velero[0].argocd_gitops_config : null
     # kubecost                  = var.kubecost_enabled ? module.kubecost[0].argocd_gitops_config : null
   }
 

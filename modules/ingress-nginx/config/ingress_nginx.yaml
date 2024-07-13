@@ -7,9 +7,9 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
       service.beta.kubernetes.io/aws-load-balancer-internal: "${enable_private_nlb}"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-    externalTrafficPolicy: Cluster  
+    externalTrafficPolicy: Cluster
 
-  
+
   ingressClassResource:
     enabled: true
     name: ${ingress_class_name}
@@ -22,7 +22,6 @@ controller:
     requests:
       cpu: 50m
       memory: 200Mi
-      
   autoscaling:
     enabled: true
     minReplicas: 2

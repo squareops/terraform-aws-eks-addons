@@ -4,7 +4,6 @@ variable "karpenter_config" {
     provisioner_name              = string
     karpenter_label               = list(string)
     provisioner_values            = string
-    capacity_type = string
     private_subnet_selector_key   = optional(string, "Name")
     private_subnet_selector_value = string
     security_group_selector_key   = optional(string, "aws:eks:cluster-name")

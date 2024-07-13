@@ -11,56 +11,15 @@
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.72 |
-| <a name="provider_time"></a> [time](#provider\_time) | >= 0.8 |
+No providers.
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_cloudwatch_metrics"></a> [aws\_cloudwatch\_metrics](#module\_aws\_cloudwatch\_metrics) | ./aws-cloudwatch-metrics | n/a |
-| <a name="module_aws_coredns"></a> [aws\_coredns](#module\_aws\_coredns) | ./aws-coredns | n/a |
-| <a name="module_aws_ebs_csi_driver"></a> [aws\_ebs\_csi\_driver](#module\_aws\_ebs\_csi\_driver) | ./aws-ebs-csi-driver | n/a |
-| <a name="module_aws_efs_csi_driver"></a> [aws\_efs\_csi\_driver](#module\_aws\_efs\_csi\_driver) | ./aws-efs-csi-driver | n/a |
-| <a name="module_aws_kube_proxy"></a> [aws\_kube\_proxy](#module\_aws\_kube\_proxy) | ./aws-kube-proxy | n/a |
-| <a name="module_aws_load_balancer_controller"></a> [aws\_load\_balancer\_controller](#module\_aws\_load\_balancer\_controller) | ./aws-load-balancer-controller | n/a |
-| <a name="module_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#module\_aws\_node\_termination\_handler) | ./aws-node-termination-handler | n/a |
-| <a name="module_aws_privateca_issuer"></a> [aws\_privateca\_issuer](#module\_aws\_privateca\_issuer) | ./aws-privateca-issuer | n/a |
-| <a name="module_aws_vpc_cni"></a> [aws\_vpc\_cni](#module\_aws\_vpc\_cni) | ./aws-vpc-cni | n/a |
-| <a name="module_cert_manager"></a> [cert\_manager](#module\_cert\_manager) | ./cert-manager | n/a |
-| <a name="module_cert_manager_csi_driver"></a> [cert\_manager\_csi\_driver](#module\_cert\_manager\_csi\_driver) | ./cert-manager-csi-driver | n/a |
-| <a name="module_cert_manager_istio_csr"></a> [cert\_manager\_istio\_csr](#module\_cert\_manager\_istio\_csr) | ./cert-manager-istio-csr | n/a |
-| <a name="module_cluster_autoscaler"></a> [cluster\_autoscaler](#module\_cluster\_autoscaler) | ./cluster-autoscaler | n/a |
-| <a name="module_coredns_autoscaler"></a> [coredns\_autoscaler](#module\_coredns\_autoscaler) | ./cluster-proportional-autoscaler | n/a |
-| <a name="module_crossplane"></a> [crossplane](#module\_crossplane) | ./crossplane | n/a |
-| <a name="module_csi_secrets_store_provider_aws"></a> [csi\_secrets\_store\_provider\_aws](#module\_csi\_secrets\_store\_provider\_aws) | ./csi-secrets-store-provider-aws | n/a |
-| <a name="module_external_dns"></a> [external\_dns](#module\_external\_dns) | ./external-dns | n/a |
-| <a name="module_external_secrets"></a> [external\_secrets](#module\_external\_secrets) | ./external-secrets | n/a |
-| <a name="module_ingress_nginx"></a> [ingress\_nginx](#module\_ingress\_nginx) | ./ingress-nginx | n/a |
-| <a name="module_karpenter"></a> [karpenter](#module\_karpenter) | ./karpenter | n/a |
-| <a name="module_keda"></a> [keda](#module\_keda) | ./keda | n/a |
-| <a name="module_kubecost"></a> [kubecost](#module\_kubecost) | ./kubecost | n/a |
-| <a name="module_kubernetes_dashboard"></a> [kubernetes\_dashboard](#module\_kubernetes\_dashboard) | ./kubernetes-dashboard | n/a |
-| <a name="module_metrics_server"></a> [metrics\_server](#module\_metrics\_server) | ./metrics-server | n/a |
-| <a name="module_reloader"></a> [reloader](#module\_reloader) | ./reloader | n/a |
-| <a name="module_secrets_store_csi_driver"></a> [secrets\_store\_csi\_driver](#module\_secrets\_store\_csi\_driver) | ./secrets-store-csi-driver | n/a |
-| <a name="module_strimzi_kafka_operator"></a> [strimzi\_kafka\_operator](#module\_strimzi\_kafka\_operator) | ./strimzi-kafka-operator | n/a |
-| <a name="module_tetrate_istio"></a> [tetrate\_istio](#module\_tetrate\_istio) | ./tetrate-istio | n/a |
-| <a name="module_vault"></a> [vault](#module\_vault) | hashicorp/hashicorp-vault-eks-addon/aws | 1.0.0-rc2 |
-| <a name="module_velero"></a> [velero](#module\_velero) | ./velero | n/a |
-| <a name="module_vpa"></a> [vpa](#module\_vpa) | ./vpa | n/a |
+No modules.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [time_sleep.dataplane](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_eks_cluster.eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
-| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+No resources.
 
 ## Inputs
 
@@ -285,35 +244,5 @@
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_aws_cloudwatch_metrics"></a> [aws\_cloudwatch\_metrics](#output\_aws\_cloudwatch\_metrics) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_coredns"></a> [aws\_coredns](#output\_aws\_coredns) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_ebs_csi_driver"></a> [aws\_ebs\_csi\_driver](#output\_aws\_ebs\_csi\_driver) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_efs_csi_driver"></a> [aws\_efs\_csi\_driver](#output\_aws\_efs\_csi\_driver) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_kube_proxy"></a> [aws\_kube\_proxy](#output\_aws\_kube\_proxy) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_load_balancer_controller"></a> [aws\_load\_balancer\_controller](#output\_aws\_load\_balancer\_controller) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#output\_aws\_node\_termination\_handler) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_privateca_issuer"></a> [aws\_privateca\_issuer](#output\_aws\_privateca\_issuer) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_aws_vpc_cni"></a> [aws\_vpc\_cni](#output\_aws\_vpc\_cni) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_cert_manager"></a> [cert\_manager](#output\_cert\_manager) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_cert_manager_csi_driver"></a> [cert\_manager\_csi\_driver](#output\_cert\_manager\_csi\_driver) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_cert_manager_istio_csr"></a> [cert\_manager\_istio\_csr](#output\_cert\_manager\_istio\_csr) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_cluster_autoscaler"></a> [cluster\_autoscaler](#output\_cluster\_autoscaler) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_coredns_autoscaler"></a> [coredns\_autoscaler](#output\_coredns\_autoscaler) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_crossplane"></a> [crossplane](#output\_crossplane) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_csi_secrets_store_provider_aws"></a> [csi\_secrets\_store\_provider\_aws](#output\_csi\_secrets\_store\_provider\_aws) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_external_dns"></a> [external\_dns](#output\_external\_dns) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_external_secrets"></a> [external\_secrets](#output\_external\_secrets) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_ingress_nginx"></a> [ingress\_nginx](#output\_ingress\_nginx) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_karpenter"></a> [karpenter](#output\_karpenter) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_keda"></a> [keda](#output\_keda) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_kubernetes_dashboard"></a> [kubernetes\_dashboard](#output\_kubernetes\_dashboard) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_metrics_server"></a> [metrics\_server](#output\_metrics\_server) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_reloader"></a> [reloader](#output\_reloader) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_secrets_store_csi_driver"></a> [secrets\_store\_csi\_driver](#output\_secrets\_store\_csi\_driver) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_strimzi_kafka_operator"></a> [strimzi\_kafka\_operator](#output\_strimzi\_kafka\_operator) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_velero"></a> [velero](#output\_velero) | Map of attributes of the Helm release and IRSA created |
-| <a name="output_vpa"></a> [vpa](#output\_vpa) | Map of attributes of the Helm release and IRSA created |
+No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

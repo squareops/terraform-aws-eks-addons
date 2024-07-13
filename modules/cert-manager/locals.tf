@@ -4,11 +4,11 @@ locals {
 
   # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/Chart.template.yaml
   default_helm_config = {
-    name        = local.name
-    chart       = local.name
-    repository  = "https://charts.jetstack.io"
-    version     = "v1.15.1"
-    
+    name       = local.name
+    chart      = local.name
+    repository = "https://charts.jetstack.io"
+    version    = "v1.15.1"
+
     namespace   = local.name
     description = "Cert Manager Add-on"
     values      = local.default_helm_values

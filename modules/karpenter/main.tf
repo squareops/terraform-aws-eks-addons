@@ -1,6 +1,6 @@
 
 module "helm_addon" {
-  depends_on = [ resource.aws_iam_instance_profile.karpenter_profile ]
+  depends_on        = [resource.aws_iam_instance_profile.karpenter_profile]
   source            = "../helm-addon"
   manage_via_gitops = var.manage_via_gitops
   helm_config       = local.helm_config

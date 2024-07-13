@@ -47,8 +47,8 @@ module "helm_addon" {
       controller:
         k8sTagClusterId: ${var.addon_context.eks_cluster_id}
       EOT
-    ],[file("${path.module}/config/values.yaml")],var.helm_config.values)
-    }
+    ], [file("${path.module}/config/values.yaml")], var.helm_config.values)
+  }
 
   set_values = [
     {

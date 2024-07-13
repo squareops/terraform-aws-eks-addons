@@ -7,6 +7,6 @@ resource "helm_release" "vpa-crds" {
   timeout    = 600
   values = [
     file("${path.module}/config/values.yaml"),
-      var.helm-config
+    var.helm-config
   ]
 }

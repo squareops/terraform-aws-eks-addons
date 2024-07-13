@@ -22,10 +22,10 @@ module "helm_addon" {
       description      = "Reloader Helm Chart deployment configuration"
     },
     {
-      values = templatefile("${path.module}/config/reloader.yaml" , 
-         {
-         enable_service_monitor = var.helm_config.enable_service_monitor
-         })
+      values = templatefile("${path.module}/config/reloader.yaml",
+        {
+          enable_service_monitor = var.helm_config.enable_service_monitor
+      })
     },
     var.helm_config
   )

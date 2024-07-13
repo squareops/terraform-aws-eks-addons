@@ -15,14 +15,14 @@ locals {
   }
 
   helm_config = merge(
-      local.default_helm_config,
-      var.helm_config,
+    local.default_helm_config,
+    var.helm_config,
     {
-      values     = [
-      templatefile("${path.module}/config/aws_nth.yaml", {
-        enable_service_monitor = var.enable_service_monitor # This line applies configurations only when ADDONS "service_monitor_crd_enabled" is set to false.
-      })
-    ]
+      values = [
+        templatefile("${path.module}/config/aws_nth.yaml", {
+          enable_service_monitor = var.enable_service_monitor # This line applies configurations only when ADDONS "service_monitor_crd_enabled" is set to false.
+        })
+      ]
     },
     var.helm_config
   )
