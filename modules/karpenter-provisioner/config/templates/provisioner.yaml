@@ -1,0 +1,39 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: {{ .Values.provisioner_name }}-provisioner
+spec:
+{{- toYaml .Values.spec | nindent 2 }}
+  requirements:
+    - key: karpenter.sh/capacity-type         # optional, set to on-demand by default, spot if both are listed
+      operator: In
+      values: {{ .Values.karpenter_ec2_capacity_type }}
+    - key: karpenter.k8s.aws/instance-family
+      operator: In
+      values: {{ .Values.karpenter_ec2_instance_family }}
+    - key: node.kubernetes.io/instance-type       # optional, set to on-demand by default, spot if both are listed
+      operator: In
+      values: {{ .Values.karpenter_ec2_instance_type }}
+    - key: karpenter.k8s.aws/instance-size
+      operator: NotIn
+      values: {{ .Values.excluded_karpenter_ec2_instance_type }}
+    {{- if .Values.karpenter_instance_hypervisor }}
+    - key: "karpenter.k8s.aws/instance-hypervisor"
+      operator: In
+      values: {{ .Values.karpenter_instance_hypervisor }}
+    {{- end }}
+  providerRef:                                # optional, recommended to use instead of `provider`
+    name: {{ .Values.provisioner_name }}-node-template
+  ttlSecondsAfterEmpty: 300                   # optional, but never scales down if not set
+  # ttlSecondsUntilExpired: 600     # optional, but never expires if not set
+
+---
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: {{ .Values.provisioner_name }}-node-template
+spec:
+  subnetSelector:                             # required
+    {{ .Values.private_subnet_selector_key }} : {{ .Values.private_subnet_selector_value }}
+  securityGroupSelector:                      # required, when not using launchTemplate
+    {{ .Values.security_group_selector_key }} : {{ .Values.security_group_selector_value }}

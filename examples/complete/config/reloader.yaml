@@ -1,0 +1,23 @@
+reloader:
+  deployment:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+    resources:
+      limits:
+        cpu: "150m"
+        memory: "400Mi"
+      requests:
+        cpu: "50m"
+        memory: "120Mi"
+
+    pod:
+      annotations:
+        co.elastic.logs/enabled: "true"

@@ -1,0 +1,8 @@
+accessLogging:
+  enabled: "${envoy_access_logs_enabled}"
+
+monitoring:
+  enabled: "${prometheus_monitoring_enabled}"
+
+clusterIssuer:
+  email: "${cert_manager_letsencrypt_email}"

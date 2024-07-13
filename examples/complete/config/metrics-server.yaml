@@ -1,0 +1,35 @@
+## Node affinity for particular node in which labels key is "Infra-Services" and value is "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+## Particular args to be passed in deployment
+
+extraArgs:
+  - --kubelet-preferred-address-types=InternalIP
+  - --v=2
+
+apiService:
+  create: true
+
+## Using limits and requests
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 350Mi
+  requests:
+    cpu: 30m
+    memory: 100Mi
+
+podAnnotations:
+  co.elastic.logs/enabled: "true"
+
+replicas: 2

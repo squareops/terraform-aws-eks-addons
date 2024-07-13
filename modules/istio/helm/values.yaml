@@ -1,0 +1,29 @@
+pilot:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
+
+# gateways:
+#   istio-ingressgateway:
+#     nodeSelector:
+#       Addons-Services: true
+#     resources:
+#       limits:
+#         cpu: 100m
+#         memory: 200Mi
+#       requests:
+#         cpu: 10m
+#         memory: 100Mi

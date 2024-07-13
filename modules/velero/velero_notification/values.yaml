@@ -1,0 +1,42 @@
+image:
+  registry: ghcr.io
+  repository: kubeshop/botkube
+  pullPolicy: IfNotPresent
+  tag: v1.10.0
+
+sources:
+  'k8s-all-events':
+    displayName: "Backup Status"
+    botkube/kubernetes:
+     config:
+      namespaces: &k8s-events-namespaces
+      event:
+        types:
+          - all
+      resources:
+        - type: velero.io/v1/backups
+          event:
+            types:
+              - all
+          updateSetting:
+            includeDiff: true
+            fields:
+              - status.phase
+
+communications:
+  'default-group':
+    socketSlack:
+      enabled: true
+      channels:
+        'default':
+          name: '${slack_channel_name}'
+          bindings:
+            executors:
+              - k8s-default-tools
+            sources:
+              - k8s-all-events
+      botToken: '${slack_botToken}'
+      appToken: '${slack_appToken}'
+
+settings:
+  clusterName: '${cluster_id}'

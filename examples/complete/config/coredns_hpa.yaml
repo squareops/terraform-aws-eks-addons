@@ -1,0 +1,24 @@
+values.yaml:
+corednsdeploymentname: "coredns"
+minReplicas: 2
+maxReplicas: 4  # Adjust according to your scaling requirements
+targetCPUUtilizationPercentage: 80
+targetMemoryUtilizationPercentage: 150Mi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
