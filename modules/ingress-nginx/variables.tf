@@ -26,12 +26,6 @@ variable "addon_context" {
   })
 }
 
-variable "ingress_nginx_enabled" {
-  description = "Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services."
-  default     = false
-  type        = bool
-}
-
 variable "enable_service_monitor" {
   description = "Enable or disable Service Monitor add-on for monitoring Kubernetes services."
   default     = false

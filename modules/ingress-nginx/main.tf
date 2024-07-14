@@ -1,5 +1,4 @@
 locals {
-  name          = var.enable_private_nlb ? "internal-ingress-nginx" : try(var.helm_config.name, "ingress-nginx")
   namespace     = var.namespace
   nlb_scheme    = var.enable_private_nlb ? "internal" : "internet-facing"
   template_path = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
@@ -22,14 +21,6 @@ resource "kubernetes_namespace" "this" {
   count = try(var.helm_config.create_namespace, true) && local.namespace != "kube-system" ? 1 : 0
   metadata {
     name = local.namespace
-  }
-}
-
-# Service creation
-data "kubernetes_service" "nginx-ingress" {
-  metadata {
-    name      = "${var.ingress_class_name}-controller"
-    namespace = local.namespace
   }
 }
 

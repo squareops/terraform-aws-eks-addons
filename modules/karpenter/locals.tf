@@ -28,17 +28,14 @@ locals {
           aws:
             defaultInstanceProfile: ${local.node_iam_instance_profile}
         EOT
-      ]
-      description = "karpenter Helm Chart for Node Autoscaling"
-    },
-    {
-      values = [
+        ,
         templatefile("${path.module}/config/karpenter.yaml", {
           eks_cluster_id            = var.addon_context.eks_cluster_id,
           eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
           node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
         })
       ]
+      description = "karpenter Helm Chart for Node Autoscaling"
     },
     var.karpenter_helm_config
   )

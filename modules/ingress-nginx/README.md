@@ -30,7 +30,6 @@ For more details [Ingress-Nginx can be found here](https://kubernetes.github.io/
 | Name | Type |
 |------|------|
 | [kubernetes_namespace.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_service.nginx-ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
 
 ## Inputs
 
@@ -41,7 +40,6 @@ For more details [Ingress-Nginx can be found here](https://kubernetes.github.io/
 | <a name="input_enable_service_monitor"></a> [enable\_service\_monitor](#input\_enable\_service\_monitor) | Enable or disable Service Monitor add-on for monitoring Kubernetes services. | `bool` | `false` | no |
 | <a name="input_helm_config"></a> [helm\_config](#input\_helm\_config) | Ingress NGINX Helm Configuration | `any` | `{}` | no |
 | <a name="input_ingress_class_name"></a> [ingress\_class\_name](#input\_ingress\_class\_name) | resource name for nginx and internal nginx | `any` | `""` | no |
-| <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services. | `bool` | `false` | no |
 | <a name="input_ip_family"></a> [ip\_family](#input\_ip\_family) | ip family ipv4 and ipv6 | `string` | `"ipv4"` | no |
 | <a name="input_manage_via_gitops"></a> [manage\_via\_gitops](#input\_manage\_via\_gitops) | Determines if the add-on should be managed via GitOps. | `bool` | `false` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Creates namespace for the controller need to install | `string` | n/a | yes |

@@ -32,7 +32,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
       } : {
       "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
-      "kubernetes.io/ingress.class"                       = "nginx"
+      "kubernetes.io/ingress.class"                       = var.ingress_class_name
       "kubernetes.io/tls-acme"                            = "false"
       "nginx.ingress.kubernetes.io/backend-protocol"      = "HTTPS"
       "nginx.ingress.kubernetes.io/rewrite-target"        = "/$2"

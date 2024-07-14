@@ -15,3 +15,9 @@ variable "k8s_dashboard_hostname" {
   default     = ""
   type        = string
 }
+
+variable "ingress_class_name" {
+  description = "resource name for nginx and internal nginx"
+  type        = any
+  default     = ""
+}

@@ -5,6 +5,7 @@
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.43.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.2 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0.2 |
@@ -35,8 +36,6 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cert_manager_letsencrypt_email"></a> [cert\_manager\_letsencrypt\_email](#input\_cert\_manager\_letsencrypt\_email) | Specifies the email address to be used by cert-manager to request Let's Encrypt certificates | `string` | n/a | yes |
-| <a name="input_egress_gateway_enabled"></a> [egress\_gateway\_enabled](#input\_egress\_gateway\_enabled) | Enable or disable the installation of Istio Egress Gateway. | `bool` | `false` | no |
-| <a name="input_egress_gateway_namespace"></a> [egress\_gateway\_namespace](#input\_egress\_gateway\_namespace) | Name of the Kubernetes namespace where the Istio Egress Gateway will be deployed. | `string` | `"istio-egressgateway"` | no |
 | <a name="input_envoy_access_logs_enabled"></a> [envoy\_access\_logs\_enabled](#input\_envoy\_access\_logs\_enabled) | Enable or disable the installation of Envoy access logs across Mesh | `bool` | `false` | no |
 | <a name="input_ingress_gateway_enabled"></a> [ingress\_gateway\_enabled](#input\_ingress\_gateway\_enabled) | Enable or disable the installation of Istio Ingress Gateway. | `bool` | `true` | no |
 | <a name="input_ingress_gateway_namespace"></a> [ingress\_gateway\_namespace](#input\_ingress\_gateway\_namespace) | Name of the Kubernetes namespace where the Istio Ingress Gateway will be deployed | `string` | `"istio-ingressgateway"` | no |

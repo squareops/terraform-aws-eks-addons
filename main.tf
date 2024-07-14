@@ -37,8 +37,8 @@ module "aws-efs-csi-driver" {
 
 ## EFS FILESYSTEM WITH Storage class
 module "aws-efs-filesystem-with-storage-class" {
-  source      = "./modules/aws-efs-filesystem-with-storage-class"
   count       = var.efs_storage_class_enabled ? 1 : 0
+  source      = "./modules/aws-efs-filesystem-with-storage-class"
   name        = var.name
   vpc_id      = var.vpc_id
   environment = var.environment
@@ -74,8 +74,8 @@ module "aws-node-termination-handler" {
 
 ## VPC-CNI
 module "aws_vpc_cni" {
-  source      = "./modules/aws-vpc-cni"
   count       = var.amazon_eks_vpc_cni_enabled ? 1 : 0
+  source      = "./modules/aws-vpc-cni"
   enable_ipv6 = var.enable_ipv6
   addon_config = merge(
     {
@@ -104,15 +104,15 @@ module "cert-manager" {
 ## CERT MANAGER LETSENCRYPT
 module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
-  source                         = "./modules/cert-manager-le-http-issuer"
   depends_on                     = [module.cert-manager]
+  source                         = "./modules/cert-manager-le-http-issuer"
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
 }
 
 ## CLUSTER AUTOSCALER
 module "cluster-autoscaler" {
-  source              = "./modules/cluster-autoscaler"
   count               = var.cluster_autoscaler_enabled ? 1 : 0
+  source              = "./modules/cluster-autoscaler"
   eks_cluster_version = local.eks_cluster_version
   helm_config = {
     version = var.cluster_autoscaler_chart_version
@@ -131,8 +131,8 @@ module "coredns_hpa" {
 
 ## EXTERNAL SECRETS
 module "external-secrets" {
-  source                                = "./modules/external-secret"
   count                                 = var.external_secrets_enabled ? 1 : 0
+  source                                = "./modules/external-secret"
   helm_config                           = var.external_secrets_helm_config
   manage_via_gitops                     = var.argocd_manage_add_ons
   addon_context                         = local.addon_context
@@ -144,8 +144,8 @@ module "external-secrets" {
 ## NGINX INGRESS
 module "ingress-nginx" {
   count             = var.ingress_nginx_enabled ? 1 : 0
-  source            = "./modules/ingress-nginx"
   depends_on        = [module.aws_vpc_cni, module.service-monitor-crd]
+  source            = "./modules/ingress-nginx"
   helm_config       = var.ingress_nginx_config
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -154,7 +154,7 @@ module "ingress-nginx" {
   # Template values for ingress-nginx and private-internal-nginx
   namespace              = var.ingress_nginx_config.namespace
   enable_private_nlb     = var.enable_private_nlb
-  ingress_class_name     = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-nginx" : "${var.ingress_nginx_config.ingress_class_name}-nginx"
+  ingress_class_name     = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 
@@ -169,17 +169,13 @@ module "karpenter" {
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
   manage_via_gitops         = var.argocd_manage_add_ons
   addon_context             = local.addon_context
-  eks_cluster_endpoint      = data.aws_eks_cluster.eks.endpoint
-  eks_cluster_id            = var.eks_cluster_name
-  environment               = var.environment
-  name                      = var.name
 }
 
 ## Karpenter-provisioner
 module "karpenter-provisioner" {
+  count            = var.karpenter_provisioner_enabled ? 1 : 0
   depends_on       = [module.karpenter]
   source           = "./modules/karpenter-provisioner"
-  count            = var.karpenter_provisioner_enabled ? 1 : 0
   ipv6_enabled     = var.ipv6_enabled
   karpenter_config = var.karpenter_provisioner_config
 }
@@ -187,17 +183,19 @@ module "karpenter-provisioner" {
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on                          = [local.kubernetes_dashboard_dependencies]
   source                              = "./modules/kubernetes-dashboard"
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
+  ingress_class_name                  = var.ingress_nginx_config.ingress_class_name
 }
 
 ## KEDA
 
 module "keda" {
-  source            = "./modules/keda"
   count             = var.keda_enabled ? 1 : 0
+  source            = "./modules/keda"
   helm_config       = var.keda_helm_config
   irsa_policies     = var.keda_irsa_policies
   manage_via_gitops = var.argocd_manage_add_ons
@@ -255,9 +253,9 @@ module "vpa-crds" {
 
 
 module "velero" {
+  count         = var.velero_enabled ? 1 : 0
   source        = "./modules/velero"
   name          = var.name
-  count         = var.velero_enabled ? 1 : 0
   region        = data.aws_region.current.name
   cluster_id    = var.eks_cluster_name
   environment   = var.environment
@@ -265,13 +263,11 @@ module "velero" {
 }
 
 module "istio" {
+  count                          = var.istio_enabled ? 1 : 0
   depends_on                     = [module.cert-manager-le-http-issuer]
   source                         = "./modules/istio"
-  count                          = var.istio_enabled ? 1 : 0
   ingress_gateway_enabled        = var.istio_config.ingress_gateway_enabled
   ingress_gateway_namespace      = var.istio_config.ingress_gateway_namespace
-  egress_gateway_enabled         = var.istio_config.egress_gateway_enabled
-  egress_gateway_namespace       = var.istio_config.egress_gateway_namespace
   envoy_access_logs_enabled      = var.istio_config.envoy_access_logs_enabled
   prometheus_monitoring_enabled  = var.istio_config.prometheus_monitoring_enabled
   cert_manager_letsencrypt_email = var.cert_manager_letsencrypt_email
@@ -445,8 +441,8 @@ resource "helm_release" "defectdojo" {
   timeout    = 600
   values = [
     templatefile("${path.module}/modules/defectdojo/values.yaml", {
-      hostname         = var.defectdojo_hostname,
-      storageClassName = var.storageClassName
+      hostname           = var.defectdojo_hostname,
+      storage_class_name = var.storage_class_name
     })
   ]
 }

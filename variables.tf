@@ -260,12 +260,6 @@ variable "kms_policy_arn" {
   type        = string
 }
 
-variable "cluster_propotional_autoscaler_enabled" {
-  description = "Enable or disable Cluster propotional autoscaler add-on"
-  default     = false
-  type        = bool
-}
-
 variable "karpenter_enabled" {
   description = "Enable or disable Karpenter, a Kubernetes-native, multi-tenant, and auto-scaling solution for containerized workloads on Kubernetes."
   default     = false
@@ -338,15 +332,12 @@ variable "istio_config" {
   type = object({
     ingress_gateway_enabled       = bool
     ingress_gateway_namespace     = optional(string, "istio-ingressgateway")
-    egress_gateway_enabled        = bool
-    egress_gateway_namespace      = optional(string, "istio-egressgateway")
     envoy_access_logs_enabled     = bool
     prometheus_monitoring_enabled = bool
     istio_values_yaml             = any
   })
   default = {
     ingress_gateway_enabled       = true
-    egress_gateway_enabled        = false
     envoy_access_logs_enabled     = true
     prometheus_monitoring_enabled = true
     istio_values_yaml             = ""
@@ -443,28 +434,6 @@ variable "cluster_issuer" {
   type        = string
 }
 
-
-variable "enable_amazon_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS add-on"
-  type        = bool
-  default     = false
-}
-variable "enable_self_managed_coredns" {
-  description = "Enable self-managed CoreDNS add-on"
-  type        = bool
-  default     = false
-}
-variable "enable_coredns_autoscaler" {
-  description = "Enable CoreDNS autoscaler add-on"
-  type        = bool
-  default     = false
-}
-
-variable "coredns_autoscaler_helm_config" {
-  description = "CoreDNS Autoscaler Helm Chart config"
-  type        = any
-  default     = {}
-}
 #-----------EKS MANAGED ADD-ONS------------
 variable "enable_ipv6" {
   description = "Enable Ipv6 network. Attaches new VPC CNI policy to the IRSA role"
@@ -478,59 +447,10 @@ variable "amazon_eks_vpc_cni_config" {
   default     = {}
 }
 
-variable "amazon_eks_coredns_config" {
-  description = "Configuration for Amazon CoreDNS EKS add-on"
-  type        = any
-  default     = {}
-}
-
-variable "self_managed_coredns_helm_config" {
-  description = "Self-managed CoreDNS Helm chart config"
-  type        = any
-  default     = {}
-}
-
-variable "remove_default_coredns_deployment" {
-  description = "Determines whether the default deployment of CoreDNS is removed and ownership of kube-dns passed to Helm"
-  type        = bool
-  default     = false
-}
-
-variable "enable_coredns_cluster_proportional_autoscaler" {
-  description = "Enable cluster-proportional-autoscaler for CoreDNS"
-  type        = bool
-  default     = true
-}
-
-variable "coredns_cluster_proportional_autoscaler_helm_config" {
-  description = "Helm provider config for the CoreDNS cluster-proportional-autoscaler"
-  default     = {}
-  type        = any
-}
-
-
-variable "amazon_eks_kube_proxy_config" {
-  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
-  type        = any
-  default     = {}
-}
-
 variable "amazon_eks_aws_ebs_csi_driver_config" {
   description = "configMap for AWS EBS CSI Driver add-on"
   type        = any
   default     = {}
-}
-
-variable "enable_amazon_eks_vpc_cni" {
-  description = "Enable VPC CNI add-on"
-  type        = bool
-  default     = false
-}
-
-variable "enable_amazon_eks_kube_proxy" {
-  description = "Enable Kube Proxy add-on"
-  type        = bool
-  default     = false
 }
 
 variable "enable_amazon_eks_aws_ebs_csi_driver" {
@@ -588,7 +508,7 @@ variable "defectdojo_hostname" {
   type        = string
 }
 
-variable "storageClassName" {
+variable "storage_class_name" {
   description = "Specify the hostname for the kubecsot. "
   default     = "infra-service-sc"
   type        = string
@@ -670,12 +590,6 @@ variable "eks_cluster_version" {
   default     = null
 }
 
-variable "enable_karpenter" {
-  description = "Enable Karpenter autoscaler add-on"
-  type        = bool
-  default     = false
-}
-
 variable "karpenter_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)
@@ -686,10 +600,4 @@ variable "karpenter_node_iam_instance_profile" {
   description = "Karpenter Node IAM Instance profile id"
   type        = string
   default     = ""
-}
-
-variable "enable_service_monitor" {
-  description = "Enable monitoring in nginx ingress add-on"
-  type        = bool
-  default     = false
 }

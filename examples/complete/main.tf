@@ -34,14 +34,14 @@ module "eks-addons" {
   enable_amazon_eks_aws_ebs_csi_driver = false
   amazon_eks_aws_ebs_csi_driver_config = {
     values        = [file("${path.module}/config/ebs-csi.yaml")]
-    addon_version = "v1.32.0"
+    addon_version = "v1.32.0-eksbuild.1"
   }
   ## Service Monitoring
   service_monitor_crd_enabled = false
   ## Keda
   keda_enabled = false
   keda_helm_config = {
-    values = [file("${path.modules}/config/keda.yaml")]
+    values = [file("${path.module}/config/keda.yaml")]
   }
   ## Config reloader
   reloader_enabled = false
@@ -67,7 +67,7 @@ module "eks-addons" {
     values = [file("${path.module}/config/karpenter.yaml")]
   }
   ## Kubernetes Provisioner
-  karpenter_provisioner_enabled = true
+  karpenter_provisioner_enabled = false
   karpenter_provisioner_config = {
     provisioner_name              = format("karpenter-provisioner-%s", local.name)
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
@@ -77,7 +77,7 @@ module "eks-addons" {
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
     private_subnet_selector_key   = "Environment"
-    private_subnet_selector_value = "${local.environment}"
+    private_subnet_selector_value = local.environment
     security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
@@ -101,13 +101,13 @@ module "eks-addons" {
   }
 
   ## Ingress nginx
-  ingress_nginx_enabled                    = true
-  enable_private_nlb                       = false
+  ingress_nginx_enabled = false
+  enable_private_nlb    = false
   ingress_nginx_config = {
-    values = [file("${path.module}/config/ingress-nginx.yaml")]
-    enable_service_monitor                  = true # enable monitoring in nginx ingress
-    ingress_class_name             = "ingress-nginx1"
-    namespace                               = "ingress-nginx"
+    values                 = [file("${path.module}/config/ingress-nginx.yaml")]
+    enable_service_monitor = false # enable monitoring in nginx ingress
+    ingress_class_name     = ""
+    namespace              = ""
   }
 
   ## Metric Server
@@ -137,7 +137,7 @@ module "eks-addons" {
     enable_service_monitor = false
   }
   # Velero
-  velero_enabled = false #aman
+  velero_enabled = false
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
@@ -165,7 +165,6 @@ module "eks-addons" {
   istio_enabled = false
   istio_config = {
     ingress_gateway_enabled       = false
-    egress_gateway_enabled        = false
     envoy_access_logs_enabled     = false
     prometheus_monitoring_enabled = false
     istio_values_yaml             = file("./config/istio.yaml")
