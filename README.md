@@ -11,65 +11,127 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ```hcl
 module "eks-addons" {
   source                                  = "squareops/eks-addons/aws"
-  name                                    = local.name
-  vpc_id                                  = "vpc-abcd5245c2331xyz"
-  environment                             = local.environment
-  ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:us-east-2:xxxxxxxxxx:key/mrk-abd9394bda5947cc864adc657d90386f"
-  keda_enabled                            = true
-  kms_policy_arn                          = "arn:aws:iam::xxxxxxxxxxxx:policy/policy_name" ## eks module will create kms_policy_arn
-  eks_cluster_name                        = "cluster_name"
-  reloader_enabled                        = true
-  kubernetes_dashboard_enabled            = true
-  k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-  alb_acm_certificate_arn                 = ""
-  k8s_dashboard_hostname                  = "dashboard.prod.in"
-  karpenter_enabled                       = true
-  private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
-  single_az_ebs_gp3_storage_class_enabled = true
-  single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
-  coredns_hpa_enabled                     = true
-  kubeclarity_enabled                     = true
-  kubeclarity_hostname                    = "kubeclarity.prod.in"
-  kubecost_enabled                        = false
-  kubecost_hostname                       = "kubecost.prod.in"
-  defectdojo_enabled                      = true
-  defectdojo_hostname                     = "defectdojo.prod.in"
-  cert_manager_enabled                    = true
-  worker_iam_role_name                    = "node-role"
-  worker_iam_role_arn                     = "arn:aws:iam::xxxxxxxxxx:role/node-role"
-  ingress_nginx_enabled                   = true
-  metrics_server_enabled                  = true
-  external_secrets_enabled                = true
-  amazon_eks_vpc_cni_enabled              = true
-  cluster_autoscaler_enabled              = true
-  service_monitor_crd_enabled             = true
-  aws_load_balancer_controller_enabled    = true
-  falco_enabled                           = true
-  slack_webhook                           = "xoxb-379541400966-iibMHnnoaPzVl"
-  istio_enabled                           = true
-  istio_config = {
-    ingress_gateway_enabled       = true
-    egress_gateway_enabled        = true
-    envoy_access_logs_enabled     = true
-    prometheus_monitoring_enabled = true
-    istio_values_yaml             = file("./config/istio.yaml")
+  name                 = local.name
+  tags                 = local.additional_tags
+  vpc_id               = "vpc-xxxxxx"
+  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"]
+  environment          = local.environment
+  ipv6_enabled         = local.ipv6_enabled
+  kms_key_arn          = "arn:aws:kms:us-west-1:xxxxx:key/mrk-xxxxxxx"
+  kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" ## eks module will create kms_policy_arn
+  worker_iam_role_name = "update-eks-node-role"
+  worker_iam_role_arn  = "arn:aws:iam::xxx:role/-eks-node-role"
+  eks_cluster_name     = data.aws_eks_cluster.cluster.name
+  ## default addons
+  amazon_eks_vpc_cni_enabled = false
+
+  #EBS-CSI-DRIVER
+  enable_amazon_eks_aws_ebs_csi_driver = false
+  amazon_eks_aws_ebs_csi_driver_config = {
+    values = [file("${path.module}/config/ebs-csi.yaml")]
   }
-  karpenter_provisioner_enabled = true
+  ## Service Monitoring
+  service_monitor_crd_enabled = false
+  ## Keda
+  keda_enabled = false
+  keda_helm_config = {
+    values = [file("${path.module}/config/keda.yaml")]
+  }
+  ## Config reloader
+  reloader_enabled = false
+  reloader_helm_config = {
+    values                 = [file("${path.module}/config/reloader.yaml")]
+    enable_service_monitor = false
+  }
+
+  kubernetes_dashboard_enabled        = false
+  k8s_dashboard_ingress_load_balancer = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+  alb_acm_certificate_arn             = ""
+  k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"
+
+  ## aws load balancer controller
+  aws_load_balancer_controller_enabled = false
+  aws_load_balancer_controller_helm_config = {
+    values = [file("${path.module}/config/aws-alb.yaml")]
+  }
+
+  ## karpenter
+  karpenter_enabled = false
+  karpenter_helm_config = {
+    values = [file("${path.module}/config/karpenter.yaml")]
+  }
+  ## Kubernetes Provisioner
+  karpenter_provisioner_enabled = false
   karpenter_provisioner_config = {
-    private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
-    instance_capacity_type = ["spot"]
-    excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]
+    provisioner_name              = format("karpenter-provisioner-%s", local.name)
+    karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
+    provisioner_values            = file("./config/karpenter_management.yaml")
+    instance_capacity_type        = ["spot"]
+    excluded_instance_type        = ["nano", "micro", "small"]
+    ec2_instance_family           = ["t3"]
+    ec2_instance_type             = ["t3.medium"]
+    private_subnet_selector_key   = "Environment"
+    private_subnet_selector_value = local.environment
+    security_group_selector_key   = "aws:eks:cluster-name"
+    security_group_selector_value = "${local.environment}-${local.name}"
+    instance_hypervisor           = ["nitro"]
   }
-  cert_manager_letsencrypt_email                = "email@email.com"
-  internal_ingress_nginx_enabled                = true
-  efs_storage_class_enabled                     = true
-  aws_node_termination_handler_enabled          = true
-  amazon_eks_aws_ebs_csi_driver_enabled         = true
-  cluster_propotional_autoscaler_enabled        = true
-  cert_manager_install_letsencrypt_http_issuers = true
-  velero_enabled                                = true
+  ## GP3
+  single_az_ebs_gp3_storage_class_enabled = false
+  single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
+
+  ## coredns HPA (cluster-proportional-autoscaler)
+  coredns_hpa_enabled = false
+  coredns_hpa_helm_config = {
+    values = [file("${path.module}/config/coredns_hpa.yaml")]
+  }
+
+  ## Cert_Manager
+  cert_manager_enabled = false
+  cert_manager_helm_config = {
+    values                         = [file("${path.module}/config/cert-manager.yaml")]
+    enable_service_monitor         = false
+    cert_manager_letsencrypt_email = "email@email.com"
+  }
+
+  ## Ingress nginx
+  ingress_nginx_enabled = false
+  enable_private_nlb    = false
+  ingress_nginx_config = {
+    values                 = [file("${path.module}/config/ingress-nginx.yaml")]
+    enable_service_monitor = false # enable monitoring in nginx ingress
+    ingress_class_name     = ""
+    namespace              = ""
+  }
+
+  ## Metric Server
+  metrics_server_enabled     = false
+  metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
+  vpa_config = {
+    values = [file("${path.module}/config/vpa-crd.yaml")]
+  }
+
+  ## External Secrets
+  external_secrets_enabled = false
+  external_secrets_helm_config = {
+    values = [file("${path.module}/config/external-secret.yaml")]
+  }
+
+  ## cluster autoscaler
+  cluster_autoscaler_enabled     = false
+  cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
+
+
+  ## Efs storage class
+  efs_storage_class_enabled = false
+  ## Node termination handler
+  aws_node_termination_handler_enabled = false
+  aws_node_termination_handler_helm_config = {
+    values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
+    enable_service_monitor = false
+  }
+  # Velero
+  velero_enabled = false
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
@@ -80,6 +142,27 @@ module "eks-addons" {
     velero_backup_name              = "application-backup"
     backup_bucket_name              = "velero-bucket"
   }
+
+  kubeclarity_enabled  = false
+  kubeclarity_hostname = "kubeclarity.prod.in"
+
+  kubecost_enabled  = false
+  kubecost_hostname = "kubecost.prod.in"
+
+  defectdojo_enabled  = false
+  defectdojo_hostname = "defectdojo.prod.in"
+
+  falco_enabled = false
+  slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
+
+  # ISTIO
+  istio_enabled = false
+  istio_config = {
+    ingress_gateway_enabled       = false
+    envoy_access_logs_enabled     = false
+    prometheus_monitoring_enabled = false
+    istio_values_yaml             = file("./config/istio.yaml")
+  }
 }
 
 
@@ -87,8 +170,8 @@ module "eks-addons" {
 
 ## Compatibility
 
-| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |  Kubernetes 1.28 |
-|------------------|------------------|------------------|----------------------|----------------------|----------------------|----------------------|
+| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |  Kubernetes 1.28 | Kubernetes 1.29 | Kubernetes 1.30 |
+|------------------|------------------|------------------|----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.1  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
@@ -99,6 +182,7 @@ module "eks-addons" {
 | Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.8  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | &#x2714; |
+| Release 3.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | &#x2714; | &#x2714; | &#x2714; |
 
 
 ## IAM Permissions
@@ -167,6 +251,10 @@ Istio is widely adopted and has a strong ecosystem of partners and contributors,
 <details>
   <summary> Karpenter </summary>
 Karpenter is a flexible, high-performance Kubernetes cluster autoscaler that helps improve application availability and cluster efficiency. Karpenter launches right-sized compute resources, (for example, Amazon EC2 instances), in response to changing application load in under a minute. Through integrating Kubernetes with AWS, Karpenter can provision just-in-time compute resources that precisely meet the requirements of your workload. Karpenter automatically provisions new compute resources based on the specific requirements of cluster workloads. These include compute, storage, acceleration, and scheduling requirements. Amazon EKS supports clusters using Karpenter, although Karpenter works with any conformant Kubernetes cluster.
+</details>
+<details>
+  <summary> Karpenter-Provisioner </summary>
+Karpernter Provisioner is a powerful provisioning module designed to streamline the deployment process for infrastructure as code (IaC) projects. It provides a set of intuitive and easy-to-use functions to automate the provisioning of resources on various cloud platforms.
 </details>
 <details>
   <summary> Metrics Server </summary>
