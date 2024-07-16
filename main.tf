@@ -104,8 +104,8 @@ module "cert-manager" {
 ## CERT MANAGER LETSENCRYPT
 module "cert-manager-le-http-issuer" {
   source                         = "./modules/cert-manager-le-http-issuer"
-  depends_on                     = [module.cert-manager]
   count                          = var.cert_manager_enabled ? 1 : 0
+  depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
 }
 
@@ -144,8 +144,8 @@ module "external-secrets" {
 ## NGINX INGRESS
 module "ingress-nginx" {
   source            = "./modules/ingress-nginx"
-  depends_on        = [module.aws_vpc_cni, module.service-monitor-crd]
   count             = var.ingress_nginx_enabled ? 1 : 0
+  depends_on        = [module.aws_vpc_cni, module.service-monitor-crd]
   helm_config       = var.ingress_nginx_config
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -174,8 +174,8 @@ module "karpenter" {
 ## Karpenter-provisioner
 module "karpenter-provisioner" {
   source           = "./modules/karpenter-provisioner"
-  depends_on       = [module.karpenter]
   count            = var.karpenter_provisioner_enabled ? 1 : 0
+  depends_on       = [module.karpenter]
   ipv6_enabled     = var.ipv6_enabled
   karpenter_config = var.karpenter_provisioner_config
 }
@@ -183,8 +183,8 @@ module "karpenter-provisioner" {
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
-  depends_on                          = [local.kubernetes_dashboard_dependencies]
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on                          = [local.kubernetes_dashboard_dependencies]
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
@@ -264,8 +264,8 @@ module "velero" {
 
 module "istio" {
   source                         = "./modules/istio"
-  depends_on                     = [module.cert-manager-le-http-issuer]
   count                          = var.istio_enabled ? 1 : 0
+  depends_on                     = [module.cert-manager-le-http-issuer]
   ingress_gateway_enabled        = var.istio_config.ingress_gateway_enabled
   ingress_gateway_namespace      = var.istio_config.ingress_gateway_namespace
   envoy_access_logs_enabled      = var.istio_config.envoy_access_logs_enabled
@@ -275,8 +275,8 @@ module "istio" {
 }
 
 data "kubernetes_service" "istio-ingress" {
-  depends_on = [module.istio]
   count      = var.istio_enabled ? 1 : 0
+  depends_on = [module.istio]
   metadata {
     name      = "istio-ingressgateway"
     namespace = var.istio_config.ingress_gateway_namespace
@@ -284,29 +284,29 @@ data "kubernetes_service" "istio-ingress" {
 }
 
 ##KUBECLARITY
-resource "kubernetes_namespace" "kube_clarity" {
+resource "kubernetes_namespace" "kube-clarity" {
   count = var.kubeclarity_enabled ? 1 : 0
   metadata {
     name = var.kubeclarity_namespace
   }
 }
 
-resource "random_password" "kube_clarity" {
+resource "random_password" "kube-clarity" {
   count   = var.kubeclarity_enabled ? 1 : 0
   length  = 20
   special = false
 }
 
-resource "kubernetes_secret" "kube_clarity" {
-  depends_on = [kubernetes_namespace.kube_clarity]
+resource "kubernetes_secret" "kube-clarity" {
   count      = var.kubeclarity_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.kube-clarity]
   metadata {
     name      = "basic-auth"
     namespace = var.kubeclarity_namespace
   }
 
   data = {
-    auth = "admin:${bcrypt(random_password.kube_clarity[0].result)}"
+    auth = "admin:${bcrypt(random_password.kube-clarity[0].result)}"
   }
 
   type = "Opaque"
@@ -352,8 +352,8 @@ resource "random_password" "kubecost" {
 }
 
 resource "kubernetes_secret" "kubecost" {
-  depends_on = [aws_eks_addon.kubecost]
   count      = var.kubecost_enabled ? 1 : 0
+  depends_on = [aws_eks_addon.kubecost]
   metadata {
     name      = "basic-auth"
     namespace = "kubecost"
@@ -367,14 +367,14 @@ resource "kubernetes_secret" "kubecost" {
 }
 
 resource "kubernetes_ingress_v1" "kubecost" {
-  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost, module.ingress-nginx]
   count                  = var.kubecost_enabled ? 1 : 0
+  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost, module.ingress-nginx]
   wait_for_load_balancer = true
   metadata {
     name      = "kubecost"
     namespace = "kubecost"
     annotations = {
-      "kubernetes.io/ingress.class"             = "nginx"
+      "kubernetes.io/ingress.class"             = var.ingress_nginx_config.ingress_class_name
       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
@@ -407,14 +407,14 @@ resource "kubernetes_ingress_v1" "kubecost" {
 
 
 resource "helm_release" "metrics-server-vpa" {
-  depends_on = [module.vpa-crds]
   count      = var.metrics_server_enabled ? 1 : 0
+  depends_on = [module.vpa-crds]
   name       = "metricsservervpa"
   namespace  = "kube-system"
-  chart      = "${path.module}/modules/metrics_server_vpa/"
+  chart      = "${path.module}/modules/metrics-server-vpa/"
   timeout    = 600
   values = [
-    templatefile("${path.module}/modules/metrics_server_vpa/values.yaml", {
+    templatefile("${path.module}/modules/metrics-server-vpa/values.yaml", {
       minCPU                      = var.metrics_server_vpa_config.minCPU,
       minMemory                   = var.metrics_server_vpa_config.minMemory,
       maxCPU                      = var.metrics_server_vpa_config.maxCPU,
@@ -433,8 +433,8 @@ resource "kubernetes_namespace" "defectdojo" {
 }
 
 resource "helm_release" "defectdojo" {
-  depends_on = [kubernetes_namespace.defectdojo]
   count      = var.defectdojo_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.defectdojo]
   name       = "defectdojo"
   namespace  = "defectdojo"
   chart      = "${path.module}/modules/defectdojo/"
@@ -448,8 +448,8 @@ resource "helm_release" "defectdojo" {
 }
 
 data "kubernetes_secret" "defectdojo" {
-  depends_on = [helm_release.defectdojo]
   count      = var.defectdojo_enabled ? 1 : 0
+  depends_on = [helm_release.defectdojo]
   metadata {
     name      = "defectdojo"
     namespace = "defectdojo"
@@ -465,8 +465,8 @@ resource "kubernetes_namespace" "falco" {
 }
 
 resource "helm_release" "falco" {
-  depends_on = [kubernetes_namespace.falco]
   count      = var.falco_enabled ? 1 : 0
+  depends_on = [kubernetes_namespace.falco]
   name       = "falco"
   namespace  = "falco"
   chart      = "falco"

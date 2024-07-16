@@ -117,11 +117,13 @@ variable "keda_enabled" {
   type        = bool
   default     = false
 }
+
 variable "keda_helm_config" {
   description = "KEDA Event-based autoscaler add-on config"
   type        = any
   default     = {}
 }
+
 variable "keda_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)

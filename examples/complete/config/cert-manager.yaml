@@ -13,7 +13,7 @@ affinity:
 
 resources:
   limits:
-    cpu: 100m
+    cpu: 20m
     memory: 400Mi
   requests:
     cpu: 10m
@@ -31,7 +31,7 @@ webhook:
             - "true"
   resources:
     limits:
-      cpu: 150m
+      cpu: 20m
       memory: 150Mi
     requests:
       cpu: 10m
@@ -49,8 +49,8 @@ cainjector:
             - "true"
   resources:
     limits:
-      cpu: 150m
-      memory: 300Mi
+      cpu: 20m
+      memory: 480Mi
     requests:
       cpu: 10m
       memory: 240Mi

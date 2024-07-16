@@ -17,7 +17,7 @@ output "kubeclarity" {
   description = "Kubeclarity endpoint and credentials"
   value = var.kubeclarity_enabled ? {
     username = "admin",
-    password = nonsensitive(random_password.kube_clarity[0].result),
+    password = nonsensitive(random_password.kube-clarity[0].result),
     url      = var.kubeclarity_hostname
   } : null
 }
