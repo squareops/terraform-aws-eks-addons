@@ -33,11 +33,13 @@ variable "metrics_server_enabled" {
   default     = false
   type        = bool
 }
+
 variable "metrics_server_helm_config" {
   description = "Metrics Server Helm Chart config"
   type        = any
   default     = {}
 }
+
 variable "metrics_server_helm_version" {
   description = "Version of the metrics server helm chart"
   default     = "3.11.0"
@@ -61,6 +63,7 @@ variable "cert_manager_helm_config" {
   type        = any
   default     = {}
 }
+
 variable "cert_manager_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)
@@ -72,6 +75,7 @@ variable "cert_manager_domain_names" {
   type        = list(string)
   default     = []
 }
+
 variable "cert_manager_kubernetes_svc_image_pull_secrets" {
   description = "list(string) of kubernetes imagePullSecrets"
   type        = list(string)
@@ -95,6 +99,7 @@ variable "private_subnet_ids" {
   default     = [""]
   type        = list(string)
 }
+
 variable "aws_efs_csi_driver_helm_config" {
   description = "AWS EFS CSI driver Helm Chart config"
   type        = any
@@ -123,7 +128,6 @@ variable "keda_irsa_policies" {
   default     = []
 }
 
-
 variable "environment" {
   description = "Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster."
   default     = ""
@@ -141,6 +145,7 @@ variable "enable_private_nlb" {
   type        = bool
   default     = false
 }
+
 variable "ingress_nginx_config" {
   description = "Configure ingress-nginx to setup addons"
   type = object({
@@ -174,6 +179,7 @@ variable "karpenter_helm_config" {
   type        = any
   default     = {}
 }
+
 variable "external_secrets_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)
@@ -185,6 +191,7 @@ variable "coredns_hpa_helm_config" {
   type        = any
   default     = {}
 }
+
 variable "external_secrets_ssm_parameter_arns" {
   description = "List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets"
   type        = list(string)
@@ -196,6 +203,7 @@ variable "external_secrets_secrets_manager_arns" {
   type        = list(string)
   default     = ["arn:aws:secretsmanager:*:*:secret:*"]
 }
+
 variable "external_secrets_helm_config" {
   type        = any
   default     = {}
@@ -217,12 +225,12 @@ variable "aws_load_balancer_controller_helm_config" {
     values = []
   }
 }
+
 variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"
   type        = bool
   default     = false
 }
-
 
 variable "aws_load_balancer_version" {
   description = "Specify the version of the AWS Load Balancer Controller for Ingress"
@@ -271,11 +279,13 @@ variable "reloader_enabled" {
   default     = false
   type        = bool
 }
+
 variable "reloader_helm_config" {
   description = "Reloader Helm Chart config"
   type        = any
   default     = {}
 }
+
 variable "worker_iam_role_name" {
   description = "Specify the IAM role for the nodes that will be provisioned through karpenter"
   default     = ""
@@ -287,6 +297,7 @@ variable "worker_iam_role_arn" {
   default     = ""
   type        = string
 }
+
 variable "data_plane_wait_arn" {
   description = "Addon deployment will not proceed until this value is known. Set to node group/Fargate profile ARN to wait for data plane to be ready before provisioning addons"
   type        = string
@@ -298,11 +309,13 @@ variable "aws_node_termination_handler_enabled" {
   default     = false
   type        = bool
 }
+
 variable "aws_node_termination_handler_helm_config" {
   description = "AWS Node Termination Handler Helm Chart config"
   type        = any
   default     = {}
 }
+
 variable "aws_node_termination_handler_irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)
@@ -344,12 +357,12 @@ variable "istio_config" {
   }
 }
 
-
 variable "velero_enabled" {
   description = "Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters."
   default     = false
   type        = bool
 }
+
 variable "velero_config" {
   description = "Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name."
   default = {
@@ -370,6 +383,7 @@ variable "karpenter_provisioner_enabled" {
   default     = false
   type        = bool
 }
+
 variable "karpenter_provisioner_config" {
   description = "Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types."
   default = {
@@ -392,6 +406,7 @@ variable "node_termination_handler_version" {
   default     = "0.21.0"
   type        = string
 }
+
 variable "auto_scaling_group_names" {
   description = "List of self-managed node groups autoscaling group names"
   type        = list(string)
@@ -543,7 +558,6 @@ variable "kubernetes_dashboard_enabled" {
   type        = bool
 }
 
-
 variable "k8s_dashboard_hostname" {
   description = "Specify the hostname for the k8s dashboard. "
   default     = ""
@@ -561,11 +575,13 @@ variable "alb_acm_certificate_arn" {
   type        = string
   default     = ""
 }
+
 variable "tags" {
   description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
   type        = map(string)
   default     = {}
 }
+
 variable "irsa_iam_role_path" {
   description = "IAM role path for IRSA roles"
   type        = string
@@ -577,6 +593,7 @@ variable "irsa_iam_permissions_boundary" {
   type        = string
   default     = ""
 }
+
 variable "eks_oidc_provider" {
   description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
   type        = string

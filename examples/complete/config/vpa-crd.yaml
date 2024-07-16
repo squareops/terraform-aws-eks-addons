@@ -1,5 +1,4 @@
 admissionController:
-
   resources:
     limits:
       cpu: 100m
@@ -19,7 +18,6 @@ admissionController:
             - "true"
 
 recommender:
-
   resources:
     limits:
       cpu: 100m
@@ -39,7 +37,6 @@ recommender:
               - "true"
 
 updater:
-
   resources:
     limits:
       cpu: 100m

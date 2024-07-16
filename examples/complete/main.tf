@@ -67,7 +67,7 @@ module "eks-addons" {
   karpenter_provisioner_config = {
     provisioner_name              = format("karpenter-provisioner-%s", local.name)
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
-    provisioner_values            = file("./config/karpenter_management.yaml")
+    provisioner_values            = file("./config/karpenter-management.yaml")
     instance_capacity_type        = ["spot"]
     excluded_instance_type        = ["nano", "micro", "small"]
     ec2_instance_family           = ["t3"]
@@ -85,7 +85,7 @@ module "eks-addons" {
   ## coredns HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false
   coredns_hpa_helm_config = {
-    values = [file("${path.module}/config/coredns_hpa.yaml")]
+    values = [file("${path.module}/config/coredns-hpa.yaml")]
   }
 
   ## Cert_Manager

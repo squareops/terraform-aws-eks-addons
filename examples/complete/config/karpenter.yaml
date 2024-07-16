@@ -7,9 +7,6 @@ controller:
       cpu: 100m
       memory: 400Mi
 
-podAnnotations:
-  co.elastic.logs/enabled: "true"
-
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:

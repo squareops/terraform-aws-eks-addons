@@ -10,15 +10,6 @@ affinity:
           values:
           - "true"
 
-## Particular args to be passed in deployment
-
-extraArgs:
-  - --kubelet-preferred-address-types=InternalIP
-  - --v=2
-
-apiService:
-  create: true
-
 ## Using limits and requests
 
 resources:
@@ -28,9 +19,3 @@ resources:
   requests:
     cpu: 30m
     memory: 100Mi
-
-
-podAnnotations:
-  co.elastic.logs/enabled: "true"
-
-replicas: 2

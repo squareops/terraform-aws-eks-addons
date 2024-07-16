@@ -17,8 +17,3 @@ reloader:
       requests:
         cpu: "50m"
         memory: "120Mi"
-
-
-    pod:
-      annotations:
-        co.elastic.logs/enabled: "true"

@@ -1,7 +1,4 @@
 operator:
-  name: keda-operator
-  replicaCount: 1
-  # -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for KEDA operator. Takes precedence over the `affinity` field
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -13,11 +10,6 @@ operator:
               - "true"
 
 metricsServer:
-  replicaCount: 1
-  # use ClusterFirstWithHostNet if `useHostNetwork: true` https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
-  dnsPolicy: ClusterFirst
-  useHostNetwork: false
-  # -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for Metrics API Server. Takes precedence over the `affinity` field
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -29,10 +21,6 @@ metricsServer:
               - "true"
 
 webhooks:
-  enabled: true # This value will be removed in keda v2.12
-  name: keda-admission-webhooks
-  replicaCount: 1
-  # -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for KEDA operator. Takes precedence over the `affinity` field
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -66,10 +54,7 @@ resources:
     requests:
       cpu: 10m
       memory: 10Mi
-nodeSelector: {}
 
-
-# -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for both KEDA operator and Metrics API Server
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
