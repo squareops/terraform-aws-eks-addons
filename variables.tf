@@ -444,13 +444,18 @@ variable "enable_ipv6" {
 variable "amazon_eks_vpc_cni_config" {
   description = "ConfigMap of Amazon EKS VPC CNI add-on"
   type        = any
-  default     = {}
+  default = {
+    addon_version = "v1.18.2-eksbuild.1"
+  }
 }
 
 variable "amazon_eks_aws_ebs_csi_driver_config" {
   description = "configMap for AWS EBS CSI Driver add-on"
   type        = any
-  default     = {}
+  default = {
+    values        = {}
+    addon_version = "v1.32.0-eksbuild.1"
+  }
 }
 
 variable "enable_amazon_eks_aws_ebs_csi_driver" {

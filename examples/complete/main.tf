@@ -26,15 +26,11 @@ module "eks-addons" {
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
   ## default addons
   amazon_eks_vpc_cni_enabled = false
-  amazon_eks_vpc_cni_config = {
-    addon_version = "v1.18.2-eksbuild.1"
-  }
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false
   amazon_eks_aws_ebs_csi_driver_config = {
-    values        = [file("${path.module}/config/ebs-csi.yaml")]
-    addon_version = "v1.32.0-eksbuild.1"
+    values = [file("${path.module}/config/ebs-csi.yaml")]
   }
   ## Service Monitoring
   service_monitor_crd_enabled = false

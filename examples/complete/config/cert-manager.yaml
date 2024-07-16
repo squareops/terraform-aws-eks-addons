@@ -14,11 +14,11 @@ affinity:
 
 resources:
   limits:
-    cpu: 50m
-    memory: 300Mi
+    cpu: 100m
+    memory: 400Mi
   requests:
     cpu: 10m
-    memory: 150Mi
+    memory: 200Mi
 
 webhook:
   affinity:
@@ -32,11 +32,11 @@ webhook:
             - "true"
   resources:
     limits:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 150m
+      memory: 150Mi
     requests:
       cpu: 10m
-      memory: 50Mi
+      memory: 75Mi
 
   podAnnotations:
     co.elastic.logs/enabled: "true"
@@ -53,11 +53,11 @@ cainjector:
             - "true"
   resources:
     limits:
-      cpu: 100m
-      memory: 250Mi
+      cpu: 150m
+      memory: 300Mi
     requests:
       cpu: 10m
-      memory: 200Mi
+      memory: 240Mi
 
   podAnnotations:
     co.elastic.logs/enabled: "true"

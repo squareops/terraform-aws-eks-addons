@@ -23,11 +23,12 @@ apiService:
 
 resources:
   limits:
-    cpu: 100m
-    memory: 350Mi
+    cpu: 60m
+    memory: 200Mi
   requests:
     cpu: 30m
     memory: 100Mi
+
 
 podAnnotations:
   co.elastic.logs/enabled: "true"
