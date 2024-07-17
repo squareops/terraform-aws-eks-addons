@@ -81,8 +81,7 @@ module "aws_vpc_cni" {
     {
       kubernetes_version      = local.eks_cluster_version
       additional_iam_policies = [var.kms_policy_arn]
-    },
-    var.amazon_eks_vpc_cni_config,
+    }
   )
   addon_context = local.addon_context
 }

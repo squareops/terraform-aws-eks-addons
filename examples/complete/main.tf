@@ -8,7 +8,6 @@ locals {
     Department = "Engineering"
   }
   ipv6_enabled = false
-
 }
 
 module "eks-addons" {
@@ -26,7 +25,6 @@ module "eks-addons" {
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
   ## default addons
   amazon_eks_vpc_cni_enabled = false
-
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false
   amazon_eks_aws_ebs_csi_driver_config = {
