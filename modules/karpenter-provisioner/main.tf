@@ -1,3 +1,7 @@
+locals {
+  kms_key_id = var.karpenter_config.kms_key_arn != "" ? regex("key/([a-f0-9\\-]+)", var.karpenter_config.kms_key_arn)[0] : ""
+}
+
 resource "helm_release" "karpenter_provisioner" {
   count   = length(var.karpenter_config.karpenter_label)
   name    = "${var.karpenter_config.provisioner_name}-${count.index}"
@@ -16,6 +20,7 @@ resource "helm_release" "karpenter_provisioner" {
       ec2_instance_family           = "[${join(",", [for s in var.karpenter_config.ec2_instance_family : format("%s", s)])}]",
       ec2_instance_type             = "[${join(",", [for s in var.karpenter_config.ec2_instance_type : format("%s", s)])}]",
       instance_hypervisor           = "[${join(",", var.karpenter_config.instance_hypervisor)}]"
+      kms_key_id                    = local.kms_key_id
     }),
     var.karpenter_config.provisioner_values
     ] : [
@@ -29,7 +34,8 @@ resource "helm_release" "karpenter_provisioner" {
       instance_capacity_type        = "[${join(",", [for s in var.karpenter_config.instance_capacity_type : format("%s", s)])}]",
       excluded_instance_type        = "[${join(",", var.karpenter_config.excluded_instance_type)}]",
       ec2_instance_family           = "[${join(",", [for s in var.karpenter_config.ec2_instance_family : format("%s", s)])}]",
-      ec2_instance_type             = "[${join(",", [for s in var.karpenter_config.ec2_instance_type : format("%s", s)])}]"
+      ec2_instance_type             = "[${join(",", [for s in var.karpenter_config.ec2_instance_type : format("%s", s)])}]",
+      kms_key_id                    = local.kms_key_id
     }),
     var.karpenter_config.provisioner_values
   ]

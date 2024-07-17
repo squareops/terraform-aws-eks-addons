@@ -3,6 +3,7 @@ resource "kubernetes_namespace" "k8s-dashboard" {
     name = "kubernetes-dashboard"
   }
 }
+
 resource "helm_release" "kubernetes-dashboard" {
   depends_on = [kubernetes_namespace.k8s-dashboard]
   name       = "kubernetes-dashboard"
@@ -12,7 +13,6 @@ resource "helm_release" "kubernetes-dashboard" {
   timeout    = 600
   version    = "7.5.0"
 }
-
 
 resource "kubernetes_ingress_v1" "k8s-ingress" {
   depends_on             = [helm_release.kubernetes-dashboard]

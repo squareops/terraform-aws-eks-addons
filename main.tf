@@ -168,6 +168,7 @@ module "karpenter" {
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
   manage_via_gitops         = var.argocd_manage_add_ons
   addon_context             = local.addon_context
+  kms_key_arn               = var.karpenter_enabled ? var.kms_key_arn : ""
 }
 
 ## Karpenter-provisioner
@@ -404,23 +405,10 @@ resource "kubernetes_ingress_v1" "kubecost" {
   }
 }
 
-
-resource "helm_release" "metrics-server-vpa" {
+module "metrics-server-vpa" {
+  source     = "./modules/metrics-server-vpa"
   count      = var.metrics_server_enabled ? 1 : 0
   depends_on = [module.vpa-crds]
-  name       = "metricsservervpa"
-  namespace  = "kube-system"
-  chart      = "${path.module}/modules/metrics-server-vpa/"
-  timeout    = 600
-  values = [
-    templatefile("${path.module}/modules/metrics-server-vpa/values.yaml", {
-      minCPU                      = var.metrics_server_vpa_config.minCPU,
-      minMemory                   = var.metrics_server_vpa_config.minMemory,
-      maxCPU                      = var.metrics_server_vpa_config.maxCPU,
-      maxMemory                   = var.metrics_server_vpa_config.maxMemory,
-      metricsServerDeploymentName = var.metrics_server_vpa_config.metricsServerDeploymentName
-    })
-  ]
 }
 
 #defectdojo

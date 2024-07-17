@@ -20,7 +20,7 @@ resource "aws_eks_addon" "aws_ebs_csi_driver" {
   addon_version            = try(var.addon_config.addon_version, data.aws_eks_addon_version.this.version)
   service_account_role_arn = local.create_irsa ? module.irsa_addon[0].irsa_iam_role_arn : try(var.addon_config.service_account_role_arn, null)
   preserve                 = try(var.addon_config.preserve, true)
-
+  configuration_values     = jsonencode({ node = { enableWindows = false } })
   tags = merge(
     var.addon_context.tags,
     try(var.addon_config.tags, {})
@@ -39,15 +39,18 @@ module "helm_addon" {
     version     = "2.32.0"
     repository  = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
     namespace   = local.namespace
-    values = concat([
-      <<-EOT
+    values = yamlencode(merge(
+      yamldecode(<<-EOT
       image:
         repository: public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver
         tag: ${try(var.helm_config.addon_version, replace(data.aws_eks_addon_version.this.version, "/-eksbuild.*/", ""))}
       controller:
         k8sTagClusterId: ${var.addon_context.eks_cluster_id}
       EOT
-    ], [file("${path.module}/config/values.yaml")], var.helm_config.values)
+      ),
+      yamldecode(file("${path.module}/config/values.yaml")),
+      var.helm_config.values
+    ))
   }
 
   set_values = [

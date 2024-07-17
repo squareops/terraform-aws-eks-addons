@@ -7,8 +7,6 @@ controller:
       cpu: 20m
       memory: 80Mi
 
-
-
 node:
   resources:
     requests:

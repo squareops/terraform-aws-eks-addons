@@ -8,7 +8,7 @@ locals {
       name        = local.name
       chart       = local.name
       repository  = "https://kedacore.github.io/charts"
-      version     = "2.13.0"
+      version     = "2.14.2"
       namespace   = local.name
       description = "Keda Event-based autoscaler for workloads on Kubernetes"
       values      = [file("${path.module}/config/values.yaml")]

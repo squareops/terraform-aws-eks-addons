@@ -3,6 +3,14 @@ locals {
   name                   = "karpenter"
   service_account        = try(var.helm_config.service_account, "karpenter")
   node_module_profile_id = resource.aws_iam_instance_profile.karpenter_profile.name
+
+  template_values = templatefile("${path.module}/config/karpenter.yaml", {
+    eks_cluster_id            = var.addon_context.eks_cluster_id,
+    eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
+    node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
+  })
+
+  template_values_map = yamldecode(local.template_values)
   set_values = [{
     name  = "serviceAccount.name"
     value = local.service_account
@@ -21,23 +29,16 @@ locals {
       repository = "oci://public.ecr.aws/karpenter"
       version    = "v0.32.10"
       namespace  = local.name
-      values = [
-        <<-EOT
-          clusterName: ${var.addon_context.eks_cluster_id}
-          clusterEndpoint: ${var.addon_context.aws_eks_cluster_endpoint}
-          aws:
-            defaultInstanceProfile: ${local.node_iam_instance_profile}
-        EOT
-        ,
-        templatefile("${path.module}/config/karpenter.yaml", {
-          eks_cluster_id            = var.addon_context.eks_cluster_id,
-          eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
-          node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
-        })
-      ]
+      values = [yamlencode(merge(
+        yamldecode(<<-EOT
+              clusterName: ${var.addon_context.eks_cluster_id}
+              clusterEndpoint: ${var.addon_context.aws_eks_cluster_endpoint}
+              aws:
+                defaultInstanceProfile: ${local.node_iam_instance_profile}
+            EOT
+      ), local.template_values_map, var.karpenter_helm_config))]
       description = "karpenter Helm Chart for Node Autoscaling"
-    },
-    var.karpenter_helm_config
+    }
   )
 
   irsa_config = {

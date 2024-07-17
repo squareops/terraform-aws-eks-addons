@@ -56,3 +56,9 @@ variable "eks_cluster_name" {
   default     = ""
   type        = string
 }
+
+variable "kms_key_arn" {
+  description = "Cluster kms key for encryption"
+  type        = string
+  default     = ""
+}

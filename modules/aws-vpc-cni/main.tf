@@ -79,8 +79,6 @@ data "aws_iam_policy_document" "ipv6_policy" {
   }
 }
 
-
-
 resource "kubectl_manifest" "update_aws_vpc_cni" {
   yaml_body = <<-EOT
     apiVersion: apps/v1

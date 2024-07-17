@@ -7,6 +7,7 @@ locals {
     Expires    = "Never"
     Department = "Engineering"
   }
+  kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled = false
 }
 
@@ -18,7 +19,7 @@ module "eks-addons" {
   private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"]
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
-  kms_key_arn          = "arn:aws:kms:us-west-1:xxxxx:key/mrk-xxxxxxx"
+  kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" ## eks module will create kms_policy_arn
   worker_iam_role_name = "update-eks-node-role"
   worker_iam_role_arn  = "arn:aws:iam::xxx:role/-eks-node-role"
@@ -43,18 +44,15 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/reloader.yaml")]
     enable_service_monitor = false
   }
-
   kubernetes_dashboard_enabled        = false
   k8s_dashboard_ingress_load_balancer = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
   alb_acm_certificate_arn             = ""
   k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"
-
   ## aws load balancer controller
   aws_load_balancer_controller_enabled = false
   aws_load_balancer_controller_helm_config = {
     values = [file("${path.module}/config/aws-alb.yaml")]
   }
-
   ## karpenter
   karpenter_enabled = false
   karpenter_helm_config = {
@@ -75,17 +73,16 @@ module "eks-addons" {
     security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
+    kms_key_arn                   = local.kms_key_arn
   }
   ## GP3
   single_az_ebs_gp3_storage_class_enabled = false
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
-
   ## coredns HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false
   coredns_hpa_helm_config = {
     values = [file("${path.module}/config/coredns-hpa.yaml")]
   }
-
   ## Cert_Manager
   cert_manager_enabled = false
   cert_manager_helm_config = {
@@ -93,7 +90,6 @@ module "eks-addons" {
     enable_service_monitor         = false
     cert_manager_letsencrypt_email = "email@email.com"
   }
-
   ## Ingress nginx
   ingress_nginx_enabled = false
   enable_private_nlb    = false
@@ -103,25 +99,20 @@ module "eks-addons" {
     ingress_class_name     = ""
     namespace              = ""
   }
-
   ## Metric Server
   metrics_server_enabled     = false
   metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
   vpa_config = {
     values = [file("${path.module}/config/vpa-crd.yaml")]
   }
-
   ## External Secrets
   external_secrets_enabled = false
   external_secrets_helm_config = {
     values = [file("${path.module}/config/external-secret.yaml")]
   }
-
   ## cluster autoscaler
   cluster_autoscaler_enabled     = false
   cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
-
-
   ## Efs storage class
   efs_storage_class_enabled = false
   ## Node termination handler
@@ -142,19 +133,14 @@ module "eks-addons" {
     velero_backup_name              = "application-backup"
     backup_bucket_name              = "velero-bucket"
   }
-
   kubeclarity_enabled  = false
   kubeclarity_hostname = "kubeclarity.prod.in"
-
-  kubecost_enabled  = false
-  kubecost_hostname = "kubecost.prod.in"
-
-  defectdojo_enabled  = false
-  defectdojo_hostname = "defectdojo.prod.in"
-
-  falco_enabled = false
-  slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
-
+  kubecost_enabled     = false
+  kubecost_hostname    = "kubecost.prod.in"
+  defectdojo_enabled   = false
+  defectdojo_hostname  = "defectdojo.prod.in"
+  falco_enabled        = false
+  slack_webhook        = "xoxb-379541400966-iibMHnnoaPzVl"
   # ISTIO
   istio_enabled = false
   istio_config = {

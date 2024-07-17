@@ -14,11 +14,8 @@ affinity:
 
 resources:
   limits:
-    cpu: 75m
-    memory: 150Mi
+    cpu: 100m
+    memory: 200Mi
   requests:
     cpu: 50m
     memory: 100Mi
-
-podAnnotations:
-  co.elastic.logs/enabled: "true"

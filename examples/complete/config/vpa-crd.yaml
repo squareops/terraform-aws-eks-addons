@@ -1,8 +1,8 @@
 admissionController:
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 20m
+      memory: 120Mi
     requests:
       cpu: 10m
       memory: 60Mi
@@ -20,8 +20,8 @@ admissionController:
 recommender:
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 20m
+      memory: 120Mi
     requests:
       cpu: 10m
       memory: 60Mi
@@ -39,8 +39,8 @@ recommender:
 updater:
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 20m
+      memory: 120Mi
     requests:
       cpu: 10m
       memory: 60Mi

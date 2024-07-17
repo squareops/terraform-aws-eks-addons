@@ -91,7 +91,6 @@ resource "aws_efs_backup_policy" "policy" {
   }
 }
 
-
 resource "aws_security_group_rule" "cidr_ingress" {
   description       = "From allowed CIDRs"
   type              = "ingress"
