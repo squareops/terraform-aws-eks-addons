@@ -55,7 +55,7 @@ pilot:
   resources:
     limits:
       cpu: 100m
-      memory: 300Mi
+      memory: 200Mi
     requests:
       cpu: 50m
       memory: 100Mi
