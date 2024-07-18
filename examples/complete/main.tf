@@ -44,6 +44,7 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/reloader.yaml")]
     enable_service_monitor = false
   }
+  ## Kubernetes Dashboard
   kubernetes_dashboard_enabled        = false
   k8s_dashboard_ingress_load_balancer = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
   alb_acm_certificate_arn             = ""
@@ -96,8 +97,8 @@ module "eks-addons" {
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false # enable monitoring in nginx ingress
-    ingress_class_name     = ""
-    namespace              = ""
+    ingress_class_name     = "" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    namespace              = "" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
   }
   ## Metric Server
   metrics_server_enabled     = false
@@ -133,12 +134,16 @@ module "eks-addons" {
     velero_backup_name              = "application-backup"
     backup_bucket_name              = "velero-bucket"
   }
+  ## kubeclarity
   kubeclarity_enabled  = false
   kubeclarity_hostname = "kubeclarity.prod.in"
+  ## kubecost
   kubecost_enabled     = false
   kubecost_hostname    = "kubecost.prod.in"
+  ## defectdojo
   defectdojo_enabled   = false
   defectdojo_hostname  = "defectdojo.prod.in"
+  ## falco
   falco_enabled        = false
   slack_webhook        = "xoxb-379541400966-iibMHnnoaPzVl"
   # ISTIO
