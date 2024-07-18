@@ -46,11 +46,11 @@ module "eks-addons" {
   }
   ## Kubernetes Dashboard
   kubernetes_dashboard_enabled        = false
-  k8s_dashboard_ingress_load_balancer = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-  alb_acm_certificate_arn             = ""
+  k8s_dashboard_ingress_load_balancer = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL. Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+  alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx"
   k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"
   ## aws load balancer controller
-  aws_load_balancer_controller_enabled = false
+  aws_load_balancer_controller_enabled = true
   aws_load_balancer_controller_helm_config = {
     values = [file("${path.module}/config/aws-alb.yaml")]
   }
@@ -96,9 +96,9 @@ module "eks-addons" {
   enable_private_nlb    = false
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
-    enable_service_monitor = false # enable monitoring in nginx ingress
-    ingress_class_name     = ""    # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
-    namespace              = ""    # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
+    enable_service_monitor = false            # enable monitoring in nginx ingress
+    ingress_class_name     = "ingress-nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    namespace              = "ingress-nginx" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
   }
   ## Metric Server
   metrics_server_enabled     = false

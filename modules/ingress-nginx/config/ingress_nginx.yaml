@@ -57,8 +57,7 @@ controller:
             operator: "In"
             values:
             - "true"
-
-
+  allowSnippetAnnotations: true
 ## Enabling metrics for prometheus monitoring
 
   metrics:

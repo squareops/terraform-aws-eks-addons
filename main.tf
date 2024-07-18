@@ -184,7 +184,6 @@ module "karpenter-provisioner" {
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on                          = [local.kubernetes_dashboard_dependencies]
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
