@@ -97,8 +97,8 @@ module "eks-addons" {
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false # enable monitoring in nginx ingress
-    ingress_class_name     = "" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
-    namespace              = "" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
+    ingress_class_name     = ""    # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    namespace              = ""    # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
   }
   ## Metric Server
   metrics_server_enabled     = false
@@ -138,14 +138,14 @@ module "eks-addons" {
   kubeclarity_enabled  = false
   kubeclarity_hostname = "kubeclarity.prod.in"
   ## kubecost
-  kubecost_enabled     = false
-  kubecost_hostname    = "kubecost.prod.in"
+  kubecost_enabled  = false
+  kubecost_hostname = "kubecost.prod.in"
   ## defectdojo
-  defectdojo_enabled   = false
-  defectdojo_hostname  = "defectdojo.prod.in"
+  defectdojo_enabled  = false
+  defectdojo_hostname = "defectdojo.prod.in"
   ## falco
-  falco_enabled        = false
-  slack_webhook        = "xoxb-379541400966-iibMHnnoaPzVl"
+  falco_enabled = false
+  slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
   # ISTIO
   istio_enabled = false
   istio_config = {
