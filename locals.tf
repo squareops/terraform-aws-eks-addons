@@ -1,10 +1,8 @@
 locals {
 
-  eks_oidc_issuer_url               = var.eks_oidc_provider != null ? var.eks_oidc_provider : replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")
-  eks_cluster_endpoint              = var.eks_cluster_endpoint != null ? var.eks_cluster_endpoint : data.aws_eks_cluster.eks_cluster.endpoint
-  eks_cluster_version               = var.eks_cluster_version != null ? var.eks_cluster_version : data.aws_eks_cluster.eks_cluster.version
-  kubernetes_dashboard_dependencies = var.k8s_dashboard_ingress_load_balancer == "alb" ? module.aws-load-balancer-controller : module.ingress-nginx
-
+  eks_oidc_issuer_url  = var.eks_oidc_provider != null ? var.eks_oidc_provider : replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")
+  eks_cluster_endpoint = var.eks_cluster_endpoint != null ? var.eks_cluster_endpoint : data.aws_eks_cluster.eks_cluster.endpoint
+  eks_cluster_version  = var.eks_cluster_version != null ? var.eks_cluster_version : data.aws_eks_cluster.eks_cluster.version
   addon_context = {
     aws_caller_identity_account_id = data.aws_caller_identity.current.account_id
     aws_caller_identity_arn        = data.aws_caller_identity.current.arn

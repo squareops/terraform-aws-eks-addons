@@ -37,3 +37,14 @@ spec:
     {{ .Values.private_subnet_selector_key }} : {{ .Values.private_subnet_selector_value }}
   securityGroupSelector:                      # required, when not using launchTemplate
     {{ .Values.security_group_selector_key }} : {{ .Values.security_group_selector_value }}
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 20Gi
+        volumeType: gp3
+        encrypted: true
+        {{- if .Values.kms_key_id }}
+        kmsKeyID: {{ .Values.kms_key_id }}
+        {{- end }}
+        # kmsKeyID: {{ .Values.kms_key_id }}
+        deleteOnTermination: true

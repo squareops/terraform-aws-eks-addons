@@ -1,3 +1,8 @@
+locals {
+  template_values     = file("${path.module}/helm/values/istiod/values.yaml")
+  template_values_map = yamldecode(local.template_values)
+}
+
 resource "kubernetes_namespace" "istio_system" {
   metadata {
     name = "istio-system"
@@ -23,17 +28,12 @@ resource "helm_release" "istiod" {
   namespace  = "istio-system"
   timeout    = 600
   version    = "1.18.0"
-  values = [
-    file("${path.module}/helm/values/istiod/values.yaml"),
-    var.istio_values_yaml
-  ]
+  values     = [yamlencode(merge(local.template_values_map, var.istio_values_yaml))]
 }
 
 resource "kubernetes_namespace" "istio_ingress" {
-
-  depends_on = [helm_release.istiod]
   count      = var.ingress_gateway_enabled ? 1 : 0
-
+  depends_on = [helm_release.istiod]
   metadata {
     name = var.ingress_gateway_namespace
   }

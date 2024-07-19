@@ -1,3 +1,7 @@
+data "aws_kms_key" "default_kms_key" {
+  key_id = "alias/aws/ebs"
+}
+
 data "aws_iam_policy_document" "karpenter" {
   statement {
     sid       = "Karpenter"
@@ -35,6 +39,40 @@ data "aws_iam_policy_document" "karpenter" {
       test     = "StringLike"
       variable = "ec2:ResourceTag/Name"
       values   = ["*karpenter*"]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.kms_key_arn != "" ? [1] : []
+    content {
+      sid       = "CMK"
+      effect    = "Allow"
+      resources = [var.kms_key_arn]
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:CreateGrant",
+        "kms:DescribeKey",
+      ]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = data.aws_kms_key.default_kms_key.arn != "" ? [1] : []
+    content {
+      sid       = "AWSManagedkms"
+      effect    = "Allow"
+      resources = [data.aws_kms_key.default_kms_key.arn]
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:CreateGrant",
+        "kms:DescribeKey",
+      ]
     }
   }
 }

@@ -44,3 +44,11 @@ output "defectdojo" {
     url      = var.defectdojo_hostname
   } : null
 }
+
+output "k8s-dashboard-admin-token" {
+  value = module.kubernetes-dashboard[0].k8s-dashboard-admin-token
+}
+
+output "k8s-dashboard-read-only-token" {
+  value = module.kubernetes-dashboard[0].k8s-dashboard-read-only-token
+}

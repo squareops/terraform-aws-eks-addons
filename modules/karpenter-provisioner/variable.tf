@@ -13,6 +13,7 @@ variable "karpenter_config" {
     ec2_instance_family           = optional(list(string), ["t3"])
     ec2_instance_type             = optional(list(string), ["t3.medium"])
     instance_hypervisor           = optional(list(string), ["nitro"])
+    kms_key_arn                   = optional(string, "")
   })
 }
 

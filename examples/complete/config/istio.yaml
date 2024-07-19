@@ -1,55 +1,20 @@
-meshConfig:
-  accessLogFile: /dev/stdout
-  accessLogFormat: |
-    [%START_TIME%] "%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%" %RESPONSE_CODE% %RESPONSE_FLAGS% %RESPONSE_CODE_DETAILS% %CONNECTION_TERMINATION_DETAILS% "%UPSTREAM_TRANSPORT_FAILURE_REASON%" %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% "%REQ(X-FORWARDED-FOR)%" "%REQ(USER-AGENT)%" "%REQ(X-REQUEST-ID)%" "%REQ(:AUTHORITY)%" "%UPSTREAM_HOST%" %UPSTREAM_CLUSTER% %UPSTREAM_LOCAL_ADDRESS% %DOWNSTREAM_LOCAL_ADDRESS% %DOWNSTREAM_REMOTE_ADDRESS% %REQUESTED_SERVER_NAME% %ROUTE_NAME% traceID=%REQ(TRACEPARENT)%
-  defaultConfig:
-    discoveryAddress: istiod.istio-system.svc:15012
-    proxyMetadata: {}
-    tracing:
-      zipkin:
-        address: zipkin.istio-system:9411
-  enableAutoMtls: true
-  enablePrometheusMerge: true
-  extensionProviders:
-  - name: otel-tracing
-    opentelemetry:
-      port: 4317
-      service: otel-collector-collector.monitoring.svc.cluster.local
-  - envoyOtelAls:
-      port: 4317
-      service: opentelemetry-collector.monitoring.svc.cluster.local
-    name: otel
-  - name: skywalking
-    skywalking:
-      port: 11800
-      service: tracing.istio-system.svc.cluster.local
-
 global:
   defaultResources:
     requests:
       cpu: 10m
       memory: 100Mi
     limits:
-      cpu: 150m
+      cpu: 20m
       memory: 200Mi
 
   proxy:
-    # readinessFailureThreshold: 30
-
-    # # The initial delay for readiness probes in seconds.
-    # readinessInitialDelaySeconds: 20
-
-    # # The period between readiness probes.
-    # readinessPeriodSeconds: 10
-
-    # # Resources for the sidecar.
     resources:
       requests:
         cpu: 10m
         memory: 80Mi
       limits:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 20m
+        memory: 160Mi
 
 pilot:
   resources:
@@ -59,6 +24,7 @@ pilot:
     requests:
       cpu: 50m
       memory: 100Mi
+
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

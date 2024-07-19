@@ -32,3 +32,11 @@ output "istio_ingressgateway_dns_hostname" {
   value       = module.eks-addons.istio_ingressgateway_dns_hostname
   description = "DNS hostname of the Istio Ingress Gateway"
 }
+
+output "k8s-dashboard-admin-token" {
+  value = module.eks-addons.k8s-dashboard-admin-token
+}
+
+output "k8s-dashboard-read-only-token" {
+  value = module.eks-addons.k8s-dashboard-read-only-token
+}

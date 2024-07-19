@@ -9,6 +9,7 @@ affinity:
           operator: In
           values:
           - "true"
+
 ## Using limits and requests
 
 resources:

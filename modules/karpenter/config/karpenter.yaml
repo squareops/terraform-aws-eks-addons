@@ -15,8 +15,8 @@ controller:
       cpu: 50m
       memory: 200Mi
     limits:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 100m
+      memory: 400Mi
 
 podAnnotations:
   co.elastic.logs/enabled: "true"

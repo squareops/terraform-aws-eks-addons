@@ -2,7 +2,7 @@
 #   Addons-Services: true
 resources:
   limits:
-    cpu: 100m
+    cpu: 20m
     memory: 200Mi
   requests:
     cpu: 10m

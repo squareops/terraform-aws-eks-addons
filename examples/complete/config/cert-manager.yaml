@@ -29,6 +29,7 @@ webhook:
             operator: In
             values:
             - "true"
+
   resources:
     limits:
       cpu: 20m
@@ -47,6 +48,7 @@ cainjector:
             operator: In
             values:
             - "true"
+
   resources:
     limits:
       cpu: 20m
