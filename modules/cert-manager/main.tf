@@ -21,7 +21,7 @@ resource "helm_release" "cert_manager_letsencrypt" {
   count     = var.manage_via_gitops || !var.install_letsencrypt_issuers ? 0 : 1
   name      = "cert-manager-letsencrypt"
   chart     = "${path.module}/config/cert-manager-letsencrypt"
-  version   = "0.1.2"
+  version   = "0.1.0"
   namespace = local.helm_config["namespace"]
 
   set {

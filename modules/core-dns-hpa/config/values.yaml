@@ -1,8 +1,8 @@
 corednsdeploymentname: "coredns"
 minReplicas: 2
-maxReplicas:
+maxReplicas: 10
 targetCPUUtilizationPercentage: 80
-targetMemoryUtilizationPercentage: "150mi"
+targetMemoryUtilizationPercentage: "150Mi"
 
 affinity:
   nodeAffinity:
