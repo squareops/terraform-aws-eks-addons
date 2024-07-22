@@ -11,7 +11,8 @@ module "aws-ebs-csi-driver" {
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   addon_config = merge(
     {
-      kubernetes_version = local.eks_cluster_version
+      kubernetes_version      = local.eks_cluster_version
+      additional_iam_policies = [var.kms_policy_arn]
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
@@ -30,7 +31,7 @@ module "aws-efs-csi-driver" {
   source            = "./modules/aws-efs-csi-driver"
   count             = var.efs_storage_class_enabled ? 1 : 0
   helm_config       = var.aws_efs_csi_driver_helm_config
-  irsa_policies     = var.aws_efs_csi_driver_irsa_policies
+  irsa_policies     = [var.kms_policy_arn]
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
 }
