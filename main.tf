@@ -107,7 +107,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
-  ingress_class_name             = var.ingress_nginx_config.ingress_class_name
+  ingress_class_name             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -190,7 +190,7 @@ module "kubernetes-dashboard" {
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
-  ingress_class_name                  = var.ingress_nginx_config.ingress_class_name
+  ingress_class_name                  = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## KEDA
@@ -377,7 +377,7 @@ resource "kubernetes_ingress_v1" "kubecost" {
     name      = "kubecost"
     namespace = "kubecost"
     annotations = {
-      "kubernetes.io/ingress.class"             = var.ingress_nginx_config.ingress_class_name
+      "kubernetes.io/ingress.class"             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"

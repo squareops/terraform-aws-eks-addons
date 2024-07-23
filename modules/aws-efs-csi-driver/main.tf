@@ -61,7 +61,9 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
       "ec2:DescribeAvailabilityZones",
       "elasticfilesystem:DescribeAccessPoints",
       "elasticfilesystem:DescribeFileSystems",
-      "elasticfilesystem:DescribeMountTargets"
+      "elasticfilesystem:DescribeMountTargets",
+      "elasticfilesystem:CreateAccessPoint",
+      "elasticfilesystem:DeleteAccessPoint"
     ]
   }
 
