@@ -4,18 +4,18 @@ locals {
   service_account = try(var.helm_config.service_account, "${local.name}-sa")
 
   template_values = templatefile("${path.module}/config/cluster_autoscaler.yaml", {
-      aws_region     = var.addon_context.aws_region_name
-      eks_cluster_id = var.addon_context.eks_cluster_id
+    aws_region     = var.addon_context.aws_region_name
+    eks_cluster_id = var.addon_context.eks_cluster_id
   })
 
   interior_template_values = templatefile("${path.module}/config/values.yaml", {
-      aws_region     = var.addon_context.aws_region_name
-      eks_cluster_id = var.addon_context.eks_cluster_id
-      image_tag      = "v${var.eks_cluster_version}.0"
+    aws_region     = var.addon_context.aws_region_name
+    eks_cluster_id = var.addon_context.eks_cluster_id
+    image_tag      = "v${var.eks_cluster_version}.0"
   })
 
   # Convert the template values to a map
-  template_values_map = yamldecode(local.template_values)
+  template_values_map          = yamldecode(local.template_values)
   interior_template_values_map = yamldecode(local.interior_template_values)
 }
 
@@ -32,8 +32,8 @@ module "helm_addon" {
     repository  = "https://kubernetes.github.io/autoscaler"
     namespace   = local.namespace
     description = "Cluster AutoScaler helm Chart deployment configuration."
-    values      = [yamlencode(merge(local.template_values_map, local.interior_template_values_map ,var.helm_config))]
-  }  
+    values      = [yamlencode(merge(local.template_values_map, local.interior_template_values_map, var.helm_config))]
+    }
   )
 
   set_values = [

@@ -50,7 +50,7 @@ module "aws-efs-filesystem-with-storage-class" {
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   source = "./modules/aws-load-balancer-controller"
-  count  = var.aws_load_balancer_controller_enabled ? 1 : 0
+  count  = var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb" ? 1 : 0
   helm_config = {
     version = var.aws_load_balancer_version
     values  = var.aws_load_balancer_controller_helm_config.values
@@ -107,6 +107,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
+  ingress_class_name             = var.ingress_nginx_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -185,7 +186,7 @@ module "karpenter-provisioner" {
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on = [ module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd ]
+  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd]
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
