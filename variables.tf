@@ -374,6 +374,12 @@ variable "velero_config" {
   type = any
 }
 
+variable "velero_notification_enabled" {
+  description = "Enable or disable the notification for velero backup."
+  default     = false
+  type        = bool
+}
+
 variable "karpenter_provisioner_enabled" {
   description = "Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler."
   default     = false

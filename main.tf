@@ -255,13 +255,14 @@ module "vpa-crds" {
 
 
 module "velero" {
-  source        = "./modules/velero"
-  count         = var.velero_enabled ? 1 : 0
-  name          = var.name
-  region        = data.aws_region.current.name
-  cluster_id    = var.eks_cluster_name
-  environment   = var.environment
-  velero_config = var.velero_config
+  source                      = "./modules/velero"
+  count                       = var.velero_enabled ? 1 : 0
+  name                        = var.name
+  region                      = data.aws_region.current.name
+  environment                 = var.environment
+  velero_config               = var.velero_config
+  eks_cluster_id              = var.eks_cluster_name
+  velero_notification_enabled = var.velero_notification_enabled
 }
 
 module "istio" {

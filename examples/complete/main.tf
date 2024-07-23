@@ -123,7 +123,8 @@ module "eks-addons" {
     enable_service_monitor = false # to enable monitoring for node termination handler
   }
   # Velero
-  velero_enabled = false # to enable velero
+  velero_enabled              = false  # to enable velero
+  velero_notification_enabled = false # To enable slack notification for Velero
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
@@ -132,7 +133,8 @@ module "eks-addons" {
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
     velero_backup_name              = "application-backup"
-    backup_bucket_name              = "velero-bucket"
+    backup_bucket_name              = "velero-test-eks-1.30" # Enter the S3 bucket name for velero
+    velero_values_yaml              = [file("${path.module}/config/velero.yaml")]
   }
   ## kubeclarity
   kubeclarity_enabled  = false # to enable kube clarity

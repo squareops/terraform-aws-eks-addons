@@ -1,0 +1,44 @@
+initContainers:
+  - name: velero-plugin-for-aws-2
+    image: velero/velero-plugin-for-aws:v1.10.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: ${bucket}
+      config:
+        region: ${region}
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+       region: ${region}
+
+credentials:
+  useSecret: false
+
+podAnnotations:
+  co.elastic.logs/enabled: "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

@@ -76,3 +76,19 @@ data "aws_iam_policy_document" "karpenter" {
     }
   }
 }
+
+data "aws_iam_policy_document" "karpenter-spot-service-linked-policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values   = ["spot.amazonaws.com"]
+    }
+  }
+}
