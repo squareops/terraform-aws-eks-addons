@@ -95,23 +95,6 @@ resource "aws_iam_policy" "velero_iam_policy" {
 EOF
 }
 
-# module "eks_blueprints_kubernetes_addons" {
-#   depends_on              = [aws_iam_policy.velero_iam_policy]
-#   source                  = "../../modules/z-archieve"
-#   eks_cluster_id          = var.cluster_id
-#   enable_velero           = true
-#   velero_backup_s3_bucket = var.velero_config.backup_bucket_name
-#   velero_irsa_policies    = [aws_iam_policy.velero_iam_policy.arn]
-#   velero_helm_config = {
-#     values = [
-#       templatefile("${path.module}/helm/values.yaml", {
-#         bucket = var.velero_config.backup_bucket_name,
-#         region = var.region
-#       })
-#     ]
-#   }
-# }
-
 module "velero" {
   depends_on           = [aws_iam_policy.velero_iam_policy]
   source               = "./velero-data"
