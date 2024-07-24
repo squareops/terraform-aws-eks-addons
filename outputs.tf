@@ -45,10 +45,12 @@ output "defectdojo" {
   } : null
 }
 
-output "k8s-dashboard-admin-token" {
-  value = module.kubernetes-dashboard[0].k8s-dashboard-admin-token
+output "k8s_dashboard_admin_token" {
+  description = "Kubernetes-Dashboard Admin Token"
+  value       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].k8s-dashboard-admin-token : ""
 }
 
-output "k8s-dashboard-read-only-token" {
-  value = module.kubernetes-dashboard[0].k8s-dashboard-read-only-token
+output "k8s_dashboard_read_only_token" {
+  description = "Kubernetes-Dashboard Read Only Token"
+  value       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].k8s-dashboard-read-only-token : ""
 }

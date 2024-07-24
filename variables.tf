@@ -106,12 +106,6 @@ variable "aws_efs_csi_driver_helm_config" {
   default     = {}
 }
 
-variable "aws_efs_csi_driver_irsa_policies" {
-  description = "Additional IAM policies for a IAM role for service accounts"
-  type        = list(string)
-  default     = []
-}
-
 variable "keda_enabled" {
   description = "Enable or disable Kubernetes Event-driven Autoscaling (KEDA) add-on for autoscaling workloads."
   type        = bool
@@ -158,7 +152,7 @@ variable "ingress_nginx_config" {
   })
 
   default = {
-    ingress_class_name     = "nginx"
+    ingress_class_name     = "ingress-nginx"
     enable_service_monitor = false
     values                 = {}
     namespace              = "ingress-nginx"
@@ -380,6 +374,12 @@ variable "velero_config" {
   type = any
 }
 
+variable "velero_notification_enabled" {
+  description = "Enable or disable the notification for velero backup."
+  default     = false
+  type        = bool
+}
+
 variable "karpenter_provisioner_enabled" {
   description = "Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler."
   default     = false
@@ -456,12 +456,6 @@ variable "enable_ipv6" {
   description = "Enable Ipv6 network. Attaches new VPC CNI policy to the IRSA role"
   type        = bool
   default     = false
-}
-
-variable "amazon_eks_vpc_cni_config" {
-  description = "ConfigMap of Amazon EKS VPC CNI add-on"
-  type        = any
-  default     = {}
 }
 
 variable "amazon_eks_aws_ebs_csi_driver_config" {

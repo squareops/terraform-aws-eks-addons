@@ -11,7 +11,8 @@ module "aws-ebs-csi-driver" {
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   addon_config = merge(
     {
-      kubernetes_version = local.eks_cluster_version
+      kubernetes_version      = local.eks_cluster_version
+      additional_iam_policies = [var.kms_policy_arn]
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
@@ -30,7 +31,7 @@ module "aws-efs-csi-driver" {
   source            = "./modules/aws-efs-csi-driver"
   count             = var.efs_storage_class_enabled ? 1 : 0
   helm_config       = var.aws_efs_csi_driver_helm_config
-  irsa_policies     = var.aws_efs_csi_driver_irsa_policies
+  irsa_policies     = [var.kms_policy_arn]
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
 }
@@ -49,7 +50,7 @@ module "aws-efs-filesystem-with-storage-class" {
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   source = "./modules/aws-load-balancer-controller"
-  count  = var.aws_load_balancer_controller_enabled ? 1 : 0
+  count  = var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb" ? 1 : 0
   helm_config = {
     version = var.aws_load_balancer_version
     values  = var.aws_load_balancer_controller_helm_config.values
@@ -96,7 +97,7 @@ module "cert-manager" {
   addon_context                     = local.addon_context
   domain_names                      = var.cert_manager_domain_names
   install_letsencrypt_issuers       = var.cert_manager_install_letsencrypt_r53_issuers
-  letsencrypt_email                 = var.cert_manager_letsencrypt_email
+  letsencrypt_email                 = var.cert_manager_helm_config.cert_manager_letsencrypt_email
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
 }
 
@@ -106,6 +107,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
+  ingress_class_name             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -184,10 +186,11 @@ module "karpenter-provisioner" {
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd]
   k8s_dashboard_hostname              = var.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
-  ingress_class_name                  = var.ingress_nginx_config.ingress_class_name
+  ingress_class_name                  = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## KEDA
@@ -252,13 +255,14 @@ module "vpa-crds" {
 
 
 module "velero" {
-  source        = "./modules/velero"
-  count         = var.velero_enabled ? 1 : 0
-  name          = var.name
-  region        = data.aws_region.current.name
-  cluster_id    = var.eks_cluster_name
-  environment   = var.environment
-  velero_config = var.velero_config
+  source                      = "./modules/velero"
+  count                       = var.velero_enabled ? 1 : 0
+  name                        = var.name
+  region                      = data.aws_region.current.name
+  environment                 = var.environment
+  velero_config               = var.velero_config
+  eks_cluster_id              = var.eks_cluster_name
+  velero_notification_enabled = var.velero_notification_enabled
 }
 
 module "istio" {
@@ -373,7 +377,7 @@ resource "kubernetes_ingress_v1" "kubecost" {
     name      = "kubecost"
     namespace = "kubecost"
     annotations = {
-      "kubernetes.io/ingress.class"             = var.ingress_nginx_config.ingress_class_name
+      "kubernetes.io/ingress.class"             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"

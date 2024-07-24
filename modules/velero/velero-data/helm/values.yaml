@@ -1,11 +1,6 @@
 initContainers:
-  - name: velero-plugin-for-csi
-    image: velero/velero-plugin-for-csi:v0.7.0
-    volumeMounts:
-      - mountPath: /target
-        name: plugins
-  - name: velero-plugin-for-aws
-    image: velero/velero-plugin-for-aws:v1.9.0
+  - name: velero-plugin-for-aws-2
+    image: velero/velero-plugin-for-aws:v1.10.0
     imagePullPolicy: IfNotPresent
     volumeMounts:
       - mountPath: /target
@@ -45,5 +40,5 @@ resources:
     cpu: 10m
     memory: 128Mi
   limits:
-    cpu: 20m
-    memory: 256Mi
+    cpu: 500m
+    memory: 512Mi

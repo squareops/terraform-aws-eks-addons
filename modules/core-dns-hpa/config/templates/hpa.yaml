@@ -1,4 +1,4 @@
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
  name: core-dns-hpa-cpu
@@ -23,7 +23,7 @@ spec:
  scaleTargetRef:
    apiVersion: apps/v1
    kind: Deployment
-   name: coredns
+   name: {{ .Values.corednsdeploymentname}}
  minReplicas: {{ .Values.minReplicas}}
  maxReplicas: {{ .Values.maxReplicas}}
  metrics:
