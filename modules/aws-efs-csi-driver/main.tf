@@ -58,41 +58,11 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
     resources = ["*"]
 
     actions = [
-        "ec2:DescribeAvailabilityZones",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:CreateNetworkInterface",
-        "ec2:DeleteNetworkInterface",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeTags",
-        "ec2:AttachNetworkInterface",
-        "ec2:DetachNetworkInterface",
-        "elasticfilesystem:DescribeAccessPoints",
-        "elasticfilesystem:DescribeFileSystems",
-        "elasticfilesystem:DescribeMountTargets",
-        "elasticfilesystem:DescribeTags",
-        "elasticfilesystem:CreateAccessPoint",
-        "elasticfilesystem:DeleteAccessPoint",
-        "elasticfilesystem:CreateFileSystem",
-        "elasticfilesystem:DeleteFileSystem",
-        "elasticfilesystem:CreateMountTarget",
-        "elasticfilesystem:DeleteMountTarget",
-        "elasticfilesystem:DescribeMountTargetSecurityGroups",
-        "elasticfilesystem:DescribeLifecycleConfiguration",
-        "elasticfilesystem:DescribeAccountPreferences",
-        "elasticfilesystem:DescribeBackupPolicy",
-        "elasticfilesystem:DescribeFileSystemPolicy",
-        "elasticfilesystem:PutFileSystemPolicy",
-        "elasticfilesystem:ClientRootAccess",
-        "elasticfilesystem:ClientWrite",
-        "elasticfilesystem:ClientMount",
-        "kms:Encrypt",
-        "kms:Decrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:DescribeKey",
-        "ec2:*",
-        "elasticfilesystem:*"
+      "ec2:DescribeAvailabilityZones",
+      "elasticfilesystem:DescribeAccessPoints",
+      "elasticfilesystem:DescribeFileSystems",
+      "elasticfilesystem:DescribeMountTargets",
+      "elasticfilesystem:TagResource"
     ]
   }
 
