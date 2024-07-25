@@ -12,7 +12,7 @@ locals {
 }
 
 module "eks-addons" {
-  source               = "../.."
+  source               = "squareops/eks-addons/aws"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -22,7 +22,7 @@ module "eks-addons" {
   kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
   worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
-  worker_iam_role_arn  = "arn:aws:iam::xxx:role/-eks-node-role"   # enter roll ARN
+  worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"   # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
@@ -126,7 +126,7 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
     ingress_class_name     = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
-    namespace              = "nginx" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
+    namespace              = "nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
   }
 
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
@@ -139,7 +139,7 @@ module "eks-addons" {
   kubernetes_dashboard_enabled        = false
   k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
   alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-  k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"                  # Enter Hostname
+  k8s_dashboard_hostname              = "k8s-dashboard.prod.in"                  # Enter Hostname
 
   # VELERO
   velero_enabled              = false # to enable velero
