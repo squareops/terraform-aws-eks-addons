@@ -22,7 +22,7 @@ module "eks-addons" {
   kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
   worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
-  worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"   # enter roll ARN
+  worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
@@ -130,7 +130,7 @@ module "eks-addons" {
   }
 
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
-  aws_load_balancer_controller_enabled = true # to enable load balancer controller
+  aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
     values = [file("${path.module}/config/aws-alb.yaml")]
   }
@@ -139,7 +139,7 @@ module "eks-addons" {
   kubernetes_dashboard_enabled        = false
   k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
   alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-  k8s_dashboard_hostname              = "k8s-dashboard.prod.in"                  # Enter Hostname
+  k8s_dashboard_hostname              = "k8s-dashboard.prod.in"                            # Enter Hostname
 
   # VELERO
   velero_enabled              = false # to enable velero
