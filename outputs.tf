@@ -3,6 +3,16 @@ output "environment" {
   value       = var.environment
 }
 
+output "nginx_ingress_controller_dns_hostname" {
+  description = "DNS hostname of the NGINX Ingress Controller."
+  value       = var.ingress_nginx_enabled ? var.enable_private_nlb ? null : data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+}
+
+output "internal_nginx_ingress_controller_dns_hostname" {
+  description = "DNS hostname of the NGINX Ingress Controller."
+  value       = var.enable_private_nlb ? data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+}
+
 output "ebs_encryption_enable" {
   description = "Whether Amazon Elastic Block Store (EBS) encryption is enabled or not."
   value       = "Encrypted by default"
