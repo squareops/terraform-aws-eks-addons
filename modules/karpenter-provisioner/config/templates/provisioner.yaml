@@ -17,6 +17,9 @@ spec:
     - key: karpenter.k8s.aws/instance-size
       operator: NotIn
       values: {{ .Values.excluded_karpenter_ec2_instance_type }}
+    - key: topology.kubernetes.io/zone
+      operator: In
+      values: {{ .Values.karpenter_availability_zones }}
     {{- if .Values.karpenter_instance_hypervisor }}
     - key: "karpenter.k8s.aws/instance-hypervisor"
       operator: In
