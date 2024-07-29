@@ -159,6 +159,16 @@ module "ingress-nginx" {
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 
+# INGRESS-NGINX DATA SOURCE
+data "kubernetes_service" "ingress-nginx" {
+  count      = var.ingress_nginx_enabled ? 1 : 0
+  depends_on = [module.ingress-nginx]
+  metadata {
+    name      = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller" : "${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller"
+    namespace = var.ingress_nginx_config.namespace
+  }
+}
+
 ## KARPENTER
 module "karpenter" {
   source                    = "./modules/karpenter"

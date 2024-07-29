@@ -24,8 +24,8 @@ module "helm_addon" {
     values = concat([templatefile("${path.module}/helm/values.yaml", {
       bucket = var.backup_s3_bucket
       region = data.aws_region.current.name
-    })],var.helm_config.velero_values_yaml)
-    }
+    })], var.helm_config.velero_values_yaml)
+  }
 
   set_values = [
     {
