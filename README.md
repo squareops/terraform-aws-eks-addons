@@ -331,7 +331,8 @@ Velero is designed to work with cloud native environments, making it a popular c
 
 ## Notes
 
-Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make sure to subscribe to the **Kubecost - Amazon EKS cost monitoring** license.
+1. Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make sure to subscribe to the **Kubecost - Amazon EKS cost monitoring** license.
+2. For Destroying resources created by terraform-aws-eks-addons module, run script present in **examples/complete/terraform.destroy.sh**.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
