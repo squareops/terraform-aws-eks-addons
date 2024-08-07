@@ -275,27 +275,6 @@ module "velero" {
   velero_notification_enabled = var.velero_notification_enabled
 }
 
-module "istio" {
-  source                         = "./modules/istio"
-  count                          = var.istio_enabled ? 1 : 0
-  depends_on                     = [module.cert-manager-le-http-issuer]
-  ingress_gateway_enabled        = var.istio_config.ingress_gateway_enabled
-  ingress_gateway_namespace      = var.istio_config.ingress_gateway_namespace
-  envoy_access_logs_enabled      = var.istio_config.envoy_access_logs_enabled
-  prometheus_monitoring_enabled  = var.istio_config.prometheus_monitoring_enabled
-  cert_manager_letsencrypt_email = var.cert_manager_letsencrypt_email
-  istio_values_yaml              = var.istio_config.istio_values_yaml
-}
-
-data "kubernetes_service" "istio-ingress" {
-  count      = var.istio_enabled ? 1 : 0
-  depends_on = [module.istio]
-  metadata {
-    name      = "istio-ingressgateway"
-    namespace = var.istio_config.ingress_gateway_namespace
-  }
-}
-
 ##KUBECLARITY
 resource "kubernetes_namespace" "kube-clarity" {
   count = var.kubeclarity_enabled ? 1 : 0

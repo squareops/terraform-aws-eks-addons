@@ -171,14 +171,4 @@ module "eks-addons" {
   ## FALCO
   falco_enabled = false # to enable falco
   slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
-
-  # ISTIO
-  istio_enabled = false # to enable istio service mesh
-  istio_config = {
-    ingress_gateway_enabled       = false
-    envoy_access_logs_enabled     = false
-    prometheus_monitoring_enabled = false
-    istio_values_yaml             = file("./config/istio.yaml")
-
-  }
 }

@@ -41,11 +41,6 @@ output "kubecost" {
   } : null
 }
 
-output "istio_ingressgateway_dns_hostname" {
-  description = "DNS hostname of the Istio Ingress Gateway."
-  value       = var.istio_enabled ? try(data.kubernetes_service.istio-ingress[0].status[0].load_balancer[0].ingress[0].hostname, null) : null
-}
-
 output "defectdojo" {
   description = "DefectDojo endpoint and credentials"
   value = var.defectdojo_enabled ? {

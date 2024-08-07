@@ -12,21 +12,21 @@ run_with_retries() {                      # Bash retries Function
             echo "Initial attempt to destroy command..."
             $COMMAND                                      # Destroy the terraform state
             EXIT_CODE=$?                                  # Exit Code stored (logic)
-            
+
             if [[ $EXIT_CODE -eq 0 ]]; then               # logic (EXIT CODE = '0' means sucess)
                 echo "Initial command succeeded."
                 return 0
             else
-                echo "Initial command failed with exit code $EXIT_CODE." 
+                echo "Initial command failed with exit code $EXIT_CODE."
                 initial_run=0                              # Run only if intitial run fails
                 attempt=2                                  # logic
             fi
         else
             echo "Retry attempt $attempt of $MAX_RETRIES..."
-            
+
             $COMMAND                                       # Retry terraform destroy
             EXIT_CODE=$?                                   # Update Exit Code Status
-            
+
             if [[ $EXIT_CODE -eq 0 ]]; then                # Recursive retry till destroy succeed
                 echo "Command succeeded on attempt $attempt."
                 return 0
@@ -41,9 +41,9 @@ run_with_retries() {                      # Bash retries Function
                 fi
             fi
         fi
-        
+
         attempt=$((attempt + 1))
     done
 }
 
-run_with_retries                                           # Call the bash function 
+run_with_retries                                           # Call the bash function

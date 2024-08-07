@@ -330,29 +330,6 @@ variable "service_monitor_crd_enabled" {
   type        = bool
 }
 
-variable "istio_enabled" {
-  description = "Enable istio for service mesh."
-  default     = false
-  type        = bool
-}
-
-variable "istio_config" {
-  description = "Configuration to provide settings for Istio"
-  type = object({
-    ingress_gateway_enabled       = bool
-    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")
-    envoy_access_logs_enabled     = bool
-    prometheus_monitoring_enabled = bool
-    istio_values_yaml             = any
-  })
-  default = {
-    ingress_gateway_enabled       = true
-    envoy_access_logs_enabled     = true
-    prometheus_monitoring_enabled = true
-    istio_values_yaml             = ""
-  }
-}
-
 variable "velero_enabled" {
   description = "Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters."
   default     = false
@@ -495,7 +472,7 @@ variable "ipv6_enabled" {
 }
 
 variable "defectdojo_enabled" {
-  description = "Enable istio for service mesh."
+  description = "Enable defectdojo for service mesh."
   default     = false
   type        = bool
 }
