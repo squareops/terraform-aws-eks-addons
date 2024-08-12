@@ -77,7 +77,7 @@ module "eks-addons" {
   ## KARPENTER-PROVISIONER
   karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
   karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner-%s", local.name)
+    provisioner_name              = format("karpenter-provisioner")
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
     provisioner_values            = file("./config/karpenter-management.yaml")
     instance_capacity_type        = ["spot"]
@@ -85,11 +85,12 @@ module "eks-addons" {
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
     private_subnet_selector_key   = "Environment"
-    private_subnet_selector_value = local.environment
-    security_group_selector_key   = "aws:eks:cluster-name"
+    private_subnet_selector_key   = "Karpenter"
+    private_subnet_selector_value = "${local.name}-${local.region}a"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
     kms_key_arn                   = local.kms_key_arn
+    ec2_node_name                 = "${local.environment}-${local.name}"
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)

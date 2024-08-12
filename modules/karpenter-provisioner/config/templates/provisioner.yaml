@@ -48,3 +48,5 @@ spec:
         {{- end }}
         # kmsKeyID: {{ .Values.kms_key_id }}
         deleteOnTermination: true
+  tags:
+    Name: {{ .Values.ec2_node_name }} 

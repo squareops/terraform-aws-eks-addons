@@ -10,6 +10,7 @@ provisioner_name: "${provisioner_name}"
 karpenter_instance_hypervisor: "${instance_hypervisor}"
 instance_capacity_type: "${instance_capacity_type}"
 kms_key_id: "${kms_key_id}"
+ec2_node_name: "${ec2_node_name}"
 
 spec:
   labels:
