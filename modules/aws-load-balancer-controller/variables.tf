@@ -27,3 +27,15 @@ variable "addon_context" {
     default_repository             = string
   })
 }
+
+variable "load_balancer_controller_name" {
+  description = "Enter load balancer name"
+  type        = string
+  default     = "aws-load-balancer-controller"
+}
+
+variable "namespace" {
+  description = "Enter namespace to install the controller"
+  type        = string
+  default     = "kube-system"
+}

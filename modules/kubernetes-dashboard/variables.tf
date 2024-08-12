@@ -21,3 +21,9 @@ variable "ingress_class_name" {
   type        = any
   default     = ""
 }
+
+variable "private_alb_enabled" {
+  description = "Specify if require private load balancer"
+  type        = bool
+  default     = false
+}

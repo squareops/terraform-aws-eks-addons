@@ -119,7 +119,7 @@ module "eks-addons" {
 
   ## INGRESS-NGINX
   ingress_nginx_enabled = false # to enable ingress nginx
-  enable_private_nlb    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
+  private_nlb_enabled    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
@@ -401,8 +401,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_load_balancer_controller_enabled"></a> [aws\_load\_balancer\_controller\_enabled](#input\_aws\_load\_balancer\_controller\_enabled) | Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes. | `bool` | `false` | no |
-| <a name="input_aws_load_balancer_controller_helm_config"></a> [aws\_load\_balancer\_controller\_helm\_config](#input\_aws\_load\_balancer\_controller\_helm\_config) | Configuration for the AWS Load Balancer Controller Helm release | <pre>object({<br>    values = list(string)<br>  })</pre> | <pre>{<br>  "values": []<br>}</pre> | no |
-| <a name="input_aws_load_balancer_version"></a> [aws\_load\_balancer\_version](#input\_aws\_load\_balancer\_version) | Specify the version of the AWS Load Balancer Controller for Ingress | `string` | `"1.4.4"` | no |
+| <a name="input_aws_load_balancer_controller_helm_config"></a> [aws\_load\_balancer\_controller\_helm\_config](#input\_aws\_load\_balancer\_controller\_helm\_config) | Configuration for the AWS Load Balancer Controller Helm release | <pre>object({<br>    values                        = any<br>    namespace                     = string<br>    load_balancer_controller_name = string<br>  })</pre> | <pre>{<br>  "load_balancer_controller_name": "",<br>  "namespace": "",<br>  "values": []<br>}</pre> | no |
 | <a name="input_aws_node_termination_handler_enabled"></a> [aws\_node\_termination\_handler\_enabled](#input\_aws\_node\_termination\_handler\_enabled) | Enable or disable node termination handler | `bool` | `false` | no |
 | <a name="input_aws_node_termination_handler_helm_config"></a> [aws\_node\_termination\_handler\_helm\_config](#input\_aws\_node\_termination\_handler\_helm\_config) | AWS Node Termination Handler Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_node_termination_handler_irsa_policies"></a> [aws\_node\_termination\_handler\_irsa\_policies](#input\_aws\_node\_termination\_handler\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
@@ -430,7 +429,6 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_eks_oidc_provider"></a> [eks\_oidc\_provider](#input\_eks\_oidc\_provider) | The OpenID Connect identity provider (issuer URL without leading `https://`) | `string` | `null` | no |
 | <a name="input_enable_amazon_eks_aws_ebs_csi_driver"></a> [enable\_amazon\_eks\_aws\_ebs\_csi\_driver](#input\_enable\_amazon\_eks\_aws\_ebs\_csi\_driver) | Enable EKS Managed AWS EBS CSI Driver add-on; enable\_amazon\_eks\_aws\_ebs\_csi\_driver and enable\_self\_managed\_aws\_ebs\_csi\_driver are mutually exclusive | `bool` | `false` | no |
 | <a name="input_enable_ipv6"></a> [enable\_ipv6](#input\_enable\_ipv6) | Enable Ipv6 network. Attaches new VPC CNI policy to the IRSA role | `bool` | `false` | no |
-| <a name="input_enable_private_nlb"></a> [enable\_private\_nlb](#input\_enable\_private\_nlb) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_enable_self_managed_aws_ebs_csi_driver"></a> [enable\_self\_managed\_aws\_ebs\_csi\_driver](#input\_enable\_self\_managed\_aws\_ebs\_csi\_driver) | Enable self-managed aws-ebs-csi-driver add-on; enable\_self\_managed\_aws\_ebs\_csi\_driver and enable\_amazon\_eks\_aws\_ebs\_csi\_driver are mutually exclusive | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster. | `string` | `""` | no |
 | <a name="input_external_secrets_enabled"></a> [external\_secrets\_enabled](#input\_external\_secrets\_enabled) | Enable or disable External Secrets operator add-on for managing external secrets. | `bool` | `false` | no |
@@ -462,12 +460,14 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_kubeclarity_namespace"></a> [kubeclarity\_namespace](#input\_kubeclarity\_namespace) | Name of the Kubernetes namespace where the kubeclarity deployment will be deployed. | `string` | `"kubeclarity"` | no |
 | <a name="input_kubecost_enabled"></a> [kubecost\_enabled](#input\_kubecost\_enabled) | Enable or disable the deployment of an Kubecost for Kubernetes. | `bool` | `false` | no |
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
+| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify all the configuration setup here | <pre>object({<br>    k8s_dashboard_ingress_load_balancer = string<br>    alb_acm_certificate_arn             = string<br>    k8s_dashboard_hostname              = string<br>    private_alb_enabled                 = bool<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "k8s_dashboard_hostname": "",<br>  "k8s_dashboard_ingress_load_balancer": "",<br>  "private_alb_enabled": false<br>}</pre> | no |
 | <a name="input_kubernetes_dashboard_enabled"></a> [kubernetes\_dashboard\_enabled](#input\_kubernetes\_dashboard\_enabled) | Determines whether k8s-dashboard is enabled or not | `bool` | `false` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_metrics_server_helm_config"></a> [metrics\_server\_helm\_config](#input\_metrics\_server\_helm\_config) | Metrics Server Helm Chart config | `any` | `{}` | no |
 | <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
+| <a name="input_private_nlb_enabled"></a> [private\_nlb\_enabled](#input\_private\_nlb\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets of the VPC which can be used by EFS | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | <a name="input_reloader_enabled"></a> [reloader\_enabled](#input\_reloader\_enabled) | Enable or disable Reloader, a Kubernetes controller to watch changes in ConfigMap and Secret objects and trigger an application reload on their changes. | `bool` | `false` | no |
 | <a name="input_reloader_helm_config"></a> [reloader\_helm\_config](#input\_reloader\_helm\_config) | Reloader Helm Chart config | `any` | `{}` | no |

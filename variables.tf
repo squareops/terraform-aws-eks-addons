@@ -136,7 +136,7 @@ variable "external_secrets_enabled" {
   type        = bool
 }
 
-variable "enable_private_nlb" {
+variable "private_nlb_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false
@@ -215,10 +215,14 @@ variable "aws_load_balancer_controller_enabled" {
 variable "aws_load_balancer_controller_helm_config" {
   description = "Configuration for the AWS Load Balancer Controller Helm release"
   type = object({
-    values = list(string)
+    values                        = any
+    namespace                     = string
+    load_balancer_controller_name = string
   })
   default = {
-    values = []
+    values                        = []
+    namespace                     = ""
+    load_balancer_controller_name = ""
   }
 }
 
@@ -226,12 +230,6 @@ variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"
   type        = bool
   default     = false
-}
-
-variable "aws_load_balancer_version" {
-  description = "Specify the version of the AWS Load Balancer Controller for Ingress"
-  default     = "1.4.4"
-  type        = string
 }
 
 variable "name" {
@@ -511,6 +509,23 @@ variable "kubernetes_dashboard_enabled" {
   description = "Determines whether k8s-dashboard is enabled or not"
   default     = false
   type        = bool
+}
+
+variable "kubernetes_dashboard_config" {
+  description = "Specify all the configuration setup here"
+  type = object({
+    k8s_dashboard_ingress_load_balancer = string
+    alb_acm_certificate_arn             = string
+    k8s_dashboard_hostname              = string
+    private_alb_enabled                 = bool
+  })
+
+  default = {
+    k8s_dashboard_ingress_load_balancer = ""
+    alb_acm_certificate_arn             = ""
+    k8s_dashboard_hostname              = ""
+    private_alb_enabled                 = false
+  }
 }
 
 variable "k8s_dashboard_hostname" {

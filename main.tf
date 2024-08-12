@@ -49,14 +49,13 @@ module "aws-efs-filesystem-with-storage-class" {
 
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
-  source = "./modules/aws-load-balancer-controller"
-  count  = var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb" ? 1 : 0
-  helm_config = {
-    version = var.aws_load_balancer_version
-    values  = var.aws_load_balancer_controller_helm_config.values
-  }
-  manage_via_gitops = var.argocd_manage_add_ons
-  addon_context     = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
+  source                        = "./modules/aws-load-balancer-controller"
+  count                         = var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb" ? 1 : 0
+  helm_config                   = var.aws_load_balancer_controller_helm_config.values
+  manage_via_gitops             = var.argocd_manage_add_ons
+  addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
+  namespace                     = var.aws_load_balancer_controller_helm_config.namespace
+  load_balancer_controller_name = var.aws_load_balancer_controller_helm_config.load_balancer_controller_name
 }
 
 ## NODE TERMINATION HANDLER
@@ -107,7 +106,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
-  ingress_class_name             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  ingress_class_name             = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -154,8 +153,8 @@ module "ingress-nginx" {
 
   # Template values for ingress-nginx and private-internal-nginx
   namespace              = var.ingress_nginx_config.namespace
-  enable_private_nlb     = var.enable_private_nlb
-  ingress_class_name     = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  private_nlb_enabled    = var.private_nlb_enabled
+  ingress_class_name     = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
 }
 
@@ -164,7 +163,7 @@ data "kubernetes_service" "ingress-nginx" {
   count      = var.ingress_nginx_enabled ? 1 : 0
   depends_on = [module.ingress-nginx]
   metadata {
-    name      = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller" : "${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller"
+    name      = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller" : "${var.ingress_nginx_config.ingress_class_name}-ingress-nginx-controller"
     namespace = var.ingress_nginx_config.namespace
   }
 }
@@ -197,10 +196,11 @@ module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
   depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd]
-  k8s_dashboard_hostname              = var.k8s_dashboard_hostname
-  alb_acm_certificate_arn             = var.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.k8s_dashboard_ingress_load_balancer
-  ingress_class_name                  = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
+  alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
+  k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
+  private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
+  ingress_class_name                  = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
 }
 
 ## KEDA
@@ -366,7 +366,7 @@ resource "kubernetes_ingress_v1" "kubecost" {
     name      = "kubecost"
     namespace = "kubecost"
     annotations = {
-      "kubernetes.io/ingress.class"             = var.enable_private_nlb ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+      "kubernetes.io/ingress.class"             = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
       "cert-manager.io/cluster-issuer"          = var.cluster_issuer
       "nginx.ingress.kubernetes.io/auth-type"   = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "basic-auth"
