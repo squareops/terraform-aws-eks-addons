@@ -5,12 +5,12 @@ output "environment" {
 
 output "nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
-  value       = var.ingress_nginx_enabled ? var.enable_private_nlb ? null : data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+  value       = var.ingress_nginx_enabled ? var.private_nlb_enabled ? null : data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
 }
 
 output "internal_nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
-  value       = var.enable_private_nlb ? data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+  value       = var.private_nlb_enabled ? data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
 }
 
 output "ebs_encryption_enable" {
@@ -39,11 +39,6 @@ output "kubecost" {
     password = nonsensitive(random_password.kubecost[0].result),
     url      = var.kubecost_hostname
   } : null
-}
-
-output "istio_ingressgateway_dns_hostname" {
-  description = "DNS hostname of the Istio Ingress Gateway."
-  value       = var.istio_enabled ? try(data.kubernetes_service.istio-ingress[0].status[0].load_balancer[0].ingress[0].hostname, null) : null
 }
 
 output "defectdojo" {
