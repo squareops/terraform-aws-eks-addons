@@ -21,6 +21,7 @@ resource "helm_release" "karpenter_provisioner" {
       ec2_instance_type             = "[${join(",", [for s in var.karpenter_config.ec2_instance_type : format("%s", s)])}]",
       instance_hypervisor           = "[${join(",", var.karpenter_config.instance_hypervisor)}]"
       kms_key_id                    = local.kms_key_id
+      ec2_node_name                 = "${var.karpenter_config.ec2_node_name}-${var.karpenter_config.provisioner_name}-${count.index}"
     }),
     var.karpenter_config.provisioner_values
     ] : [
@@ -36,6 +37,7 @@ resource "helm_release" "karpenter_provisioner" {
       ec2_instance_family           = "[${join(",", [for s in var.karpenter_config.ec2_instance_family : format("%s", s)])}]",
       ec2_instance_type             = "[${join(",", [for s in var.karpenter_config.ec2_instance_type : format("%s", s)])}]",
       kms_key_id                    = local.kms_key_id
+      ec2_node_name                 = "${var.karpenter_config.ec2_node_name}-${var.karpenter_config.provisioner_name}-${count.index}"
     }),
     var.karpenter_config.provisioner_values
   ]
