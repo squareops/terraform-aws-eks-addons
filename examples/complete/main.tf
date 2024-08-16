@@ -6,6 +6,8 @@ locals {
     Owner      = "Organization_Name"
     Expires    = "Never"
     Department = "Engineering"
+    Product    = "Atmosly"
+    Environment = local.environment
   }
   kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled = false
