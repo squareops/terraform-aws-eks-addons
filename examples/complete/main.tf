@@ -84,9 +84,9 @@ module "eks-addons" {
     excluded_instance_type        = ["nano", "micro", "small"]
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Environment"
     private_subnet_selector_key   = "Karpenter"
     private_subnet_selector_value = "${local.name}-${local.region}a"
+    security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
     kms_key_arn                   = local.kms_key_arn
