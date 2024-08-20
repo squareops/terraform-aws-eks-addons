@@ -1,0 +1,17 @@
+controller:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 40Mi
+    limits:
+      cpu: 20m
+      memory: 80Mi
+
+node:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 40Mi
+    limits:
+      cpu: 20m
+      memory: 80Mi

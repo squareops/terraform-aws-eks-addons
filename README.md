@@ -10,66 +10,138 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ## Usage Example
 ```hcl
 module "eks-addons" {
-  source                                  = "squareops/eks-addons/aws"
-  name                                    = local.name
-  vpc_id                                  = "vpc-abcd5245c2331xyz"
-  environment                             = local.environment
-  ipv6_enabled                            = local.ipv6_enabled
-  kms_key_arn                             = "arn:aws:kms:us-east-2:xxxxxxxxxx:key/mrk-abd9394bda5947cc864adc657d90386f"
-  keda_enabled                            = true
-  kms_policy_arn                          = "arn:aws:iam::xxxxxxxxxxxx:policy/policy_name" ## eks module will create kms_policy_arn
-  eks_cluster_name                        = "cluster_name"
-  reloader_enabled                        = true
-  kubernetes_dashboard_enabled            = true
-  k8s_dashboard_ingress_load_balancer     = "" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-  alb_acm_certificate_arn                 = ""
-  k8s_dashboard_hostname                  = "dashboard.prod.in"
-  karpenter_enabled                       = true
-  private_subnet_ids                      = ["subnet-xxxxxxxxxxxx", "subnet-xxxxxxxxxxxx"]
-  single_az_ebs_gp3_storage_class_enabled = true
+  source               = "squareops/eks-addons/aws"
+  name                 = local.name
+  tags                 = local.additional_tags
+  vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
+  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Subnet IDs
+  environment          = local.environment
+  ipv6_enabled         = local.ipv6_enabled
+  kms_key_arn          = local.kms_key_arn
+  kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
+  worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
+  worker_iam_role_arn  = "arn:aws:iam::xxx:role/-eks-node-role"   # enter roll ARN
+  eks_cluster_name     = data.aws_eks_cluster.cluster.name
+
+  #VPC-CNI-DRIVER
+  amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
+
+  #EBS-CSI-DRIVER
+  enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
+  amazon_eks_aws_ebs_csi_driver_config = {
+    values = [file("${path.module}/config/ebs-csi.yaml")]
+  }
+
+  ## EBS-STORAGE-CLASS
+  single_az_ebs_gp3_storage_class_enabled = false # to enable ebs gp3 storage class
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
-  coredns_hpa_enabled                     = true
-  kubeclarity_enabled                     = true
-  kubeclarity_hostname                    = "kubeclarity.prod.in"
-  kubecost_enabled                        = false
-  kubecost_hostname                       = "kubecost.prod.in"
-  defectdojo_enabled                      = true
-  defectdojo_hostname                     = "defectdojo.prod.in"
-  cert_manager_enabled                    = true
-  worker_iam_role_name                    = "node-role"
-  worker_iam_role_arn                     = "arn:aws:iam::xxxxxxxxxx:role/node-role"
-  ingress_nginx_enabled                   = true
-  metrics_server_enabled                  = true
-  external_secrets_enabled                = true
-  amazon_eks_vpc_cni_enabled              = true
-  cluster_autoscaler_enabled              = true
-  service_monitor_crd_enabled             = true
-  aws_load_balancer_controller_enabled    = true
-  falco_enabled                           = true
-  slack_webhook                           = "xoxb-379541400966-iibMHnnoaPzVl"
-  istio_enabled                           = true
-  istio_config = {
-    ingress_gateway_enabled       = true
-    egress_gateway_enabled        = true
-    envoy_access_logs_enabled     = true
-    prometheus_monitoring_enabled = true
-    istio_values_yaml             = file("./config/istio.yaml")
+
+  ## EfS-STORAGE-CLASS
+  efs_storage_class_enabled = false # to enable EBS storage class
+
+  ## SERVICE-MONITORING-CRDs
+  service_monitor_crd_enabled = false # enable service monitor along with K8S-dashboard (required CRD) or when require service monitor in reloader and cert-manager
+
+  ## METRIC-SERVER
+  metrics_server_enabled     = false # to enable metrics server
+  metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
+  vpa_config = {
+    values = [file("${path.module}/config/vpa-crd.yaml")]
   }
-  karpenter_provisioner_enabled = true
+
+  ## CLUSTER-AUTOSCALER
+  cluster_autoscaler_enabled     = false # to enable cluster autoscaller
+  cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
+
+  ## NODE-TERMINATION-HANDLER
+  aws_node_termination_handler_enabled = false # to enable node termination handler
+  aws_node_termination_handler_helm_config = {
+    values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
+    enable_service_monitor = false # to enable monitoring for node termination handler
+  }
+
+  ## KEDA
+  keda_enabled = false # to enable Keda in the EKS cluster
+  keda_helm_config = {
+    values = [file("${path.module}/config/keda.yaml")]
+  }
+
+  ## KARPENTER
+  karpenter_enabled = false # to enable Karpenter (installs required CRDs )
+  karpenter_helm_config = {
+    values = [file("${path.module}/config/karpenter.yaml")]
+  }
+
+  ## KARPENTER-PROVISIONER
+  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
   karpenter_provisioner_config = {
-    private_subnet_name    = "${local.environment}-${local.name}-private-subnet"
-    instance_capacity_type = ["spot"]
-    excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]
+    provisioner_name              = format("karpenter-provisioner-%s", local.name)
+    karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
+    provisioner_values            = file("./config/karpenter-management.yaml")
+    instance_capacity_type        = ["spot"]
+    excluded_instance_type        = ["nano", "micro", "small"]
+    ec2_instance_family           = ["t3"]
+    ec2_instance_type             = ["t3.medium"]
+    private_subnet_selector_key   = "Environment"
+    private_subnet_selector_value = local.environment
+    security_group_selector_key   = "aws:eks:cluster-name"
+    security_group_selector_value = "${local.environment}-${local.name}"
+    instance_hypervisor           = ["nitro"]
+    kms_key_arn                   = local.kms_key_arn
   }
-  cert_manager_letsencrypt_email                = "email@email.com"
-  internal_ingress_nginx_enabled                = true
-  efs_storage_class_enabled                     = true
-  aws_node_termination_handler_enabled          = true
-  amazon_eks_aws_ebs_csi_driver_enabled         = true
-  cluster_propotional_autoscaler_enabled        = true
-  cert_manager_install_letsencrypt_http_issuers = true
-  velero_enabled                                = true
+
+  ## coreDNS-HPA (cluster-proportional-autoscaler)
+  coredns_hpa_enabled = false # to enable core-dns HPA
+  coredns_hpa_helm_config = {
+    values = [file("${path.module}/config/coredns-hpa.yaml")]
+  }
+
+  ## EXTERNAL-SECRETS
+  external_secrets_enabled = false # to enable external secrets
+  external_secrets_helm_config = {
+    values = [file("${path.module}/config/external-secret.yaml")]
+  }
+
+  ## CERT-MANAGER
+  cert_manager_enabled = false # to enable Cert-manager
+  cert_manager_helm_config = {
+    values                         = [file("${path.module}/config/cert-manager.yaml")]
+    enable_service_monitor         = false # to enable monitoring for Cert Manager
+    cert_manager_letsencrypt_email = "email@email.com"
+  }
+
+  ## CONFIG-RELOADER
+  reloader_enabled = false # to enable config reloader in the EKS cluster
+  reloader_helm_config = {
+    values                 = [file("${path.module}/config/reloader.yaml")]
+    enable_service_monitor = false # to enable monitoring for reloader
+  }
+
+  ## INGRESS-NGINX
+  ingress_nginx_enabled = false # to enable ingress nginx
+  enable_private_nlb    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
+  ingress_nginx_config = {
+    values                 = [file("${path.module}/config/ingress-nginx.yaml")]
+    enable_service_monitor = false   # enable monitoring in nginx ingress
+    ingress_class_name     = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
+    namespace              = "nginx" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
+  }
+
+  ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
+  aws_load_balancer_controller_enabled = true # to enable load balancer controller
+  aws_load_balancer_controller_helm_config = {
+    values = [file("${path.module}/config/aws-alb.yaml")]
+  }
+
+  ## KUBERNETES-DASHBOARD
+  kubernetes_dashboard_enabled        = false
+  k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+  alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+  k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"                  # Enter Hostname
+
+  # VELERO
+  velero_enabled              = false # to enable velero
+  velero_notification_enabled = false # To enable slack notification for Velero
   velero_config = {
     namespaces                      = "" ## If you want full cluster backup, leave it blank else provide namespace.
     slack_botToken                  = "xoxb-379541400966-iibMHnnoaPzVl"
@@ -78,17 +150,45 @@ module "eks-addons" {
     retention_period_in_days        = 45
     schedule_backup_cron_time       = "* 6 * * *"
     velero_backup_name              = "application-backup"
-    backup_bucket_name              = "velero-bucket"
+    backup_bucket_name              = "velero-test-eks-1.30" # Enter the S3 bucket name for velero
+    velero_values_yaml              = [file("${path.module}/config/velero.yaml")]
+  }
+
+  ## KUBECLARITY
+  kubeclarity_enabled  = false # to enable kube clarity
+  kubeclarity_hostname = "kubeclarity.prod.in"
+
+  ## KUBECOST
+  kubecost_enabled  = false # to enable kube cost
+  kubecost_hostname = "kubecost.prod.in"
+
+  ## DEFECT-DOJO
+  defectdojo_enabled  = false # to enable defectdojo
+  defectdojo_hostname = "defectdojo.prod.in"
+
+  ## FALCO
+  falco_enabled = false # to enable falco
+  slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
+
+  # ISTIO
+  istio_enabled = false # to enable istio service mesh
+  istio_config = {
+    ingress_gateway_enabled       = false
+    envoy_access_logs_enabled     = false
+    prometheus_monitoring_enabled = false
+    istio_values_yaml             = file("./config/istio.yaml")
+
   }
 }
+
 
 
 ```
 
 ## Compatibility
 
-| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |  Kubernetes 1.28 |
-|------------------|------------------|------------------|----------------------|----------------------|----------------------|----------------------|
+| Release | Kubernetes 1.23 | Kubernetes 1.24  | Kubernetes 1.25 |  Kubernetes 1.26 |  Kubernetes 1.27 |  Kubernetes 1.28 | Kubernetes 1.29 | Kubernetes 1.30 |
+|------------------|------------------|------------------|----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|
 | Release 1.0.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.0  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; |
 | Release 1.1.1  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
@@ -99,8 +199,9 @@ module "eks-addons" {
 | Release 1.1.6  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.8  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | &#x2714; |
+| Release 3.0.0  | &#x274C;  | &#x274C;  | &#x274C; | &#x274C; | &#x274C; | &#x2714; | &#x2714; | &#x2714; |
 
-
+Note: The latest release 3.0.0 support EKS version 1.28, 1.29 and 1.30. For EKS version <=1.27 refer the previous release.
 ## IAM Permissions
 The required IAM permissions to create resources from this module can be found [here](https://github.com/squareops/terraform-aws-eks-addons.git/blob/main/IAM.md)
 
@@ -169,6 +270,10 @@ Istio is widely adopted and has a strong ecosystem of partners and contributors,
 Karpenter is a flexible, high-performance Kubernetes cluster autoscaler that helps improve application availability and cluster efficiency. Karpenter launches right-sized compute resources, (for example, Amazon EC2 instances), in response to changing application load in under a minute. Through integrating Kubernetes with AWS, Karpenter can provision just-in-time compute resources that precisely meet the requirements of your workload. Karpenter automatically provisions new compute resources based on the specific requirements of cluster workloads. These include compute, storage, acceleration, and scheduling requirements. Amazon EKS supports clusters using Karpenter, although Karpenter works with any conformant Kubernetes cluster.
 </details>
 <details>
+  <summary> Karpenter-Provisioner </summary>
+Karpernter Provisioner is a powerful provisioning module designed to streamline the deployment process for infrastructure as code (IaC) projects. It provides a set of intuitive and easy-to-use functions to automate the provisioning of resources on various cloud platforms.
+</details>
+<details>
   <summary> Metrics Server </summary>
 Metric Server is a Kubernetes add-on that collects resource usage data from the Kubernetes API server and makes it available to other components, such as the Horizontal Pod Autoscaler (HPA) and the Cluster Autoscaler.
 The Metric Server collects data on the CPU and memory usage of pods and nodes in a cluster, and provides this data to other components in a format that they can use to make scaling decisions. The HPA, for example, can use the data provided by the Metric Server to automatically scale the number of replicas of a deployment based on the resource usage of the pods. The Cluster Autoscaler can also use this data to determine when to add or remove nodes from a cluster based on the resource utilization of the pods and nodes.
@@ -233,9 +338,12 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.23 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.6 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.13 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.6.0 |
 
 ## Providers
 
@@ -244,100 +352,132 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.23 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.6 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.13 |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | >= 0.6.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_efs"></a> [efs](#module\_efs) | ./modules/efs | n/a |
+| <a name="module_aws-ebs-csi-driver"></a> [aws-ebs-csi-driver](#module\_aws-ebs-csi-driver) | ./modules/aws-ebs-csi-driver | n/a |
+| <a name="module_aws-efs-csi-driver"></a> [aws-efs-csi-driver](#module\_aws-efs-csi-driver) | ./modules/aws-efs-csi-driver | n/a |
+| <a name="module_aws-efs-filesystem-with-storage-class"></a> [aws-efs-filesystem-with-storage-class](#module\_aws-efs-filesystem-with-storage-class) | ./modules/aws-efs-filesystem-with-storage-class | n/a |
+| <a name="module_aws-load-balancer-controller"></a> [aws-load-balancer-controller](#module\_aws-load-balancer-controller) | ./modules/aws-load-balancer-controller | n/a |
+| <a name="module_aws-node-termination-handler"></a> [aws-node-termination-handler](#module\_aws-node-termination-handler) | ./modules/aws-node-termination-handler | n/a |
+| <a name="module_aws_vpc_cni"></a> [aws\_vpc\_cni](#module\_aws\_vpc\_cni) | ./modules/aws-vpc-cni | n/a |
+| <a name="module_cert-manager"></a> [cert-manager](#module\_cert-manager) | ./modules/cert-manager | n/a |
+| <a name="module_cert-manager-le-http-issuer"></a> [cert-manager-le-http-issuer](#module\_cert-manager-le-http-issuer) | ./modules/cert-manager-le-http-issuer | n/a |
+| <a name="module_cluster-autoscaler"></a> [cluster-autoscaler](#module\_cluster-autoscaler) | ./modules/cluster-autoscaler | n/a |
+| <a name="module_coredns_hpa"></a> [coredns\_hpa](#module\_coredns\_hpa) | ./modules/core-dns-hpa | n/a |
+| <a name="module_external-secrets"></a> [external-secrets](#module\_external-secrets) | ./modules/external-secret | n/a |
+| <a name="module_ingress-nginx"></a> [ingress-nginx](#module\_ingress-nginx) | ./modules/ingress-nginx | n/a |
 | <a name="module_istio"></a> [istio](#module\_istio) | ./modules/istio | n/a |
-| <a name="module_k8s_addons"></a> [k8s\_addons](#module\_k8s\_addons) | ./modules/kubernetes-addons | n/a |
-| <a name="module_karpenter_provisioner"></a> [karpenter\_provisioner](#module\_karpenter\_provisioner) | ./modules/karpenter_provisioner | n/a |
-| <a name="module_service_monitor_crd"></a> [service\_monitor\_crd](#module\_service\_monitor\_crd) | ./modules/service_monitor_crd | n/a |
-| <a name="module_single_az_sc"></a> [single\_az\_sc](#module\_single\_az\_sc) | ./modules/aws-ebs-storage-class | n/a |
+| <a name="module_karpenter"></a> [karpenter](#module\_karpenter) | ./modules/karpenter | n/a |
+| <a name="module_karpenter-provisioner"></a> [karpenter-provisioner](#module\_karpenter-provisioner) | ./modules/karpenter-provisioner | n/a |
+| <a name="module_keda"></a> [keda](#module\_keda) | ./modules/keda | n/a |
+| <a name="module_kubernetes-dashboard"></a> [kubernetes-dashboard](#module\_kubernetes-dashboard) | ./modules/kubernetes-dashboard | n/a |
+| <a name="module_metrics-server"></a> [metrics-server](#module\_metrics-server) | ./modules/metrics-server | n/a |
+| <a name="module_metrics-server-vpa"></a> [metrics-server-vpa](#module\_metrics-server-vpa) | ./modules/metrics-server-vpa | n/a |
+| <a name="module_reloader"></a> [reloader](#module\_reloader) | ./modules/reloader | n/a |
+| <a name="module_service-monitor-crd"></a> [service-monitor-crd](#module\_service-monitor-crd) | ./modules/service-monitor-crd | n/a |
+| <a name="module_single-az-sc"></a> [single-az-sc](#module\_single-az-sc) | ./modules/aws-ebs-storage-class | n/a |
 | <a name="module_velero"></a> [velero](#module\_velero) | ./modules/velero | n/a |
+| <a name="module_vpa-crds"></a> [vpa-crds](#module\_vpa-crds) | ./modules/vpa-crds | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_eks_addon.kubecost](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
-| [aws_iam_instance_profile.karpenter_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
-| [helm_release.cert_manager_le_http](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.coredns-hpa](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.defectdojo](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.falco](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.internal_nginx](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.kubeclarity](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.kubernetes-dashboard](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.metrics-server-vpa](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.vpa-crds](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubernetes_cluster_role.eks_read_only_role](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role) | resource |
-| [kubernetes_cluster_role_binding.eks_read_only_role_binding](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding) | resource |
-| [kubernetes_cluster_role_binding_v1.admin-user](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
-| [kubernetes_ingress_v1.k8s-ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [kubernetes_ingress_v1.kubecost](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [kubernetes_namespace.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.falco](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_namespace.internal_nginx](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_namespace.k8s-dashboard](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_namespace.kube_clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_secret.kube_clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
+| [kubernetes_namespace.kube-clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
+| [kubernetes_secret.kube-clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
 | [kubernetes_secret.kubecost](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
-| [kubernetes_secret_v1.admin-user](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
-| [kubernetes_secret_v1.dashboard_read_only_sa_token](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
-| [kubernetes_service_account.dashboard_admin_sa](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
-| [kubernetes_service_account.dashboard_read_only_sa](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
-| [random_password.kube_clarity](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_password.kube-clarity](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.kubecost](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [time_sleep.dataplane](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_addon_version.kubecost](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_addon_version) | data source |
 | [aws_eks_cluster.eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
+| [aws_eks_cluster.eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [kubernetes_secret.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/secret) | data source |
-| [kubernetes_service.internal-nginx-ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
+| [kubernetes_service.ingress-nginx](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
 | [kubernetes_service.istio-ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
-| [kubernetes_service.nginx-ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
-| <a name="input_amazon_eks_aws_ebs_csi_driver_enabled"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_enabled](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_enabled) | Whether to enable the EKS Managed AWS EBS CSI Driver add-on or not. | `bool` | `false` | no |
+| <a name="input_amazon_eks_aws_ebs_csi_driver_config"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_config](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_config) | configMap for AWS EBS CSI Driver add-on | `any` | `{}` | no |
 | <a name="input_amazon_eks_vpc_cni_enabled"></a> [amazon\_eks\_vpc\_cni\_enabled](#input\_amazon\_eks\_vpc\_cni\_enabled) | Enable or disable the installation of the Amazon EKS VPC CNI addon. | `bool` | `false` | no |
+| <a name="input_argocd_manage_add_ons"></a> [argocd\_manage\_add\_ons](#input\_argocd\_manage\_add\_ons) | Enable managing add-on configuration via ArgoCD App of Apps | `bool` | `false` | no |
+| <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
+| <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_load_balancer_controller_enabled"></a> [aws\_load\_balancer\_controller\_enabled](#input\_aws\_load\_balancer\_controller\_enabled) | Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes. | `bool` | `false` | no |
+| <a name="input_aws_load_balancer_controller_helm_config"></a> [aws\_load\_balancer\_controller\_helm\_config](#input\_aws\_load\_balancer\_controller\_helm\_config) | Configuration for the AWS Load Balancer Controller Helm release | <pre>object({<br>    values = list(string)<br>  })</pre> | <pre>{<br>  "values": []<br>}</pre> | no |
 | <a name="input_aws_load_balancer_version"></a> [aws\_load\_balancer\_version](#input\_aws\_load\_balancer\_version) | Specify the version of the AWS Load Balancer Controller for Ingress | `string` | `"1.4.4"` | no |
 | <a name="input_aws_node_termination_handler_enabled"></a> [aws\_node\_termination\_handler\_enabled](#input\_aws\_node\_termination\_handler\_enabled) | Enable or disable node termination handler | `bool` | `false` | no |
+| <a name="input_aws_node_termination_handler_helm_config"></a> [aws\_node\_termination\_handler\_helm\_config](#input\_aws\_node\_termination\_handler\_helm\_config) | AWS Node Termination Handler Helm Chart config | `any` | `{}` | no |
+| <a name="input_aws_node_termination_handler_irsa_policies"></a> [aws\_node\_termination\_handler\_irsa\_policies](#input\_aws\_node\_termination\_handler\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
+| <a name="input_cert_manager_domain_names"></a> [cert\_manager\_domain\_names](#input\_cert\_manager\_domain\_names) | Domain names of the Route53 hosted zone to use with cert-manager | `list(string)` | `[]` | no |
 | <a name="input_cert_manager_enabled"></a> [cert\_manager\_enabled](#input\_cert\_manager\_enabled) | Enable or disable the cert manager add-on for EKS cluster. | `bool` | `false` | no |
-| <a name="input_cert_manager_install_letsencrypt_http_issuers"></a> [cert\_manager\_install\_letsencrypt\_http\_issuers](#input\_cert\_manager\_install\_letsencrypt\_http\_issuers) | Enable or disable the HTTP issuer for cert-manager | `bool` | `false` | no |
+| <a name="input_cert_manager_helm_config"></a> [cert\_manager\_helm\_config](#input\_cert\_manager\_helm\_config) | Cert Manager Helm Chart config | `any` | `{}` | no |
 | <a name="input_cert_manager_install_letsencrypt_r53_issuers"></a> [cert\_manager\_install\_letsencrypt\_r53\_issuers](#input\_cert\_manager\_install\_letsencrypt\_r53\_issuers) | Enable or disable the creation of Route53 issuer while installing cert manager. | `bool` | `false` | no |
+| <a name="input_cert_manager_irsa_policies"></a> [cert\_manager\_irsa\_policies](#input\_cert\_manager\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
+| <a name="input_cert_manager_kubernetes_svc_image_pull_secrets"></a> [cert\_manager\_kubernetes\_svc\_image\_pull\_secrets](#input\_cert\_manager\_kubernetes\_svc\_image\_pull\_secrets) | list(string) of kubernetes imagePullSecrets | `list(string)` | `[]` | no |
 | <a name="input_cert_manager_letsencrypt_email"></a> [cert\_manager\_letsencrypt\_email](#input\_cert\_manager\_letsencrypt\_email) | Specifies the email address to be used by cert-manager to request Let's Encrypt certificates | `string` | `""` | no |
 | <a name="input_cluster_autoscaler_chart_version"></a> [cluster\_autoscaler\_chart\_version](#input\_cluster\_autoscaler\_chart\_version) | Version of the cluster autoscaler helm chart | `string` | `"9.29.0"` | no |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Whether to enable the Cluster Autoscaler add-on or not. | `bool` | `false` | no |
+| <a name="input_cluster_autoscaler_helm_config"></a> [cluster\_autoscaler\_helm\_config](#input\_cluster\_autoscaler\_helm\_config) | CoreDNS Autoscaler Helm Chart config | `any` | `{}` | no |
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
-| <a name="input_cluster_propotional_autoscaler_enabled"></a> [cluster\_propotional\_autoscaler\_enabled](#input\_cluster\_propotional\_autoscaler\_enabled) | Enable or disable Cluster propotional autoscaler add-on | `bool` | `false` | no |
-| <a name="input_core_dns_hpa_config"></a> [core\_dns\_hpa\_config](#input\_core\_dns\_hpa\_config) | Configuration to provide settings of hpa over core dns | `any` | <pre>{<br>  "corednsdeploymentname": "coredns",<br>  "maxReplicas": 10,<br>  "minReplicas": 2,<br>  "targetCPUUtilizationPercentage": 80,<br>  "targetMemoryUtilizationPercentage": "150Mi"<br>}</pre> | no |
 | <a name="input_coredns_hpa_enabled"></a> [coredns\_hpa\_enabled](#input\_coredns\_hpa\_enabled) | Determines whether Horizontal Pod Autoscaling (HPA) for CoreDNS is enabled. | `bool` | `false` | no |
+| <a name="input_coredns_hpa_helm_config"></a> [coredns\_hpa\_helm\_config](#input\_coredns\_hpa\_helm\_config) | CoreDNS Autoscaler Helm Chart config | `any` | `{}` | no |
+| <a name="input_custom_image_registry_uri"></a> [custom\_image\_registry\_uri](#input\_custom\_image\_registry\_uri) | Custom image registry URI map of `{region = dkr.endpoint }` | `map(string)` | `{}` | no |
+| <a name="input_data_plane_wait_arn"></a> [data\_plane\_wait\_arn](#input\_data\_plane\_wait\_arn) | Addon deployment will not proceed until this value is known. Set to node group/Fargate profile ARN to wait for data plane to be ready before provisioning addons | `string` | `""` | no |
 | <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
+| <a name="input_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#input\_eks\_cluster\_endpoint) | Endpoint for your Kubernetes API server | `string` | `null` | no |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Fetch Cluster ID of the cluster | `string` | `""` | no |
+| <a name="input_eks_cluster_version"></a> [eks\_cluster\_version](#input\_eks\_cluster\_version) | The Kubernetes version for the cluster | `string` | `null` | no |
+| <a name="input_eks_oidc_provider"></a> [eks\_oidc\_provider](#input\_eks\_oidc\_provider) | The OpenID Connect identity provider (issuer URL without leading `https://`) | `string` | `null` | no |
+| <a name="input_enable_amazon_eks_aws_ebs_csi_driver"></a> [enable\_amazon\_eks\_aws\_ebs\_csi\_driver](#input\_enable\_amazon\_eks\_aws\_ebs\_csi\_driver) | Enable EKS Managed AWS EBS CSI Driver add-on; enable\_amazon\_eks\_aws\_ebs\_csi\_driver and enable\_self\_managed\_aws\_ebs\_csi\_driver are mutually exclusive | `bool` | `false` | no |
+| <a name="input_enable_ipv6"></a> [enable\_ipv6](#input\_enable\_ipv6) | Enable Ipv6 network. Attaches new VPC CNI policy to the IRSA role | `bool` | `false` | no |
+| <a name="input_enable_private_nlb"></a> [enable\_private\_nlb](#input\_enable\_private\_nlb) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
+| <a name="input_enable_self_managed_aws_ebs_csi_driver"></a> [enable\_self\_managed\_aws\_ebs\_csi\_driver](#input\_enable\_self\_managed\_aws\_ebs\_csi\_driver) | Enable self-managed aws-ebs-csi-driver add-on; enable\_self\_managed\_aws\_ebs\_csi\_driver and enable\_amazon\_eks\_aws\_ebs\_csi\_driver are mutually exclusive | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment identifier for the Amazon Elastic Kubernetes Service (EKS) cluster. | `string` | `""` | no |
 | <a name="input_external_secrets_enabled"></a> [external\_secrets\_enabled](#input\_external\_secrets\_enabled) | Enable or disable External Secrets operator add-on for managing external secrets. | `bool` | `false` | no |
+| <a name="input_external_secrets_helm_config"></a> [external\_secrets\_helm\_config](#input\_external\_secrets\_helm\_config) | External Secrets operator Helm Chart config | `any` | `{}` | no |
+| <a name="input_external_secrets_irsa_policies"></a> [external\_secrets\_irsa\_policies](#input\_external\_secrets\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
+| <a name="input_external_secrets_secrets_manager_arns"></a> [external\_secrets\_secrets\_manager\_arns](#input\_external\_secrets\_secrets\_manager\_arns) | List of Secrets Manager ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br>  "arn:aws:secretsmanager:*:*:secret:*"<br>]</pre> | no |
+| <a name="input_external_secrets_ssm_parameter_arns"></a> [external\_secrets\_ssm\_parameter\_arns](#input\_external\_secrets\_ssm\_parameter\_arns) | List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br>  "arn:aws:ssm:*:*:parameter/*"<br>]</pre> | no |
 | <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | Determines whether Falco is enabled. | `bool` | `false` | no |
-| <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Enable or disable Nginx Ingress Controller add-on for routing external traffic to Kubernetes services. | `bool` | `false` | no |
-| <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Specify the version of the NGINX Ingress Controller | `string` | `"4.9.1"` | no |
-| <a name="input_internal_ingress_nginx_enabled"></a> [internal\_ingress\_nginx\_enabled](#input\_internal\_ingress\_nginx\_enabled) | Enable or disable the deployment of an internal ingress controller for Kubernetes. | `bool` | `false` | no |
+| <a name="input_ingress_nginx_config"></a> [ingress\_nginx\_config](#input\_ingress\_nginx\_config) | Configure ingress-nginx to setup addons | <pre>object({<br>    ingress_class_name     = string<br>    enable_service_monitor = bool<br>    values                 = any<br>    namespace              = string<br>  })</pre> | <pre>{<br>  "enable_service_monitor": false,<br>  "ingress_class_name": "ingress-nginx",<br>  "namespace": "ingress-nginx",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
-| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    egress_gateway_enabled        = bool<br>    egress_gateway_namespace      = optional(string, "istio-egressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "egress_gateway_enabled": false,<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
+| <a name="input_irsa_iam_permissions_boundary"></a> [irsa\_iam\_permissions\_boundary](#input\_irsa\_iam\_permissions\_boundary) | IAM permissions boundary for IRSA roles | `string` | `""` | no |
+| <a name="input_irsa_iam_role_path"></a> [irsa\_iam\_role\_path](#input\_irsa\_iam\_role\_path) | IAM role path for IRSA roles | `string` | `"/"` | no |
+| <a name="input_istio_config"></a> [istio\_config](#input\_istio\_config) | Configuration to provide settings for Istio | <pre>object({<br>    ingress_gateway_enabled       = bool<br>    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")<br>    envoy_access_logs_enabled     = bool<br>    prometheus_monitoring_enabled = bool<br>    istio_values_yaml             = any<br>  })</pre> | <pre>{<br>  "envoy_access_logs_enabled": true,<br>  "ingress_gateway_enabled": true,<br>  "istio_values_yaml": "",<br>  "prometheus_monitoring_enabled": true<br>}</pre> | no |
 | <a name="input_istio_enabled"></a> [istio\_enabled](#input\_istio\_enabled) | Enable istio for service mesh. | `bool` | `false` | no |
 | <a name="input_k8s_dashboard_hostname"></a> [k8s\_dashboard\_hostname](#input\_k8s\_dashboard\_hostname) | Specify the hostname for the k8s dashboard. | `string` | `""` | no |
 | <a name="input_k8s_dashboard_ingress_load_balancer"></a> [k8s\_dashboard\_ingress\_load\_balancer](#input\_k8s\_dashboard\_ingress\_load\_balancer) | Controls whether to enable ALB Ingress or not. | `string` | `"nlb"` | no |
 | <a name="input_karpenter_enabled"></a> [karpenter\_enabled](#input\_karpenter\_enabled) | Enable or disable Karpenter, a Kubernetes-native, multi-tenant, and auto-scaling solution for containerized workloads on Kubernetes. | `bool` | `false` | no |
+| <a name="input_karpenter_helm_config"></a> [karpenter\_helm\_config](#input\_karpenter\_helm\_config) | Karpenter autoscaler add-on config | `any` | `{}` | no |
+| <a name="input_karpenter_irsa_policies"></a> [karpenter\_irsa\_policies](#input\_karpenter\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
+| <a name="input_karpenter_node_iam_instance_profile"></a> [karpenter\_node\_iam\_instance\_profile](#input\_karpenter\_node\_iam\_instance\_profile) | Karpenter Node IAM Instance profile id | `string` | `""` | no |
 | <a name="input_karpenter_provisioner_config"></a> [karpenter\_provisioner\_config](#input\_karpenter\_provisioner\_config) | Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types. | `any` | <pre>{<br>  "excluded_instance_type": [<br>    "nano",<br>    "micro",<br>    "small"<br>  ],<br>  "instance_capacity_type": [<br>    "spot"<br>  ],<br>  "instance_hypervisor": [<br>    "nitro"<br>  ],<br>  "private_subnet_name": ""<br>}</pre> | no |
 | <a name="input_karpenter_provisioner_enabled"></a> [karpenter\_provisioner\_enabled](#input\_karpenter\_provisioner\_enabled) | Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler. | `bool` | `false` | no |
 | <a name="input_keda_enabled"></a> [keda\_enabled](#input\_keda\_enabled) | Enable or disable Kubernetes Event-driven Autoscaling (KEDA) add-on for autoscaling workloads. | `bool` | `false` | no |
+| <a name="input_keda_helm_config"></a> [keda\_helm\_config](#input\_keda\_helm\_config) | KEDA Event-based autoscaler add-on config | `any` | `{}` | no |
+| <a name="input_keda_irsa_policies"></a> [keda\_irsa\_policies](#input\_keda\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key used to encrypt AWS resources in the EKS cluster. | `string` | `""` | no |
 | <a name="input_kms_policy_arn"></a> [kms\_policy\_arn](#input\_kms\_policy\_arn) | Specify the ARN of KMS policy, for service accounts. | `string` | `""` | no |
 | <a name="input_kubeclarity_enabled"></a> [kubeclarity\_enabled](#input\_kubeclarity\_enabled) | Enable or disable the deployment of an kubeclarity for Kubernetes. | `bool` | `false` | no |
@@ -347,19 +487,24 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_kubernetes_dashboard_enabled"></a> [kubernetes\_dashboard\_enabled](#input\_kubernetes\_dashboard\_enabled) | Determines whether k8s-dashboard is enabled or not | `bool` | `false` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
+| <a name="input_metrics_server_helm_config"></a> [metrics\_server\_helm\_config](#input\_metrics\_server\_helm\_config) | Metrics Server Helm Chart config | `any` | `{}` | no |
 | <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
-| <a name="input_metrics_server_vpa_config"></a> [metrics\_server\_vpa\_config](#input\_metrics\_server\_vpa\_config) | Configuration to provide settings of vpa over metrics server | `any` | <pre>{<br>  "maxCPU": "100m",<br>  "maxMemory": "500Mi",<br>  "metricsServerDeploymentName": "metrics-server",<br>  "minCPU": "25m",<br>  "minMemory": "150Mi"<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets of the VPC which can be used by EFS | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | <a name="input_reloader_enabled"></a> [reloader\_enabled](#input\_reloader\_enabled) | Enable or disable Reloader, a Kubernetes controller to watch changes in ConfigMap and Secret objects and trigger an application reload on their changes. | `bool` | `false` | no |
+| <a name="input_reloader_helm_config"></a> [reloader\_helm\_config](#input\_reloader\_helm\_config) | Reloader Helm Chart config | `any` | `{}` | no |
+| <a name="input_self_managed_aws_ebs_csi_driver_helm_config"></a> [self\_managed\_aws\_ebs\_csi\_driver\_helm\_config](#input\_self\_managed\_aws\_ebs\_csi\_driver\_helm\_config) | Self-managed aws-ebs-csi-driver Helm chart config | `any` | `{}` | no |
 | <a name="input_service_monitor_crd_enabled"></a> [service\_monitor\_crd\_enabled](#input\_service\_monitor\_crd\_enabled) | Enable or disable the installation of Custom Resource Definitions (CRDs) for Prometheus Service Monitor. | `bool` | `false` | no |
 | <a name="input_single_az_ebs_gp3_storage_class_enabled"></a> [single\_az\_ebs\_gp3\_storage\_class\_enabled](#input\_single\_az\_ebs\_gp3\_storage\_class\_enabled) | Whether to enable the Single AZ storage class or not. | `bool` | `false` | no |
 | <a name="input_single_az_sc_config"></a> [single\_az\_sc\_config](#input\_single\_az\_sc\_config) | Name and regions for storage class in Key-Value pair. | `list(any)` | `[]` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | The Slack webhook URL used for notifications. | `string` | `""` | no |
-| <a name="input_storageClassName"></a> [storageClassName](#input\_storageClassName) | Specify the hostname for the kubecsot. | `string` | `"infra-service-sc"` | no |
+| <a name="input_storage_class_name"></a> [storage\_class\_name](#input\_storage\_class\_name) | Specify the hostname for the kubecsot. | `string` | `"infra-service-sc"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `map('BusinessUnit`,`XYZ`) | `map(string)` | `{}` | no |
 | <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_backup_cron_time": "",<br>  "slack_appToken": "",<br>  "slack_botToken": "",<br>  "slack_notification_channel_name": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
 | <a name="input_velero_enabled"></a> [velero\_enabled](#input\_velero\_enabled) | Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters. | `bool` | `false` | no |
+| <a name="input_velero_notification_enabled"></a> [velero\_notification\_enabled](#input\_velero\_notification\_enabled) | Enable or disable the notification for velero backup. | `bool` | `false` | no |
+| <a name="input_vpa_config"></a> [vpa\_config](#input\_vpa\_config) | Configure VPA CRD to setup addon | <pre>object({<br>    values = list(string)<br>  })</pre> | <pre>{<br>  "values": []<br>}</pre> | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the VPC where the cluster and its nodes will be provisioned | `string` | `""` | no |
 | <a name="input_worker_iam_role_arn"></a> [worker\_iam\_role\_arn](#input\_worker\_iam\_role\_arn) | Specify the IAM role Arn for the nodes | `string` | `""` | no |
 | <a name="input_worker_iam_role_name"></a> [worker\_iam\_role\_name](#input\_worker\_iam\_role\_name) | Specify the IAM role for the nodes that will be provisioned through karpenter | `string` | `""` | no |
@@ -372,10 +517,10 @@ Before enabling the **Kubecost** addon for your Amazon EKS cluster, please make 
 | <a name="output_ebs_encryption_enable"></a> [ebs\_encryption\_enable](#output\_ebs\_encryption\_enable) | Whether Amazon Elastic Block Store (EBS) encryption is enabled or not. |
 | <a name="output_efs_id"></a> [efs\_id](#output\_efs\_id) | ID of the Amazon Elastic File System (EFS) that has been created for the EKS cluster. |
 | <a name="output_environment"></a> [environment](#output\_environment) | Environment Name for the EKS cluster |
-| <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
+| <a name="output_internal_nginx_ingress_controller_dns_hostname"></a> [internal\_nginx\_ingress\_controller\_dns\_hostname](#output\_internal\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
 | <a name="output_istio_ingressgateway_dns_hostname"></a> [istio\_ingressgateway\_dns\_hostname](#output\_istio\_ingressgateway\_dns\_hostname) | DNS hostname of the Istio Ingress Gateway. |
-| <a name="output_k8s-dashboard-admin-token"></a> [k8s-dashboard-admin-token](#output\_k8s-dashboard-admin-token) | n/a |
-| <a name="output_k8s-dashboard-read-only-token"></a> [k8s-dashboard-read-only-token](#output\_k8s-dashboard-read-only-token) | n/a |
+| <a name="output_k8s_dashboard_admin_token"></a> [k8s\_dashboard\_admin\_token](#output\_k8s\_dashboard\_admin\_token) | Kubernetes-Dashboard Admin Token |
+| <a name="output_k8s_dashboard_read_only_token"></a> [k8s\_dashboard\_read\_only\_token](#output\_k8s\_dashboard\_read\_only\_token) | Kubernetes-Dashboard Read Only Token |
 | <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
 | <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |

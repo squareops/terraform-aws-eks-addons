@@ -1,0 +1,17 @@
+  resources:
+    limits:
+      cpu: 100m
+      memory: 400Mi
+    requests:
+      cpu: 50m
+      memory: 200Mi
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: "In"
+            values:
+            - "true"

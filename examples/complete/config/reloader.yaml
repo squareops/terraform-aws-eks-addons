@@ -1,0 +1,19 @@
+reloader:
+  deployment:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+    resources:
+      limits:
+        cpu: "100m"
+        memory: "240Mi"
+      requests:
+        cpu: "50m"
+        memory: "120Mi"

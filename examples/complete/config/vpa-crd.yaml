@@ -1,0 +1,67 @@
+admissionController:
+  resources:
+    limits:
+      cpu: 20m
+      memory: 120Mi
+    requests:
+      cpu: 10m
+      memory: 60Mi
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Addons-Services"
+            operator: In
+            values:
+            - "true"
+
+recommender:
+  resources:
+    limits:
+      cpu: 20m
+      memory: 120Mi
+    requests:
+      cpu: 10m
+      memory: 60Mi
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+updater:
+  resources:
+    limits:
+      cpu: 20m
+      memory: 120Mi
+    requests:
+      cpu: 10m
+      memory: 60Mi
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+crds:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"

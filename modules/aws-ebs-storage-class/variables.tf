@@ -4,12 +4,6 @@ variable "kms_key_id" {
   description = "KMS key to Encrypt storage class."
 }
 
-variable "storage_class_name" {
-  description = "storage class name"
-  default     = ""
-  type        = string
-}
-
 variable "single_az_ebs_gp3_storage_class_name" {
   type        = string
   default     = ""

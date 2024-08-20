@@ -10,18 +10,6 @@ variable "ingress_gateway_namespace" {
   type        = string
 }
 
-variable "egress_gateway_enabled" {
-  description = "Enable or disable the installation of Istio Egress Gateway."
-  default     = false
-  type        = bool
-}
-
-variable "egress_gateway_namespace" {
-  description = "Name of the Kubernetes namespace where the Istio Egress Gateway will be deployed."
-  default     = "istio-egressgateway"
-  type        = string
-}
-
 variable "envoy_access_logs_enabled" {
   description = "Enable or disable the installation of Envoy access logs across Mesh"
   default     = false
