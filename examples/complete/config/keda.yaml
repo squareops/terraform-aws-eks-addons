@@ -35,24 +35,24 @@ webhooks:
 resources:
   operator:
     limits:
-      cpu: 200m
-      memory: 200Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
-  metricServer:
-    limits:
-      cpu: 200m
-      memory: 200Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
-  webhooks:
-    limits:
       cpu: 20m
-      memory: 20Mi
+      memory: 180Mi
     requests:
       cpu: 10m
+      memory: 60Mi
+  metricServer:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+  webhooks:
+    limits:
+      cpu: 10m
+      memory: 20Mi
+    requests:
+      cpu: 5m
       memory: 10Mi
 
 affinity:
