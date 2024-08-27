@@ -112,7 +112,7 @@ module "eks-addons" {
   cert_manager_helm_config = {
     values                         = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor         = false # to enable monitoring for Cert Manager
-    cert_manager_letsencrypt_email = "mona@squareops.com"
+    cert_manager_letsencrypt_email = "email@email.com"
   }
 
   ## CONFIG-RELOADER
