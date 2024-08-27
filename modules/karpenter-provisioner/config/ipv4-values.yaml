@@ -10,6 +10,8 @@ provisioner_name: "${provisioner_name}"
 instance_capacity_type: "${instance_capacity_type}"
 kms_key_id: "${kms_key_id}"
 ec2_node_name: "${ec2_node_name}"
+tag_product: "${tag_product}"
+tag_environment: "${tag_environment}"
 
 
 spec:

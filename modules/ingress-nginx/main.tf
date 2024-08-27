@@ -9,6 +9,8 @@ locals {
     private_nlb_enabled    = var.private_nlb_enabled
     nlb_scheme             = local.nlb_scheme
     ingress_class_name     = var.ingress_class_name
+    tag_product                = var.tag_product
+    tag_environment            = var.tag_environment
   })
 
   # Convert the template values to a map

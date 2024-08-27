@@ -6,7 +6,7 @@ locals {
     Owner      = "Organization_Name"
     Expires    = "Never"
     Department = "Engineering"
-    Product    = "Atmosly"
+    Product    = ""
     Environment = local.environment
   }
   kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
@@ -39,6 +39,8 @@ module "eks-addons" {
   ## EBS-STORAGE-CLASS
   single_az_ebs_gp3_storage_class_enabled = false # to enable ebs gp3 storage class
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
+  tag_product                             = local.additional_tags.Product
+  tag_environment                         = local.environment
 
   ## EfS-STORAGE-CLASS
   efs_storage_class_enabled = false # to enable EBS storage class
@@ -77,9 +79,9 @@ module "eks-addons" {
   }
 
   ## KARPENTER-PROVISIONER
-  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
+ karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
   karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner")
+    provisioner_name              = format("karpenter-provisioner-%s", local.name)
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
     provisioner_values            = file("./config/karpenter-management.yaml")
     instance_capacity_type        = ["spot"]
@@ -87,14 +89,12 @@ module "eks-addons" {
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
     private_subnet_selector_key   = "Environment"
-    private_subnet_selector_key   = "Karpenter"
-    private_subnet_selector_value = "${local.name}-${local.region}a"
+    private_subnet_selector_value = local.environment
+    security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
     kms_key_arn                   = local.kms_key_arn
-    ec2_node_name                 = "${local.environment}-${local.name}"
   }
-
   ## coreDNS-HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false # to enable core-dns HPA
   coredns_hpa_helm_config = {
@@ -112,7 +112,7 @@ module "eks-addons" {
   cert_manager_helm_config = {
     values                         = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor         = false # to enable monitoring for Cert Manager
-    cert_manager_letsencrypt_email = "email@email.com"
+    cert_manager_letsencrypt_email = "mona@squareops.com"
   }
 
   ## CONFIG-RELOADER
