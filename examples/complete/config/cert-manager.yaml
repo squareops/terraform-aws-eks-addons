@@ -5,8 +5,6 @@ crds:
   # This option decides if the CRDs should be installed
   # as part of the Helm installation.
   enabled: true
-  # This option makes it so that the "helm.sh/resource-policy": keep annotation is NOT added to the CRD. This means Helm will delete the CRD when the Helm release is uninstalled.
-  keep: false
 ## Node affinity for particular node in which labels key is "Infra-Services" and value is "true"
 
 affinity:
