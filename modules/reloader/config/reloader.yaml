@@ -12,8 +12,8 @@ reloader:
 
     resources:
       limits:
-        cpu: "150m"
-        memory: "400Mi"
+        cpu: "100m"
+        memory: "240Mi"
       requests:
         cpu: "50m"
         memory: "120Mi"

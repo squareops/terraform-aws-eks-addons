@@ -18,11 +18,11 @@ controller:
 
   resources:
     limits:
-      cpu: 500m
-      memory: 750Mi
-    requests:
       cpu: 50m
-      memory: 200Mi
+      memory: 300Mi
+    requests:
+      cpu: 25m
+      memory: 150Mi
   autoscaling:
     enabled: true
     minReplicas: 2
