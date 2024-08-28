@@ -1,11 +1,11 @@
 admissionController:
   resources:
     limits:
-      cpu: 20m
-      memory: 120Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   affinity:
     nodeAffinity:
@@ -20,11 +20,11 @@ admissionController:
 recommender:
   resources:
     limits:
-      cpu: 20m
-      memory: 120Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   affinity:
     nodeAffinity:
@@ -39,11 +39,11 @@ recommender:
 updater:
   resources:
     limits:
-      cpu: 20m
-      memory: 120Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   affinity:
     nodeAffinity:

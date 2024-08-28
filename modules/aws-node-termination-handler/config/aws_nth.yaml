@@ -6,8 +6,8 @@ podAnnotations:
 
 resources:
   limits:
-    cpu: 20m
+    cpu: 16m
     memory: 60Mi
   requests:
-    cpu: 10m
+    cpu: 8m
     memory: 30Mi

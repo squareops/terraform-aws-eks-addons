@@ -12,3 +12,9 @@ resource "aws_iam_policy" "karpenter" {
   description = "IAM Policy for Karpenter"
   policy      = data.aws_iam_policy_document.karpenter.json
 }
+
+resource "aws_iam_policy" "karpenter-spot" {
+  name        = "${var.addon_context.eks_cluster_id}-karpenter-spot"
+  description = "IAM Policy for Karpenter"
+  policy      = data.aws_iam_policy_document.karpenter-spot-service-linked-policy.json
+}
