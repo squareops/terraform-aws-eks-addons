@@ -6,13 +6,15 @@ locals {
     Owner      = "Organization_Name"
     Expires    = "Never"
     Department = "Engineering"
+    Product    = "Atmosly"
+    Environment = local.environment
   }
   kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled = false
 }
 
 module "eks-addons" {
-  source               = "squareops/eks-addons/aws"
+  source               = "../.."
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -77,19 +79,20 @@ module "eks-addons" {
   ## KARPENTER-PROVISIONER
   karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
   karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner-%s", local.name)
+    provisioner_name              = format("karpenter-provisioner")
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
     provisioner_values            = file("./config/karpenter-management.yaml")
     instance_capacity_type        = ["spot"]
     excluded_instance_type        = ["nano", "micro", "small"]
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Environment"
-    private_subnet_selector_value = local.environment
+    private_subnet_selector_key   = "Karpenter"
+    private_subnet_selector_value = "${local.name}-${local.region}a"
     security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
     kms_key_arn                   = local.kms_key_arn
+    ec2_node_name                 = "${local.environment}-${local.name}"
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)
@@ -121,7 +124,7 @@ module "eks-addons" {
 
   ## INGRESS-NGINX
   ingress_nginx_enabled = false # to enable ingress nginx
-  enable_private_nlb    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
+  private_nlb_enabled   = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "false" together
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
@@ -132,14 +135,19 @@ module "eks-addons" {
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
   aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
-    values = [file("${path.module}/config/aws-alb.yaml")]
+    values                        = [file("${path.module}/config/aws-alb.yaml")]
+    namespace                     = "alb"       # enter namespace according to the requirement (example: "alb")
+    load_balancer_controller_name = "alb" # enter ingress class name according to your requirement (example: "aws-load-balancer-controller")
   }
 
   ## KUBERNETES-DASHBOARD
-  kubernetes_dashboard_enabled        = false
-  k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
-  alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-  k8s_dashboard_hostname              = "k8s-dashboard.prod.in"                            # Enter Hostname
+  kubernetes_dashboard_enabled = false
+  kubernetes_dashboard_config = {
+    k8s_dashboard_ingress_load_balancer = "nlb"                                                                                 ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled                 = false                                                                                 # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn             = "arn:aws:acm:us-east-1:381491984451:certificate/b7fe797d-cefd-4272-94b3-1ef668eb79a3" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+    k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in"                                                      # Enter Hostname
+  }
 
   # VELERO
   velero_enabled              = false # to enable velero
@@ -171,14 +179,4 @@ module "eks-addons" {
   ## FALCO
   falco_enabled = false # to enable falco
   slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
-
-  # ISTIO
-  istio_enabled = false # to enable istio service mesh
-  istio_config = {
-    ingress_gateway_enabled       = false
-    envoy_access_logs_enabled     = false
-    prometheus_monitoring_enabled = false
-    istio_values_yaml             = file("./config/istio.yaml")
-
-  }
 }

@@ -38,7 +38,7 @@ variable "ip_family" {
 }
 ##### Control variable for public and private type of ingress nginx
 
-variable "enable_private_nlb" {
+variable "private_nlb_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false

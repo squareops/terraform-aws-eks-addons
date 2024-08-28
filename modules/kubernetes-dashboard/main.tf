@@ -1,3 +1,7 @@
+locals {
+  alb_scheme = var.private_alb_enabled ? "internal" : "internet-facing"
+}
+
 resource "kubernetes_namespace" "k8s-dashboard" {
   metadata {
     name = "kubernetes-dashboard"
@@ -22,7 +26,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
     namespace = "kubernetes-dashboard"
     annotations = var.k8s_dashboard_ingress_load_balancer == "alb" ? {
       "kubernetes.io/ingress.class"                    = "alb"
-      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
+      "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
       "alb.ingress.kubernetes.io/certificate-arn"      = var.alb_acm_certificate_arn,
       "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
