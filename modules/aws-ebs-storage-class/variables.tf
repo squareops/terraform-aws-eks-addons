@@ -20,3 +20,13 @@ variable "availability_zone" {
   type        = any
   description = "List of Azs"
 }
+
+variable "tag_product" {
+  description = "Tag for Product"
+  type        = string
+}
+
+variable "tag_environment" {
+  description = "Tag for Environment"
+  type        = string
+}

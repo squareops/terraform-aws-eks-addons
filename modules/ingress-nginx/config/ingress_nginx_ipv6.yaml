@@ -4,11 +4,12 @@ controller:
     enabled: true
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: external
-      service.beta.kubernetes.io/aws-load-balancer-internal: "${enable_private_nlb}"
+      service.beta.kubernetes.io/aws-load-balancer-internal: "${private_nlb_enabled}"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
       service.beta.kubernetes.io/aws-load-balancer-ip-address-type: dualstack
       service.beta.kubernetes.io/aws-load-balancer-scheme: ${nlb_scheme}
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Product=${tag_product},Environment=${tag_environment}"
     externalTrafficPolicy: Cluster
     ipFamilies:
     - IPv6
@@ -21,10 +22,11 @@ controller:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: dualstack
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Product=${tag_product},Environment=${tag_environment}"
       ingressClass: ${ingress_class_name}
 
   ingressClassResource:
-    enabled: ${enable_private_nlb}
+    enabled: ${private_nlb_enabled}
     name: ${ingress_class_name}
   ingressClass: ${ingress_class_name}
 

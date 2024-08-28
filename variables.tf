@@ -136,7 +136,7 @@ variable "external_secrets_enabled" {
   type        = bool
 }
 
-variable "enable_private_nlb" {
+variable "private_nlb_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false
@@ -215,10 +215,14 @@ variable "aws_load_balancer_controller_enabled" {
 variable "aws_load_balancer_controller_helm_config" {
   description = "Configuration for the AWS Load Balancer Controller Helm release"
   type = object({
-    values = list(string)
+    values                        = any
+    namespace                     = string
+    load_balancer_controller_name = string
   })
   default = {
-    values = []
+    values                        = []
+    namespace                     = ""
+    load_balancer_controller_name = ""
   }
 }
 
@@ -226,12 +230,6 @@ variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"
   type        = bool
   default     = false
-}
-
-variable "aws_load_balancer_version" {
-  description = "Specify the version of the AWS Load Balancer Controller for Ingress"
-  default     = "1.4.4"
-  type        = string
 }
 
 variable "name" {
@@ -328,29 +326,6 @@ variable "service_monitor_crd_enabled" {
   description = "Enable or disable the installation of Custom Resource Definitions (CRDs) for Prometheus Service Monitor. "
   default     = false
   type        = bool
-}
-
-variable "istio_enabled" {
-  description = "Enable istio for service mesh."
-  default     = false
-  type        = bool
-}
-
-variable "istio_config" {
-  description = "Configuration to provide settings for Istio"
-  type = object({
-    ingress_gateway_enabled       = bool
-    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")
-    envoy_access_logs_enabled     = bool
-    prometheus_monitoring_enabled = bool
-    istio_values_yaml             = any
-  })
-  default = {
-    ingress_gateway_enabled       = true
-    envoy_access_logs_enabled     = true
-    prometheus_monitoring_enabled = true
-    istio_values_yaml             = ""
-  }
 }
 
 variable "velero_enabled" {
@@ -495,7 +470,7 @@ variable "ipv6_enabled" {
 }
 
 variable "defectdojo_enabled" {
-  description = "Enable istio for service mesh."
+  description = "Enable defectdojo for service mesh."
   default     = false
   type        = bool
 }
@@ -534,6 +509,23 @@ variable "kubernetes_dashboard_enabled" {
   description = "Determines whether k8s-dashboard is enabled or not"
   default     = false
   type        = bool
+}
+
+variable "kubernetes_dashboard_config" {
+  description = "Specify all the configuration setup here"
+  type = object({
+    k8s_dashboard_ingress_load_balancer = string
+    alb_acm_certificate_arn             = string
+    k8s_dashboard_hostname              = string
+    private_alb_enabled                 = bool
+  })
+
+  default = {
+    k8s_dashboard_ingress_load_balancer = ""
+    alb_acm_certificate_arn             = ""
+    k8s_dashboard_hostname              = ""
+    private_alb_enabled                 = false
+  }
 }
 
 variable "k8s_dashboard_hostname" {
@@ -600,4 +592,14 @@ variable "karpenter_node_iam_instance_profile" {
   description = "Karpenter Node IAM Instance profile id"
   type        = string
   default     = ""
+}
+
+variable "tag_product" {
+  description = "Tag for Product"
+  type        = string
+}
+
+variable "tag_environment" {
+  description = "Tag for Environment"
+  type        = string
 }

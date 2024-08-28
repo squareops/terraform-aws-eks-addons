@@ -19,11 +19,11 @@ affinity:
 
 resources:
   limits:
-    cpu: 20m
-    memory: 400Mi
-  requests:
     cpu: 10m
     memory: 200Mi
+  requests:
+    cpu: 5m
+    memory: 100Mi
 
 webhook:
   affinity:
@@ -38,11 +38,11 @@ webhook:
 
   resources:
     limits:
-      cpu: 20m
-      memory: 150Mi
-    requests:
       cpu: 10m
-      memory: 75Mi
+      memory: 100Mi
+    requests:
+      cpu: 8m
+      memory: 50Mi
 
 cainjector:
   affinity:
@@ -57,8 +57,8 @@ cainjector:
 
   resources:
     limits:
-      cpu: 20m
-      memory: 480Mi
+      cpu: 16m
+      memory: 300Mi
     requests:
-      cpu: 10m
-      memory: 240Mi
+      cpu: 8m
+      memory: 150Mi
