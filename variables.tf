@@ -528,6 +528,34 @@ variable "kubernetes_dashboard_config" {
   }
 }
 
+variable "argocd_enabled" {
+  description = "Determine weather argocd is enabled or not"
+  default = false
+  type = bool
+}
+
+variable "argocd_config" {
+  type = object({
+    hostname                     = string
+    values_yaml                  = any
+    redis_ha_enabled             = bool
+    autoscaling_enabled          = bool
+    slack_notification_token     = string
+    argocd_notifications_enabled = bool
+    ingress_class_name           = string
+  })
+
+   default = {
+    hostname                     = ""
+    values_yaml                  = {}
+    redis_ha_enabled             = false
+    autoscaling_enabled          = false
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = ""
+  }
+}
+
 variable "k8s_dashboard_hostname" {
   description = "Specify the hostname for the k8s dashboard. "
   default     = ""

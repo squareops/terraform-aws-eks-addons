@@ -263,6 +263,25 @@ module "vpa-crds" {
   helm-config = var.vpa_config.values[0]
 }
 
+## argocd
+module "argocd" {
+  source      = "./modules/argocd"
+  count       = var.argocd_enabled ? 1 : 0
+  argocd_config = {
+    hostname                     = var.argocd_config.hostname
+    values_yaml                  = var.argocd_config.values_yaml
+    redis_ha_enabled             = var.argocd_config.redis_ha_enabled
+    autoscaling_enabled          = var.argocd_config.autoscaling_enabled
+    slack_notification_token     = var.argocd_config.slack_notification_token
+    argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
+    ingress_class_name           = var.argocd_config.ingress_class_name
+  }
+}
+
+module "argocd-project" {
+  source = "./modules/argocd-projects"
+  depends_on = [ module.argocd ]
+}
 
 module "velero" {
   source                      = "./modules/velero"

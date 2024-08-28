@@ -59,3 +59,8 @@ output "k8s_dashboard_read_only_token" {
   description = "Kubernetes-Dashboard Read Only Token"
   value       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].k8s-dashboard-read-only-token : ""
 }
+
+output "argocd_credentials" {
+  description = "Argocd_Info"
+  value = var.argocd_enabled ? module.argocd[0].argocd : null
+}

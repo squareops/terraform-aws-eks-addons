@@ -146,6 +146,18 @@ module "eks-addons" {
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in"                                                      # Enter Hostname
   }
 
+  ## ArgoCD
+  argocd_enabled = true
+  argocd_config = {
+    hostname                     = "argocd.rnd.squareops.in"
+    values_yaml                  = file("${path.module}/config/argocd.yaml")
+    redis_ha_enabled             = true
+    autoscaling_enabled          = true
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+
   # VELERO
   velero_enabled              = false # to enable velero
   velero_notification_enabled = false # To enable slack notification for Velero
