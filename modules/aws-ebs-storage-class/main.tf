@@ -12,5 +12,7 @@ resource "kubernetes_storage_class_v1" "single_az_sc" {
     encrypted = true
     kmskeyId  = var.kms_key_id
     zone      = var.availability_zone
+    tagSpecification_1 ="Product=${var.tag_product}"
+    tagSpecification_2 = "Environment=${var.tag_environment}"
   }
 }

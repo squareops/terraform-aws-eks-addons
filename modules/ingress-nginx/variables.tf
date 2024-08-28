@@ -54,3 +54,13 @@ variable "namespace" {
   description = "Creates namespace for the controller need to install"
   type        = string
 }
+
+variable "tag_product" {
+  description = "Tag for Product"
+  type        = string
+}
+
+variable "tag_environment" {
+  description = "Tag for Environment"
+  type        = string
+}
