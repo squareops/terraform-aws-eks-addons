@@ -179,3 +179,4 @@ module "eks-addons" {
   ## FALCO
   falco_enabled = false # to enable falco
   slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
+}
