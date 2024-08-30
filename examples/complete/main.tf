@@ -151,6 +151,7 @@ module "eks-addons" {
   argocd_config = {
     hostname                     = "argocd.rnd.squareops.in"
     values_yaml                  = file("${path.module}/config/argocd.yaml")
+    namespace                    = "" # Give NameSpace
     redis_ha_enabled             = true
     autoscaling_enabled          = true
     slack_notification_token     = ""

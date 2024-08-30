@@ -276,6 +276,7 @@ module "argocd" {
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
     ingress_class_name           = var.argocd_config.ingress_class_name
   }
+  namespace                    = var.argocd_config.namespace
 }
 
 module "argocd-project" {

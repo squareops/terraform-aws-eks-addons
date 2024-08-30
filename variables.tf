@@ -543,6 +543,7 @@ variable "argocd_config" {
     slack_notification_token     = string
     argocd_notifications_enabled = bool
     ingress_class_name           = string
+    namespace                    = string
   })
 
    default = {
@@ -553,6 +554,7 @@ variable "argocd_config" {
     slack_notification_token     = ""
     argocd_notifications_enabled = false
     ingress_class_name           = ""
+    namespace                    = ""
   }
 }
 
