@@ -47,3 +47,8 @@ output "k8s_dashboard_read_only_token" {
   value       = module.eks-addons.k8s_dashboard_read_only_token
   description = "Kubernetes-Dashboard Read Only Token"
 }
+
+output "argocd" {
+  description = "ArgoCD Credentials"
+  value = module.eks-addons.argocd_credentials
+}
