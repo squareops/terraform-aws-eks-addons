@@ -50,5 +50,4 @@ spec:
         deleteOnTermination: true
   tags:
     Name: {{ .Values.ec2_node_name }} 
-    Product: {{ .Values.tag_product}}
-    Environment: {{ .Values.tag_environment }}
+

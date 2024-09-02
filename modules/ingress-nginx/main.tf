@@ -2,6 +2,7 @@ locals {
   namespace     = var.namespace
   nlb_scheme    = var.private_nlb_enabled ? "internal" : "internet-facing"
   template_path = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
+  additional_tags = join(",", [for k, v in var.addon_context.tags : "${k}=${v}"])
 
   # Read module's template file
   template_values = templatefile(local.template_path, {
@@ -9,8 +10,7 @@ locals {
     private_nlb_enabled    = var.private_nlb_enabled
     nlb_scheme             = local.nlb_scheme
     ingress_class_name     = var.ingress_class_name
-    tag_product                = var.tag_product
-    tag_environment            = var.tag_environment
+    additional_tags    = local.additional_tags  # Pass the dynamically created string
   })
 
   # Convert the template values to a map

@@ -156,8 +156,6 @@ module "ingress-nginx" {
   private_nlb_enabled    = var.private_nlb_enabled
   ingress_class_name     = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
-  tag_product                = var.tag_product
-  tag_environment            = var.tag_environment
 }
 
 # INGRESS-NGINX DATA SOURCE
@@ -191,8 +189,6 @@ module "karpenter-provisioner" {
   depends_on       = [module.karpenter]
   ipv6_enabled     = var.ipv6_enabled
   karpenter_config = var.karpenter_provisioner_config
-  tag_product                = var.tag_product
-  tag_environment            = var.tag_environment
 }
 
 ## KUBERNETES DASHBOARD
@@ -252,8 +248,7 @@ module "single-az-sc" {
   availability_zone                    = each.value.zone
   single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
   single_az_ebs_gp3_storage_class_name = each.value.name
-  tag_product                = var.tag_product
-  tag_environment            = var.tag_environment
+  tags_all                             = var.tags
 }
 
 ## SERVICE MONITOR CRD
