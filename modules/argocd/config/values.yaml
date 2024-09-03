@@ -162,7 +162,7 @@ notifications:
         release: "prometheus-operator"
   notifiers:
     service.slack: |
-      token: $slack-token
+      token: ${slack_token}
   resources:
     limits:
       cpu: 200m
@@ -433,3 +433,9 @@ notifications:
     #For more information: https://argocd-notifications.readthedocs.io/en/stable/triggers/#default-triggers
     defaultTriggers: |
       - on-sync-status-unknown
+
+crds:
+  # -- Install and upgrade CRDs
+  install: true
+  # -- Keep CRDs on chart uninstall
+  keep: false

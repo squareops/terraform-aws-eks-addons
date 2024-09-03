@@ -264,8 +264,14 @@ module "vpa-crds" {
 }
 
 ## argocd
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = var.argocd_config.namespace
+  }
+}
 module "argocd" {
   source      = "./modules/argocd"
+  depends_on = [ kubernetes_namespace.argocd ]
   count       = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -279,9 +285,25 @@ module "argocd" {
   namespace                    = var.argocd_config.namespace
 }
 
-module "argocd-project" {
+# argo-workflow
+module "argocd-workflow" {
+  source = "./modules/argocd-workflow"
+  depends_on = [ kubernetes_namespace.argocd ]
+  count = var.argoworkflow_enabled ? 1 : 0
+  argoworkflow_config = {
+    values = var.argoworkflow_config.values
+    hostname = var.argoworkflow_config.hostname
+    ingress_class_name = var.argoworkflow_config.ingress_class_name
+  }
+  namespace = var.argoworkflow_config.namespace
+}
+
+# argo-project
+module "argo-project" {
   source = "./modules/argocd-projects"
-  depends_on = [ module.argocd ]
+  count = var.argoworkflow_enabled ? 1 : 0
+  depends_on = [ module.argocd, kubernetes_namespace.argocd ]
+  namespace = var.argoworkflow_config.namespace
 }
 
 module "velero" {

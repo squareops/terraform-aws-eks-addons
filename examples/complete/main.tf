@@ -7,6 +7,7 @@ locals {
     Expires    = "Never"
     Department = "Engineering"
   }
+  argocd_namespace = "atmosly" # Give Namespace
   kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled = false
 }
@@ -151,11 +152,20 @@ module "eks-addons" {
   argocd_config = {
     hostname                     = "argocd.rnd.squareops.in"
     values_yaml                  = file("${path.module}/config/argocd.yaml")
-    namespace                    = "" # Give NameSpace
+    namespace                    = local.argocd_namespace 
     redis_ha_enabled             = true
     autoscaling_enabled          = true
     slack_notification_token     = ""
     argocd_notifications_enabled = false
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+
+  ## ArgoCD-Workflow
+  argoworkflow_enabled = true
+  argoworkflow_config = {
+    values                       = file("${path.module}/config/argocd-workflow.yaml")
+    namespace                    = local.argocd_namespace
+    hostname                     = "argocd-workflow.rnd.squareops.in"
     ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
 

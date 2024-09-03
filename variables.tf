@@ -529,7 +529,7 @@ variable "kubernetes_dashboard_config" {
 }
 
 variable "argocd_enabled" {
-  description = "Determine weather argocd is enabled or not"
+  description = "Determine whether argocd is enabled or not"
   default = false
   type = bool
 }
@@ -554,7 +554,29 @@ variable "argocd_config" {
     slack_notification_token     = ""
     argocd_notifications_enabled = false
     ingress_class_name           = ""
-    namespace                    = ""
+    namespace                    = "argocd"
+  }
+}
+
+variable "argoworkflow_enabled" {
+  description = "Determine whether argocd-workflow is enabled or not"
+  default = false
+  type = bool
+}
+
+variable "argoworkflow_config" { 
+  type = object({
+    values = any
+    namespace = string
+    hostname = string
+    ingress_class_name = string
+  })
+
+  default = {
+    values = {}
+    namespace = "argocd"
+    hostname = ""
+    ingress_class_name = ""
   }
 }
 

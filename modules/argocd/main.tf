@@ -1,11 +1,4 @@
-resource "kubernetes_namespace" "argocd" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 resource "helm_release" "argocd_deploy" {
-  depends_on = [kubernetes_namespace.argocd]
   name       = "argo-cd"
   chart      = "argo-cd"
   timeout    = 600
