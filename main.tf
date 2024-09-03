@@ -265,8 +265,9 @@ module "vpa-crds" {
 
 ## argocd
 resource "kubernetes_namespace" "argocd" {
+  count = var.argoworkflow_enabled || var.argocd_enabled ? 1 : 0
   metadata {
-    name = var.argocd_config.namespace
+    name = var.argocd_enabled ? var.argocd_config.namespace : var.argoworkflow_config.namespace
   }
 }
 module "argocd" {
@@ -301,9 +302,9 @@ module "argocd-workflow" {
 # argo-project
 module "argo-project" {
   source = "./modules/argocd-projects"
-  count = var.argoworkflow_enabled ? 1 : 0
+  count = var.argocd_enabled ? 1 : 0
   depends_on = [ module.argocd, kubernetes_namespace.argocd ]
-  namespace = var.argoworkflow_config.namespace
+  namespace = var.argocd_config.namespace
 }
 
 module "velero" {
