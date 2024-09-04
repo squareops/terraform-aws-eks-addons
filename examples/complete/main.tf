@@ -148,7 +148,7 @@ module "eks-addons" {
   }
 
   ## ArgoCD
-  argocd_enabled = true
+  argocd_enabled = false
   argocd_config = {
     hostname                     = "argocd.rnd.squareops.in"
     values_yaml                  = file("${path.module}/config/argocd.yaml")
@@ -159,9 +159,12 @@ module "eks-addons" {
     argocd_notifications_enabled = false
     ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
+  argoproject_config = {
+    name = "argo-project" # enter name for aro-project appProjects
+  }
 
   ## ArgoCD-Workflow
-  argoworkflow_enabled = true
+  argoworkflow_enabled = false
   argoworkflow_config = {
     values                       = file("${path.module}/config/argocd-workflow.yaml")
     namespace                    = local.argocd_namespace

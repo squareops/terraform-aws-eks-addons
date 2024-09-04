@@ -304,6 +304,7 @@ module "argo-project" {
   source = "./modules/argocd-projects"
   count = var.argocd_enabled ? 1 : 0
   depends_on = [ module.argocd, kubernetes_namespace.argocd ]
+  name = var.argoproject_config.name
   namespace = var.argocd_config.namespace
 }
 

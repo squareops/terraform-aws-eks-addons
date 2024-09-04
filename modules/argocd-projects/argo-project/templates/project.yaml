@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: argocd-project
-  namespace: argocd
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
 spec:
   clusterResourceWhitelist:
   - group: '*'

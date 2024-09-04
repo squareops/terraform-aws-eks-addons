@@ -3,3 +3,9 @@ variable "namespace" {
   default = ""
   type = string
 }
+
+variable "name" {
+  description = "Name of argo-project"
+  default = ""
+  type = string
+}

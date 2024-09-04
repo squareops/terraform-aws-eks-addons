@@ -580,6 +580,16 @@ variable "argoworkflow_config" {
   }
 }
 
+variable "argoproject_config" {
+  type = object({
+    name                         = string
+  })
+
+   default = {
+    name                         = ""
+  }
+}
+
 variable "k8s_dashboard_hostname" {
   description = "Specify the hostname for the k8s dashboard. "
   default     = ""
