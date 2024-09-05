@@ -7,7 +7,6 @@ locals {
   template_values = templatefile("${path.module}/config/karpenter.yaml", {
     eks_cluster_id            = var.addon_context.eks_cluster_id,
     eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
-    node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
   })
 
   template_values_map = yamldecode(local.template_values)
@@ -27,14 +26,12 @@ locals {
       name       = local.name
       chart      = local.name
       repository = "oci://public.ecr.aws/karpenter"
-      version    = "v0.32.10"
+      version    = "0.37.0"
       namespace  = local.name
       values = [yamlencode(merge(
         yamldecode(<<-EOT
               clusterName: ${var.addon_context.eks_cluster_id}
               clusterEndpoint: ${var.addon_context.aws_eks_cluster_endpoint}
-              aws:
-                defaultInstanceProfile: ${local.node_iam_instance_profile}
             EOT
       ), local.template_values_map, var.karpenter_helm_config))]
       description = "karpenter Helm Chart for Node Autoscaling"

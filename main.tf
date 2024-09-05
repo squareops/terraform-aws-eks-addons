@@ -184,17 +184,6 @@ module "karpenter" {
   kms_key_arn               = var.karpenter_enabled ? var.kms_key_arn : ""
 }
 
-## Karpenter-provisioner
-module "karpenter-provisioner" {
-  source           = "./modules/karpenter-provisioner"
-  count            = var.karpenter_provisioner_enabled ? 1 : 0
-  depends_on       = [module.karpenter]
-  ipv6_enabled     = var.ipv6_enabled
-  karpenter_config = var.karpenter_provisioner_config
-  tag_product                = var.tag_product
-  tag_environment            = var.tag_environment
-}
-
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
