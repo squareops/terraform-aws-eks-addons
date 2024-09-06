@@ -26,7 +26,7 @@ locals {
       name       = local.name
       chart      = local.name
       repository = "oci://public.ecr.aws/karpenter"
-      version    = "0.37.0"
+      version    = "1.0.0"
       namespace  = local.name
       values = [yamlencode(merge(
         yamldecode(<<-EOT
