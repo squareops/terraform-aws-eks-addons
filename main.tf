@@ -269,6 +269,50 @@ module "vpa-crds" {
   helm-config = var.vpa_config.values[0]
 }
 
+## argocd
+resource "kubernetes_namespace" "argocd" {
+  count = var.argoworkflow_enabled || var.argocd_enabled ? 1 : 0
+  metadata {
+    name = var.argocd_enabled ? var.argocd_config.namespace : var.argoworkflow_config.namespace
+  }
+}
+module "argocd" {
+  source      = "./modules/argocd"
+  depends_on = [ kubernetes_namespace.argocd ]
+  count       = var.argocd_enabled ? 1 : 0
+  argocd_config = {
+    hostname                     = var.argocd_config.hostname
+    values_yaml                  = var.argocd_config.values_yaml
+    redis_ha_enabled             = var.argocd_config.redis_ha_enabled
+    autoscaling_enabled          = var.argocd_config.autoscaling_enabled
+    slack_notification_token     = var.argocd_config.slack_notification_token
+    argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
+    ingress_class_name           = var.argocd_config.ingress_class_name
+  }
+  namespace                    = var.argocd_config.namespace
+}
+
+# argo-workflow
+module "argocd-workflow" {
+  source = "./modules/argocd-workflow"
+  depends_on = [ kubernetes_namespace.argocd ]
+  count = var.argoworkflow_enabled ? 1 : 0
+  argoworkflow_config = {
+    values = var.argoworkflow_config.values
+    hostname = var.argoworkflow_config.hostname
+    ingress_class_name = var.argoworkflow_config.ingress_class_name
+  }
+  namespace = var.argoworkflow_config.namespace
+}
+
+# argo-project
+module "argo-project" {
+  source = "./modules/argocd-projects"
+  count = var.argocd_enabled ? 1 : 0
+  depends_on = [ module.argocd, kubernetes_namespace.argocd ]
+  name = var.argoproject_config.name
+  namespace = var.argocd_config.namespace
+}
 
 module "velero" {
   source                      = "./modules/velero"

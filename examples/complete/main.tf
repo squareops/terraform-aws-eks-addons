@@ -9,6 +9,7 @@ locals {
     Product    = ""
     Environment = local.environment
   }
+  argocd_namespace = "atmosly" # Give Namespace
   kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled = false
 }
@@ -147,6 +148,31 @@ module "eks-addons" {
     private_alb_enabled                 = false                                                                                 # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn             = "arn:aws:acm:us-east-1:381491984451:certificate/b7fe797d-cefd-4272-94b3-1ef668eb79a3" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in"                                                      # Enter Hostname
+  }
+
+  ## ArgoCD
+  argocd_enabled = false
+  argocd_config = {
+    hostname                     = "argocd.rnd.squareops.in"
+    values_yaml                  = file("${path.module}/config/argocd.yaml")
+    namespace                    = local.argocd_namespace 
+    redis_ha_enabled             = true
+    autoscaling_enabled          = true
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+  argoproject_config = {
+    name = "argo-project" # enter name for aro-project appProjects
+  }
+
+  ## ArgoCD-Workflow
+  argoworkflow_enabled = false
+  argoworkflow_config = {
+    values                       = file("${path.module}/config/argocd-workflow.yaml")
+    namespace                    = local.argocd_namespace
+    hostname                     = "argocd-workflow.rnd.squareops.in"
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
 
   # VELERO
