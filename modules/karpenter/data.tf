@@ -26,6 +26,12 @@ data "aws_iam_policy_document" "karpenter" {
       "iam:PassRole",
       "pricing:GetProducts",
       "ssm:GetParameter",
+      "iam:CreateInstanceProfile",
+      "iam:TagInstanceProfile",
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+      "iam:DeleteInstanceProfile",
+      "iam:GetInstanceProfile",
     ]
   }
 
