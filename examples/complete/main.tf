@@ -40,8 +40,6 @@ module "eks-addons" {
   ## EBS-STORAGE-CLASS
   single_az_ebs_gp3_storage_class_enabled = false # to enable ebs gp3 storage class
   single_az_sc_config                     = [{ name = "infra-service-sc", zone = "${local.region}a" }]
-  tag_product                             = local.additional_tags.Product
-  tag_environment                         = local.environment
 
   ## EfS-STORAGE-CLASS
   efs_storage_class_enabled = false # to enable EBS storage class

@@ -21,12 +21,8 @@ variable "availability_zone" {
   description = "List of Azs"
 }
 
-variable "tag_product" {
-  description = "Tag for Product"
-  type        = string
-}
-
-variable "tag_environment" {
-  description = "Tag for Environment"
-  type        = string
+variable "tags_all" {
+  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
+  type        = map(string)
+  default     = {}
 }

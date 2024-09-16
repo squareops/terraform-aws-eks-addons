@@ -656,12 +656,4 @@ variable "karpenter_node_iam_instance_profile" {
   default     = ""
 }
 
-variable "tag_product" {
-  description = "Tag for Product"
-  type        = string
-}
 
-variable "tag_environment" {
-  description = "Tag for Environment"
-  type        = string
-}

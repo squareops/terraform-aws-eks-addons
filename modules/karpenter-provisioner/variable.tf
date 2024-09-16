@@ -24,12 +24,3 @@ variable "ipv6_enabled" {
   default     = false
 }
 
-variable "tag_product" {
-  description = "Tag for Product"
-  type        = string
-}
-
-variable "tag_environment" {
-  description = "Tag for Environment"
-  type        = string
-}

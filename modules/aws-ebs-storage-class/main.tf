@@ -7,12 +7,13 @@ resource "kubernetes_storage_class_v1" "single_az_sc" {
   reclaim_policy         = "Retain"
   allow_volume_expansion = true
   volume_binding_mode    = "WaitForFirstConsumer"
-  parameters = {
-    type      = "gp3"
-    encrypted = true
-    kmskeyId  = var.kms_key_id
-    zone      = var.availability_zone
-    tagSpecification_1 ="Product=${var.tag_product}"
-    tagSpecification_2 = "Environment=${var.tag_environment}"
-  }
+  parameters = merge(
+    {
+      type      = "gp3"
+      encrypted = true
+      kmskeyId  = var.kms_key_id
+      zone      = var.availability_zone
+    },
+    { for k, v in var.tags_all : "tagSpecification_${k}" => "${k}=${v}" }
+  )
 }
