@@ -64,3 +64,14 @@ output "argocd_credentials" {
   description = "Argocd_Info"
   value = var.argocd_enabled ? module.argocd[0].argocd : null
 }
+
+output "argoworkflow_hostname" {
+  description = "Argocd Workflow hostname"
+  value = var.argoworkflow_enabled ? module.argocd-workflow[0].argoworkflow_host : null
+}
+
+output "argoworkflow_credentials" {
+  description = "Argocd Workflow credentials"
+  value = var.argoworkflow_enabled ? module.argocd-workflow[0].argo_workflow_token : null
+}
+
