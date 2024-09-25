@@ -52,3 +52,13 @@ output "argocd" {
   description = "ArgoCD Credentials"
   value = module.eks-addons.argocd_credentials
 }
+
+output "argoworkflow_hostname" {
+  description = "Argocd Workflow hostname"
+  value = module.eks-addons.argoworkflow_hostname
+}
+
+output "argoworkflow_credentials" {
+  description = "Argocd Workflow credentials"
+  value = module.eks-addons.argoworkflow_credentials
+}

@@ -50,7 +50,7 @@ module "aws-efs-filesystem-with-storage-class" {
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   source                        = "./modules/aws-load-balancer-controller"
-  count                         = var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb" ? 1 : 0
+  count                         = (var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb") ? 1 : 0
   helm_config                   = var.aws_load_balancer_controller_helm_config.values
   manage_via_gitops             = var.argocd_manage_add_ons
   addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
@@ -195,7 +195,7 @@ module "karpenter-provisioner" {
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd]
+  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd, module.aws-load-balancer-controller]
   k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
