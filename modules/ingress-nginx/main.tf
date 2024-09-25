@@ -27,6 +27,7 @@ resource "kubernetes_namespace" "this" {
 }
 
 module "helm_addon" {
+  depends_on = [ kubernetes_namespace.this ]
   source = "../helm-addon"
   helm_config = merge(
     {
