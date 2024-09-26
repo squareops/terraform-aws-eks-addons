@@ -656,4 +656,20 @@ variable "karpenter_node_iam_instance_profile" {
   default     = ""
 }
 
+variable "cluster_propotional_autoscaler_enabled" {
+  description = "Whether to enable the Cluster propotional Autoscaler add-on or not."
+  default     = true
+  type        = bool
+}
 
+variable "cluster_propotional_autoscaler_chart_version" {
+  description = "Version of the cluster propotional autoscaler helm chart"
+  default     = "1.1.0"
+  type        = string
+}
+
+variable "cluster_propotional_autoscaler_helm_config" {
+description = "Configuration options for the Cluster Propotional Autoscaler Helm chart."
+  type        = any
+  default     = {}
+}

@@ -1,5 +1,5 @@
 variable "helm_config" {
-  description = "Helm provider config for the Karpenter"
+  description = "Helm provider config for cluster proportional autoscaler "
   type        = any
   default     = {}
 }
@@ -23,4 +23,10 @@ variable "addon_context" {
     eks_oidc_provider_arn          = string
     tags                           = map(string)
   })
+}
+
+variable "enable_service_monitor" {
+  description = "Enable Service monitor for Kubernetes Services"
+  type        = bool
+  default     = false
 }

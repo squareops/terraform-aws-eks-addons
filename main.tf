@@ -122,6 +122,17 @@ module "cluster-autoscaler" {
   addon_context     = local.addon_context
 }
 
+module "cluster-propotional-autoscaler" {
+  source            = "./modules/cluster-propotional-autoscaler"
+  count             = var.cluster_propotional_autoscaler_enabled ? 1 : 0
+  helm_config       = {
+    version = var.cluster_propotional_autoscaler_chart_version
+    values = var.cluster_propotional_autoscaler_helm_config
+  }
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}
+
 ## COREDNS HPA
 module "coredns_hpa" {
   source      = "./modules/core-dns-hpa"
@@ -503,3 +514,5 @@ resource "helm_release" "falco" {
     })
   ]
 }
+
+
