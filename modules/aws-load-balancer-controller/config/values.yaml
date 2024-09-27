@@ -18,6 +18,6 @@ serviceMutatorWebhookConfig:
     meta.helm.sh/release-name: ${load_balancer_controller_name}
     meta.helm.sh/release-namespace: ${namespace}
 
-enableCertManager: true
+# enableCertManager: true
 
 nameOverride: ${load_balancer_controller_name}
