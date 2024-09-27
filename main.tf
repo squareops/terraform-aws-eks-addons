@@ -296,6 +296,7 @@ module "argocd-workflow" {
     values = var.argoworkflow_config.values
     hostname = var.argoworkflow_config.hostname
     ingress_class_name = var.argoworkflow_config.ingress_class_name
+    autoscaling_enabled = var.argoworkflow_config.autoscaling_enabled
   }
   namespace = var.argoworkflow_config.namespace
 }

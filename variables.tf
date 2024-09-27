@@ -570,6 +570,7 @@ variable "argoworkflow_config" {
     namespace = string
     hostname = string
     ingress_class_name = string
+    autoscaling_enabled = bool
   })
 
   default = {
@@ -577,6 +578,7 @@ variable "argoworkflow_config" {
     namespace = "argocd"
     hostname = ""
     ingress_class_name = ""
+    autoscaling_enabled = true
   }
 }
 
