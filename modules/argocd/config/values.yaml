@@ -45,6 +45,10 @@ repoServer:
       enabled: true
   autoscaling:
     enabled: ${autoscaling_enabled}
+    # -- Average CPU utilization percentage for the repo server [HPA]
+    targetCPUUtilizationPercentage: 70
+    # -- Average memory utilization percentage for the repo server [HPA]
+    targetMemoryUtilizationPercentage: 70    
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -92,6 +96,10 @@ server:
         release: "prometheus-operator"
   autoscaling:
     enabled: ${autoscaling_enabled}
+    # -- Average CPU utilization percentage for the Argo CD server [HPA]
+    targetCPUUtilizationPercentage: 70
+    # -- Average memory utilization percentage for the Argo CD server [HPA]
+    targetMemoryUtilizationPercentage: 70    
   # Argo CD server ingress configuration
   ingress:
     enabled: true
@@ -147,6 +155,9 @@ redis-ha:
   enabled: ${redis_ha_enable}
   exporter:
     enabled: true
+  hardAntiAffinity: false
+  haproxy:
+    hardAntiAffinity: false
 
 ## Notifications controller
 notifications:
