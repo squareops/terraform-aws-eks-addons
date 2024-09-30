@@ -169,6 +169,7 @@ module "eks-addons" {
   argoworkflow_config = {
     values                       = file("${path.module}/config/argocd-workflow.yaml")
     namespace                    = local.argocd_namespace
+    autoscaling_enabled          = true
     hostname                     = "argocd-workflow.rnd.squareops.in"
     ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
