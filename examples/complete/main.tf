@@ -10,7 +10,7 @@ locals {
     Environment = local.environment
   }
   argocd_namespace = "atmosly" # Give Namespace
-  kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
+  kms_key_arn  = "" # pass ARN of EKS created KMS key
   ipv6_enabled = false
 }
 
@@ -18,7 +18,7 @@ module "eks-addons" {
   source               = "../.."
   name                 = local.name
   tags                 = local.additional_tags
-  vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
+   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
   private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Subnet IDs
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
@@ -57,6 +57,10 @@ module "eks-addons" {
   ## CLUSTER-AUTOSCALER
   cluster_autoscaler_enabled     = false # to enable cluster autoscaller
   cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
+
+
+  cluster_propotional_autoscaler_enabled    = false  # to enable cluster proportional autoscaler
+  cluster_propotional_autoscaler_helm_config = [file("${path.module}/config/cluster-propotional_autoscaler.yaml")]
 
   ## NODE-TERMINATION-HANDLER
   aws_node_termination_handler_enabled = false # to enable node termination handler
