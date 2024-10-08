@@ -3,15 +3,15 @@ locals {
   environment = ""
   name        = ""
   additional_tags = {
-    Owner      = "Organization_Name"
-    Expires    = "Never"
-    Department = "Engineering"
-    Product    = ""
+    Owner       = "Organization_Name"
+    Expires     = "Never"
+    Department  = "Engineering"
+    Product     = ""
     Environment = local.environment
   }
-  argocd_namespace = "atmosly" # Give Namespace
-  kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
-  ipv6_enabled = false
+  argocd_namespace = "atmosly"                                       # Give Namespace
+  kms_key_arn      = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
+  ipv6_enabled     = false
 }
 
 module "eks-addons" {
@@ -63,6 +63,7 @@ module "eks-addons" {
   aws_node_termination_handler_helm_config = {
     values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
     enable_service_monitor = false # to enable monitoring for node termination handler
+    enable_notifications   = true
   }
 
   ## KEDA
@@ -78,7 +79,7 @@ module "eks-addons" {
   }
 
   ## KARPENTER-PROVISIONER
- karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
+  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
   karpenter_provisioner_config = {
     provisioner_name              = format("karpenter-provisioner-%s", local.name)
     karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
@@ -135,7 +136,7 @@ module "eks-addons" {
   aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
     values                        = [file("${path.module}/config/aws-alb.yaml")]
-    namespace                     = "alb"       # enter namespace according to the requirement (example: "alb")
+    namespace                     = "alb" # enter namespace according to the requirement (example: "alb")
     load_balancer_controller_name = "alb" # enter ingress class name according to your requirement (example: "aws-load-balancer-controller")
   }
 
@@ -153,7 +154,7 @@ module "eks-addons" {
   argocd_config = {
     hostname                     = "argocd.rnd.squareops.in"
     values_yaml                  = file("${path.module}/config/argocd.yaml")
-    namespace                    = local.argocd_namespace 
+    namespace                    = local.argocd_namespace
     redis_ha_enabled             = true
     autoscaling_enabled          = true
     slack_notification_token     = ""
@@ -167,11 +168,11 @@ module "eks-addons" {
   ## ArgoCD-Workflow
   argoworkflow_enabled = false
   argoworkflow_config = {
-    values                       = file("${path.module}/config/argocd-workflow.yaml")
-    namespace                    = local.argocd_namespace
-    autoscaling_enabled          = true
-    hostname                     = "argocd-workflow.rnd.squareops.in"
-    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    values              = file("${path.module}/config/argocd-workflow.yaml")
+    namespace           = local.argocd_namespace
+    autoscaling_enabled = true
+    hostname            = "argocd-workflow.rnd.squareops.in"
+    ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
 
   # VELERO

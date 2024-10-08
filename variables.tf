@@ -530,8 +530,8 @@ variable "kubernetes_dashboard_config" {
 
 variable "argocd_enabled" {
   description = "Determine whether argocd is enabled or not"
-  default = false
-  type = bool
+  default     = false
+  type        = bool
 }
 
 variable "argocd_config" {
@@ -546,7 +546,7 @@ variable "argocd_config" {
     namespace                    = string
   })
 
-   default = {
+  default = {
     hostname                     = ""
     values_yaml                  = {}
     redis_ha_enabled             = false
@@ -560,35 +560,35 @@ variable "argocd_config" {
 
 variable "argoworkflow_enabled" {
   description = "Determine whether argocd-workflow is enabled or not"
-  default = false
-  type = bool
+  default     = false
+  type        = bool
 }
 
-variable "argoworkflow_config" { 
+variable "argoworkflow_config" {
   type = object({
-    values = any
-    namespace = string
-    hostname = string
-    ingress_class_name = string
+    values              = any
+    namespace           = string
+    hostname            = string
+    ingress_class_name  = string
     autoscaling_enabled = bool
   })
 
   default = {
-    values = {}
-    namespace = "argocd"
-    hostname = ""
-    ingress_class_name = ""
+    values              = {}
+    namespace           = "argocd"
+    hostname            = ""
+    ingress_class_name  = ""
     autoscaling_enabled = true
   }
 }
 
 variable "argoproject_config" {
   type = object({
-    name                         = string
+    name = string
   })
 
-   default = {
-    name                         = ""
+  default = {
+    name = ""
   }
 }
 
@@ -657,5 +657,3 @@ variable "karpenter_node_iam_instance_profile" {
   type        = string
   default     = ""
 }
-
-

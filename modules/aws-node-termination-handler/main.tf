@@ -31,6 +31,7 @@ resource "aws_autoscaling_group_tag" "aws_node_termination_handler_tag" {
 
 #tfsec:ignore:aws-sqs-enable-queue-encryption
 resource "aws_sqs_queue" "aws_node_termination_handler_queue" {
+  count                     = var.enable_notifications ? 1 : 0
   name_prefix               = "aws_node_termination_handler"
   message_retention_seconds = "300"
   sqs_managed_sse_enabled   = true
@@ -38,8 +39,9 @@ resource "aws_sqs_queue" "aws_node_termination_handler_queue" {
 }
 
 resource "aws_sqs_queue_policy" "aws_node_termination_handler_queue_policy" {
-  queue_url = aws_sqs_queue.aws_node_termination_handler_queue.id
-  policy    = data.aws_iam_policy_document.aws_node_termination_handler_queue_policy_document.json
+  count     = var.enable_notifications ? 1 : 0
+  queue_url = aws_sqs_queue.aws_node_termination_handler_queue[0].id
+  policy    = data.aws_iam_policy_document.aws_node_termination_handler_queue_policy_document[0].json
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_rule" {
@@ -53,7 +55,7 @@ resource "aws_cloudwatch_event_target" "aws_node_termination_handler_rule_target
   count = length(aws_cloudwatch_event_rule.aws_node_termination_handler_rule)
 
   rule = aws_cloudwatch_event_rule.aws_node_termination_handler_rule[count.index].id
-  arn  = aws_sqs_queue.aws_node_termination_handler_queue.arn
+  arn  = aws_sqs_queue.aws_node_termination_handler_queue[0].arn
 }
 
 resource "aws_iam_policy" "aws_node_termination_handler_irsa" {

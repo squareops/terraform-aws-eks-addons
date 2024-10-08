@@ -70,6 +70,7 @@ module "aws-node-termination-handler" {
   autoscaling_group_names = var.auto_scaling_group_names
   addon_context           = local.addon_context
   enable_service_monitor  = var.aws_node_termination_handler_helm_config.enable_service_monitor
+  enable_notifications    = var.aws_node_termination_handler_helm_config.enable_notifications
 }
 
 ## VPC-CNI
@@ -272,9 +273,9 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 module "argocd" {
-  source      = "./modules/argocd"
-  depends_on = [ kubernetes_namespace.argocd ]
-  count       = var.argocd_enabled ? 1 : 0
+  source     = "./modules/argocd"
+  depends_on = [kubernetes_namespace.argocd]
+  count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
     values_yaml                  = var.argocd_config.values_yaml
@@ -284,18 +285,18 @@ module "argocd" {
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
     ingress_class_name           = var.argocd_config.ingress_class_name
   }
-  namespace                    = var.argocd_config.namespace
+  namespace = var.argocd_config.namespace
 }
 
 # argo-workflow
 module "argocd-workflow" {
-  source = "./modules/argocd-workflow"
-  depends_on = [ kubernetes_namespace.argocd ]
-  count = var.argoworkflow_enabled ? 1 : 0
+  source     = "./modules/argocd-workflow"
+  depends_on = [kubernetes_namespace.argocd]
+  count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
-    values = var.argoworkflow_config.values
-    hostname = var.argoworkflow_config.hostname
-    ingress_class_name = var.argoworkflow_config.ingress_class_name
+    values              = var.argoworkflow_config.values
+    hostname            = var.argoworkflow_config.hostname
+    ingress_class_name  = var.argoworkflow_config.ingress_class_name
     autoscaling_enabled = var.argoworkflow_config.autoscaling_enabled
   }
   namespace = var.argoworkflow_config.namespace
@@ -303,11 +304,11 @@ module "argocd-workflow" {
 
 # argo-project
 module "argo-project" {
-  source = "./modules/argocd-projects"
-  count = var.argocd_enabled ? 1 : 0
-  depends_on = [ module.argocd, kubernetes_namespace.argocd ]
-  name = var.argoproject_config.name
-  namespace = var.argocd_config.namespace
+  source     = "./modules/argocd-projects"
+  count      = var.argocd_enabled ? 1 : 0
+  depends_on = [module.argocd, kubernetes_namespace.argocd]
+  name       = var.argoproject_config.name
+  namespace  = var.argocd_config.namespace
 }
 
 module "velero" {

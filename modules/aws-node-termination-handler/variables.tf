@@ -37,3 +37,15 @@ variable "enable_service_monitor" {
   type        = bool
   default     = false
 }
+
+variable "enable_notifications" {
+  description = "Enable creating event rules and SQS queues to send notifications to all SQS subscribers once an event is triggered."
+  default     = true
+  type        = bool
+}
+
+variable "chart_version" {
+  description = "AWS Node Termination Handler helm chart version"
+  type        = string
+  default     = "0.21.0"
+}
