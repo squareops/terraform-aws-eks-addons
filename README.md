@@ -340,6 +340,9 @@ Velero is designed to work with cloud native environments, making it a popular c
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_argo-project"></a> [argo-project](#module\_argo-project) | ./modules/argocd-projects | n/a |
+| <a name="module_argocd"></a> [argocd](#module\_argocd) | ./modules/argocd | n/a |
+| <a name="module_argocd-workflow"></a> [argocd-workflow](#module\_argocd-workflow) | ./modules/argocd-workflow | n/a |
 | <a name="module_aws-ebs-csi-driver"></a> [aws-ebs-csi-driver](#module\_aws-ebs-csi-driver) | ./modules/aws-ebs-csi-driver | n/a |
 | <a name="module_aws-efs-csi-driver"></a> [aws-efs-csi-driver](#module\_aws-efs-csi-driver) | ./modules/aws-efs-csi-driver | n/a |
 | <a name="module_aws-efs-filesystem-with-storage-class"></a> [aws-efs-filesystem-with-storage-class](#module\_aws-efs-filesystem-with-storage-class) | ./modules/aws-efs-filesystem-with-storage-class | n/a |
@@ -373,6 +376,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | [helm_release.falco](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.kubeclarity](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [kubernetes_ingress_v1.kubecost](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
+| [kubernetes_namespace.argocd](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.falco](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
 | [kubernetes_namespace.kube-clarity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
@@ -397,7 +401,12 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
 | <a name="input_amazon_eks_aws_ebs_csi_driver_config"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_config](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_config) | configMap for AWS EBS CSI Driver add-on | `any` | `{}` | no |
 | <a name="input_amazon_eks_vpc_cni_enabled"></a> [amazon\_eks\_vpc\_cni\_enabled](#input\_amazon\_eks\_vpc\_cni\_enabled) | Enable or disable the installation of the Amazon EKS VPC CNI addon. | `bool` | `false` | no |
+| <a name="input_argocd_config"></a> [argocd\_config](#input\_argocd\_config) | n/a | <pre>object({<br>    hostname                     = string<br>    values_yaml                  = any<br>    redis_ha_enabled             = bool<br>    autoscaling_enabled          = bool<br>    slack_notification_token     = string<br>    argocd_notifications_enabled = bool<br>    ingress_class_name           = string<br>    namespace                    = string<br>  })</pre> | <pre>{<br>  "argocd_notifications_enabled": false,<br>  "autoscaling_enabled": false,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "redis_ha_enabled": false,<br>  "slack_notification_token": "",<br>  "values_yaml": {}<br>}</pre> | no |
+| <a name="input_argocd_enabled"></a> [argocd\_enabled](#input\_argocd\_enabled) | Determine whether argocd is enabled or not | `bool` | `false` | no |
 | <a name="input_argocd_manage_add_ons"></a> [argocd\_manage\_add\_ons](#input\_argocd\_manage\_add\_ons) | Enable managing add-on configuration via ArgoCD App of Apps | `bool` | `false` | no |
+| <a name="input_argoproject_config"></a> [argoproject\_config](#input\_argoproject\_config) | n/a | <pre>object({<br>    name = string<br>  })</pre> | <pre>{<br>  "name": ""<br>}</pre> | no |
+| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values              = any<br>    namespace           = string<br>    hostname            = string<br>    ingress_class_name  = string<br>    autoscaling_enabled = bool<br>  })</pre> | <pre>{<br>  "autoscaling_enabled": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argoworkflow_enabled"></a> [argoworkflow\_enabled](#input\_argoworkflow\_enabled) | Determine whether argocd-workflow is enabled or not | `bool` | `false` | no |
 | <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_load_balancer_controller_enabled"></a> [aws\_load\_balancer\_controller\_enabled](#input\_aws\_load\_balancer\_controller\_enabled) | Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes. | `bool` | `false` | no |
@@ -490,6 +499,9 @@ Velero is designed to work with cloud native environments, making it a popular c
 
 | Name | Description |
 |------|-------------|
+| <a name="output_argocd_credentials"></a> [argocd\_credentials](#output\_argocd\_credentials) | Argocd\_Info |
+| <a name="output_argoworkflow_credentials"></a> [argoworkflow\_credentials](#output\_argoworkflow\_credentials) | Argocd Workflow credentials |
+| <a name="output_argoworkflow_hostname"></a> [argoworkflow\_hostname](#output\_argoworkflow\_hostname) | Argocd Workflow hostname |
 | <a name="output_defectdojo"></a> [defectdojo](#output\_defectdojo) | DefectDojo endpoint and credentials |
 | <a name="output_ebs_encryption_enable"></a> [ebs\_encryption\_enable](#output\_ebs\_encryption\_enable) | Whether Amazon Elastic Block Store (EBS) encryption is enabled or not. |
 | <a name="output_efs_id"></a> [efs\_id](#output\_efs\_id) | ID of the Amazon Elastic File System (EFS) that has been created for the EKS cluster. |
