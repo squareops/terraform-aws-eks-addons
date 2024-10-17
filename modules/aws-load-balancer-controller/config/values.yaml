@@ -9,15 +9,6 @@ ingressClassParams:
   create: true
   webhookServiceName: ${load_balancer_controller_name}-webhook-service
 
-serviceMutatorWebhookConfig:
-  namespace: ${namespace}
-  name: ${load_balancer_controller_name}
-  operations: [CREATE]
-  failurePolicy: Ignore
-  annotations:
-    meta.helm.sh/release-name: ${load_balancer_controller_name}
-    meta.helm.sh/release-namespace: ${namespace}
-
-# enableCertManager: true
+enableServiceMutatorWebhook: false
 
 nameOverride: ${load_balancer_controller_name}
