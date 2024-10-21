@@ -25,7 +25,7 @@ variable "namespace" {
 }
 
 variable "ingress_class_name" {
-  type = string
-  default = "nginx"
+  type        = string
+  default     = "nginx"
   description = "Enter ingress class name which is created in EKS cluster"
 }

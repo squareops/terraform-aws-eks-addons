@@ -13,7 +13,7 @@ controller:
     create: true
   serviceMonitor:
     enabled: true
-    additionalLabels: 
+    additionalLabels:
       release: "prometheus-operator"
   # serviceAccount:
   #   # -- Create a service account for the controller
@@ -35,7 +35,7 @@ controller:
             - key: "Addons-Services"
               operator: In
               values:
-              - "true"     
+              - "true"
 
 # mainContainer adds default config for main container that could be overriden in workflows template
 mainContainer:
@@ -80,7 +80,7 @@ server:
       - secretName: argo-workflow-token
         hosts:
           - ${ingress_host}
-  affinity: 
+  affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -88,11 +88,11 @@ server:
             - key: "Addons-Services"
               operator: In
               values:
-              - "true"    
+              - "true"
   resources:
    limits:
      cpu: 20m
      memory: 100Mi
    requests:
      cpu: 10m
-     memory: 50Mi              
+     memory: 50Mi

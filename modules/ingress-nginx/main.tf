@@ -1,7 +1,7 @@
 locals {
-  namespace     = var.namespace
-  nlb_scheme    = var.private_nlb_enabled ? "internal" : "internet-facing"
-  template_path = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
+  namespace       = var.namespace
+  nlb_scheme      = var.private_nlb_enabled ? "internal" : "internet-facing"
+  template_path   = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
   additional_tags = join(",", [for k, v in var.addon_context.tags : "${k}=${v}"])
 
   # Read module's template file
@@ -10,7 +10,7 @@ locals {
     private_nlb_enabled    = var.private_nlb_enabled
     nlb_scheme             = local.nlb_scheme
     ingress_class_name     = var.ingress_class_name
-    additional_tags    = local.additional_tags  # Pass the dynamically created string
+    additional_tags        = local.additional_tags # Pass the dynamically created string
   })
 
   # Convert the template values to a map
@@ -27,8 +27,8 @@ resource "kubernetes_namespace" "this" {
 }
 
 module "helm_addon" {
-  depends_on = [ kubernetes_namespace.this ]
-  source = "../helm-addon"
+  depends_on = [kubernetes_namespace.this]
+  source     = "../helm-addon"
   helm_config = merge(
     {
       name        = var.ingress_class_name

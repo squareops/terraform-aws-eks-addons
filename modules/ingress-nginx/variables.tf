@@ -54,4 +54,3 @@ variable "namespace" {
   description = "Creates namespace for the controller need to install"
   type        = string
 }
-
