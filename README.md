@@ -11,6 +11,7 @@ This module provides a set of reusable, configurable, and scalable AWS EKS addon
 ```hcl
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
+  version              = "3.1.1"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -19,8 +20,8 @@ module "eks-addons" {
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
-  worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
-  worker_iam_role_arn  = "arn:aws:iam::xxx:role/-eks-node-role"   # enter roll ARN
+  worker_iam_role_name = "eks-node-role"                          # enter role name created by eks module
+  worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
@@ -58,6 +59,7 @@ module "eks-addons" {
   aws_node_termination_handler_helm_config = {
     values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
     enable_service_monitor = false # to enable monitoring for node termination handler
+    enable_notifications   = true
   }
 
   ## KEDA
@@ -82,14 +84,13 @@ module "eks-addons" {
     excluded_instance_type        = ["nano", "micro", "small"]
     ec2_instance_family           = ["t3"]
     ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Environment"
-    private_subnet_selector_value = local.environment
+    private_subnet_selector_key   = "Karpenter"
+    private_subnet_selector_value = "${local.name}-${local.region}a"
     security_group_selector_key   = "aws:eks:cluster-name"
     security_group_selector_value = "${local.environment}-${local.name}"
     instance_hypervisor           = ["nitro"]
     kms_key_arn                   = local.kms_key_arn
   }
-
   ## coreDNS-HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false # to enable core-dns HPA
   coredns_hpa_helm_config = {
@@ -119,25 +120,56 @@ module "eks-addons" {
 
   ## INGRESS-NGINX
   ingress_nginx_enabled = false # to enable ingress nginx
-  private_nlb_enabled    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
+  private_nlb_enabled   = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "false" together
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
     ingress_class_name     = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
-    namespace              = "nginx" # enter namespace according to the requirement (example: "ingress-nginx", "internal-ingress")
+    namespace              = "nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
   }
 
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
-  aws_load_balancer_controller_enabled = true # to enable load balancer controller
+  aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
-    values = [file("${path.module}/config/aws-alb.yaml")]
+    values                        = [file("${path.module}/config/aws-alb.yaml")]
+    namespace                     = "alb" # enter namespace according to the requirement (example: "alb")
+    load_balancer_controller_name = "alb" # enter ingress class name according to your requirement (example: "aws-load-balancer-controller")
   }
 
   ## KUBERNETES-DASHBOARD
-  kubernetes_dashboard_enabled        = false
-  k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
-  alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-  k8s_dashboard_hostname              = "dashboard-test.rnd.squareops.in"                  # Enter Hostname
+  kubernetes_dashboard_enabled = false
+  kubernetes_dashboard_config = {
+    k8s_dashboard_ingress_load_balancer = "nlb"                            ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+    k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
+  }
+
+  ## ArgoCD
+  argocd_enabled = false
+  argocd_config = {
+    hostname                     = "argocd.rnd.squareops.in"
+    values_yaml                  = file("${path.module}/config/argocd.yaml")
+    namespace                    = local.argocd_namespace
+    redis_ha_enabled             = true
+    autoscaling_enabled          = true
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+  argoproject_config = {
+    name = "argo-project" # enter name for aro-project appProjects
+  }
+
+  ## ArgoCD-Workflow
+  argoworkflow_enabled = false
+  argoworkflow_config = {
+    values              = file("${path.module}/config/argocd-workflow.yaml")
+    namespace           = local.argocd_namespace
+    autoscaling_enabled = true
+    hostname            = "argocd-workflow.rnd.squareops.in"
+    ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
 
   # VELERO
   velero_enabled              = false # to enable velero
@@ -190,6 +222,7 @@ module "eks-addons" {
 | Release 1.1.7  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; |
 | Release 1.1.8  | &#x2714;  | &#x2714;  | &#x2714; | &#x2714; | &#x2714; | &#x2714; |
 | Release 3.0.0  | &#x274C;  | &#x274C;  | &#x274C; | &#x274C; | &#x274C; | &#x2714; | &#x2714; | &#x2714; |
+| Release 3.1.1  | &#x274C;  | &#x274C;  | &#x274C; | &#x274C; | &#x274C; | &#x2714; | &#x2714; | &#x2714; |
 
 Note: The latest release 3.0.0 support EKS version 1.28, 1.29 and 1.30. For EKS version <=1.27 refer the previous release.
 ## IAM Permissions
