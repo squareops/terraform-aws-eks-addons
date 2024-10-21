@@ -48,7 +48,7 @@ repoServer:
     # -- Average CPU utilization percentage for the repo server [HPA]
     targetCPUUtilizationPercentage: 70
     # -- Average memory utilization percentage for the repo server [HPA]
-    targetMemoryUtilizationPercentage: 70    
+    targetMemoryUtilizationPercentage: 70
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -99,7 +99,7 @@ server:
     # -- Average CPU utilization percentage for the Argo CD server [HPA]
     targetCPUUtilizationPercentage: 70
     # -- Average memory utilization percentage for the Argo CD server [HPA]
-    targetMemoryUtilizationPercentage: 70    
+    targetMemoryUtilizationPercentage: 70
   # Argo CD server ingress configuration
   ingress:
     enabled: true

@@ -32,6 +32,7 @@ No modules.
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | KMS key to Encrypt storage class. | `string` | `""` | no |
 | <a name="input_single_az_ebs_gp3_storage_class"></a> [single\_az\_ebs\_gp3\_storage\_class](#input\_single\_az\_ebs\_gp3\_storage\_class) | Enable Single az storage class. | `bool` | `false` | no |
 | <a name="input_single_az_ebs_gp3_storage_class_name"></a> [single\_az\_ebs\_gp3\_storage\_class\_name](#input\_single\_az\_ebs\_gp3\_storage\_class\_name) | Name for the single az storage class | `string` | `""` | no |
+| <a name="input_tags_all"></a> [tags\_all](#input\_tags\_all) | Additional tags (e.g. `map('BusinessUnit`,`XYZ`) | `map(string)` | `{}` | no |
 
 ## Outputs
 

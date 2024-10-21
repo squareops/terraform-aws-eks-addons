@@ -9,13 +9,14 @@ locals {
     Product     = ""
     Environment = local.environment
   }
-  argocd_namespace = "atmosly"                                       # Give Namespace
+  argocd_namespace = "argo-cd"                                       # Give Namespace
   kms_key_arn      = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
   ipv6_enabled     = false
 }
 
 module "eks-addons" {
-  source               = "../.."
+  source               = "squareops/eks-addons/aws"
+  version              = "3.1.1"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID

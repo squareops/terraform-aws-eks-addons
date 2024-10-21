@@ -10,20 +10,20 @@ variable "argoworkflow_host" {
   default     = ""
 }
 
-variable "argoworkflow_config" { 
+variable "argoworkflow_config" {
   type = any
 
   default = {
-    values = {}
-    namespace = ""
-    hostname = ""
+    values              = {}
+    namespace           = ""
+    hostname            = ""
     autoscaling_enabled = "true"
   }
   description = "Specify the configuration settings for Argocd-Workflow, including the hostname, and custom YAML values."
 }
 
 variable "chart_version" {
-  default = "0.29.2"
-  type = string
+  default     = "0.29.2"
+  type        = string
   description = "Argo workflow chart version"
 }

@@ -3,8 +3,8 @@ locals {
 
   # read modules template file
   template_values = templatefile("${path.module}/config/argocd-workflow.yaml", {
-    ingress_host = var.argoworkflow_config.hostname
-    ingress_class_name = var.argoworkflow_config.ingress_class_name
+    ingress_host        = var.argoworkflow_config.hostname
+    ingress_class_name  = var.argoworkflow_config.ingress_class_name
     autoscaling_enabled = var.argoworkflow_config.autoscaling_enabled
   })
 
@@ -17,12 +17,12 @@ resource "helm_release" "argo_workflow" {
   version    = var.chart_version
   namespace  = var.namespace
   repository = "https://argoproj.github.io/argo-helm"
-  values = [local.template_values, var.argoworkflow_config.values]
+  values     = [local.template_values, var.argoworkflow_config.values]
 }
 
 resource "kubernetes_service_account_v1" "argoworkflows-service-account" {
   metadata {
-    name = "argo-workflow"
+    name      = "argo-workflow"
     namespace = var.namespace
   }
 }

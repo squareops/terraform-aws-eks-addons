@@ -23,4 +23,3 @@ variable "ipv6_enabled" {
   type        = bool
   default     = false
 }
-
