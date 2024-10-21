@@ -9,9 +9,10 @@ locals {
     Product     = ""
     Environment = local.environment
   }
-  argocd_namespace = "argo-cd"                                       # Give Namespace
-  kms_key_arn      = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
-  ipv6_enabled     = false
+  argocd_namespace        = "argo-cd"                                       # Give Namespace
+  kms_key_arn             = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
+  ipv6_enabled            = false
+  alb_acm_certificate_arn = ""
 }
 
 module "eks-addons" {
@@ -25,7 +26,7 @@ module "eks-addons" {
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
-  worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
+  worker_iam_role_name = "eks-node-role"                          # enter role name created by eks module
   worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
@@ -144,10 +145,10 @@ module "eks-addons" {
   ## KUBERNETES-DASHBOARD
   kubernetes_dashboard_enabled = false
   kubernetes_dashboard_config = {
-    k8s_dashboard_ingress_load_balancer = "nlb"                                                                                 ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
-    private_alb_enabled                 = false                                                                                 # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
-    alb_acm_certificate_arn             = "arn:aws:acm:us-east-1:381491984451:certificate/b7fe797d-cefd-4272-94b3-1ef668eb79a3" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-    k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in"                                                      # Enter Hostname
+    k8s_dashboard_ingress_load_balancer = "nlb"                            ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+    k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
   }
 
   ## ArgoCD
