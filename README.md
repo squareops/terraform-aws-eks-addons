@@ -71,26 +71,10 @@ module "eks-addons" {
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
   karpenter_helm_config = {
-    values = [file("${path.module}/config/karpenter.yaml")]
+    enable_service_monitor = false # to enable monitoring for kafalserpenter
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
-  ## KARPENTER-PROVISIONER
-  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
-  karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner-%s", local.name)
-    karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
-    provisioner_values            = file("./config/karpenter-management.yaml")
-    instance_capacity_type        = ["spot"]
-    excluded_instance_type        = ["nano", "micro", "small"]
-    ec2_instance_family           = ["t3"]
-    ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Karpenter"
-    private_subnet_selector_value = "${local.name}-${local.region}a"
-    security_group_selector_key   = "aws:eks:cluster-name"
-    security_group_selector_value = "${local.environment}-${local.name}"
-    instance_hypervisor           = ["nitro"]
-    kms_key_arn                   = local.kms_key_arn
-  }
   ## coreDNS-HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false # to enable core-dns HPA
   coredns_hpa_helm_config = {
@@ -283,10 +267,6 @@ By using External Secrets, organizations can ensure that sensitive information i
 Karpenter is a flexible, high-performance Kubernetes cluster autoscaler that helps improve application availability and cluster efficiency. Karpenter launches right-sized compute resources, (for example, Amazon EC2 instances), in response to changing application load in under a minute. Through integrating Kubernetes with AWS, Karpenter can provision just-in-time compute resources that precisely meet the requirements of your workload. Karpenter automatically provisions new compute resources based on the specific requirements of cluster workloads. These include compute, storage, acceleration, and scheduling requirements. Amazon EKS supports clusters using Karpenter, although Karpenter works with any conformant Kubernetes cluster.
 </details>
 <details>
-  <summary> Karpenter-Provisioner </summary>
-Karpernter Provisioner is a powerful provisioning module designed to streamline the deployment process for infrastructure as code (IaC) projects. It provides a set of intuitive and easy-to-use functions to automate the provisioning of resources on various cloud platforms.
-</details>
-<details>
   <summary> Metrics Server </summary>
 Metric Server is a Kubernetes add-on that collects resource usage data from the Kubernetes API server and makes it available to other components, such as the Horizontal Pod Autoscaler (HPA) and the Cluster Autoscaler.
 The Metric Server collects data on the CPU and memory usage of pods and nodes in a cluster, and provides this data to other components in a format that they can use to make scaling decisions. The HPA, for example, can use the data provided by the Metric Server to automatically scale the number of replicas of a deployment based on the resource usage of the pods. The Cluster Autoscaler can also use this data to determine when to add or remove nodes from a cluster based on the resource utilization of the pods and nodes.
@@ -389,7 +369,6 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="module_external-secrets"></a> [external-secrets](#module\_external-secrets) | ./modules/external-secret | n/a |
 | <a name="module_ingress-nginx"></a> [ingress-nginx](#module\_ingress-nginx) | ./modules/ingress-nginx | n/a |
 | <a name="module_karpenter"></a> [karpenter](#module\_karpenter) | ./modules/karpenter | n/a |
-| <a name="module_karpenter-provisioner"></a> [karpenter-provisioner](#module\_karpenter-provisioner) | ./modules/karpenter-provisioner | n/a |
 | <a name="module_keda"></a> [keda](#module\_keda) | ./modules/keda | n/a |
 | <a name="module_kubernetes-dashboard"></a> [kubernetes-dashboard](#module\_kubernetes-dashboard) | ./modules/kubernetes-dashboard | n/a |
 | <a name="module_metrics-server"></a> [metrics-server](#module\_metrics-server) | ./modules/metrics-server | n/a |
@@ -490,8 +469,6 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_karpenter_helm_config"></a> [karpenter\_helm\_config](#input\_karpenter\_helm\_config) | Karpenter autoscaler add-on config | `any` | `{}` | no |
 | <a name="input_karpenter_irsa_policies"></a> [karpenter\_irsa\_policies](#input\_karpenter\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
 | <a name="input_karpenter_node_iam_instance_profile"></a> [karpenter\_node\_iam\_instance\_profile](#input\_karpenter\_node\_iam\_instance\_profile) | Karpenter Node IAM Instance profile id | `string` | `""` | no |
-| <a name="input_karpenter_provisioner_config"></a> [karpenter\_provisioner\_config](#input\_karpenter\_provisioner\_config) | Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types. | `any` | <pre>{<br>  "excluded_instance_type": [<br>    "nano",<br>    "micro",<br>    "small"<br>  ],<br>  "instance_capacity_type": [<br>    "spot"<br>  ],<br>  "instance_hypervisor": [<br>    "nitro"<br>  ],<br>  "private_subnet_name": ""<br>}</pre> | no |
-| <a name="input_karpenter_provisioner_enabled"></a> [karpenter\_provisioner\_enabled](#input\_karpenter\_provisioner\_enabled) | Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler. | `bool` | `false` | no |
 | <a name="input_keda_enabled"></a> [keda\_enabled](#input\_keda\_enabled) | Enable or disable Kubernetes Event-driven Autoscaling (KEDA) add-on for autoscaling workloads. | `bool` | `false` | no |
 | <a name="input_keda_helm_config"></a> [keda\_helm\_config](#input\_keda\_helm\_config) | KEDA Event-based autoscaler add-on config | `any` | `{}` | no |
 | <a name="input_keda_irsa_policies"></a> [keda\_irsa\_policies](#input\_keda\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |

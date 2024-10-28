@@ -5,9 +5,9 @@ locals {
   node_module_profile_id = resource.aws_iam_instance_profile.karpenter_profile.name
 
   template_values = templatefile("${path.module}/config/karpenter.yaml", {
-    eks_cluster_id            = var.addon_context.eks_cluster_id,
-    eks_cluster_endpoint      = var.addon_context.aws_eks_cluster_endpoint,
-    node_iam_instance_profile = local.node_module_profile_id # enter profile name for kubernetes iam profile
+    eks_cluster_id         = var.addon_context.eks_cluster_id,
+    eks_cluster_endpoint   = var.addon_context.aws_eks_cluster_endpoint,
+    enable_service_monitor = var.enable_service_monitor
   })
 
   template_values_map = yamldecode(local.template_values)
@@ -27,7 +27,7 @@ locals {
       name       = local.name
       chart      = local.name
       repository = "oci://public.ecr.aws/karpenter"
-      version    = "v0.32.10"
+      version    = var.chart_version
       namespace  = local.name
       values = [yamlencode(merge(
         yamldecode(<<-EOT

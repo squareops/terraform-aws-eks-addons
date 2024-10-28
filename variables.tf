@@ -355,23 +355,6 @@ variable "velero_notification_enabled" {
   type        = bool
 }
 
-variable "karpenter_provisioner_enabled" {
-  description = "Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler."
-  default     = false
-  type        = bool
-}
-
-variable "karpenter_provisioner_config" {
-  description = "Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types."
-  default = {
-    private_subnet_name    = ""
-    instance_capacity_type = ["spot"]
-    excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]
-  }
-  type = any
-}
-
 variable "ingress_nginx_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
