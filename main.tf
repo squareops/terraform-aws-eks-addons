@@ -181,15 +181,7 @@ module "karpenter" {
   manage_via_gitops         = var.argocd_manage_add_ons
   addon_context             = local.addon_context
   kms_key_arn               = var.karpenter_enabled ? var.kms_key_arn : ""
-}
-
-## Karpenter-provisioner
-module "karpenter-provisioner" {
-  source           = "./modules/karpenter-provisioner"
-  count            = var.karpenter_provisioner_enabled ? 1 : 0
-  depends_on       = [module.karpenter]
-  ipv6_enabled     = var.ipv6_enabled
-  karpenter_config = var.karpenter_provisioner_config
+  enable_service_monitor    = var.karpenter_helm_config.enable_service_monitor
 }
 
 ## KUBERNETES DASHBOARD

@@ -1,0 +1,69 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: node-class # Replace with the required name
+spec:
+  subnetSelectorTerms:
+    # Select any subnet that has the below mentioned tags OR any subnet with the below mentioned IDs
+    - tags:
+        Addons-service: true
+        Karpenter: eks-addons-us-east-1a
+    - id: subnet-xxxxx # replace with your subnet id
+    - id: subnet-xxxxx # replace with your subnet id
+
+  securityGroupSelectorTerms:
+    # Select on any security group that has "aws:eks:cluster-name: ${cluster-name}" tag OR any security group with the "my-security-group" name
+    # OR any security group with ID "sg-xxxxxx"
+    - tags:
+        aws:eks:cluster-name: <clusternme> # Add name of the cluster
+    # - name: my-security-group
+    # - id: sg-xxxxxx
+
+  # Optional, IAM role to use for the node identity.
+  role: "node-role-name"
+  # Optional, IAM instance profile to use for the node identity.
+  # Must specify one of "role" or "instanceProfile" for Karpenter to launch nodes
+  # instanceProfile: "eks-node-instance-profile"
+
+  amiFamily: AL2
+  amiSelectorTerms:
+    - owner: "602401143452"
+      # name: "amazon-eks-arm64-node-1.30-v*"  # Use this for ARM images, update K8s version as required. Use format "amazon-eks-arm64-node-"+k8s version+"-v*"
+      name: amazon-eks-node-1.30-v*  # Use this for AMD images update K8s version as required. Use format "amazon-eks-node-"+k8s version+"-v*"
+
+
+  # Optional, configures storage devices for the instance
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 20Gi
+        volumeType: gp3
+        encrypted: true
+        kmsKeyID: "kms-key-arn" # Enter your KMS Key ID from EKS cluster console
+        deleteOnTermination: true
+
+  tags:
+    managed-by: karpenter
+    Name: karpenter-node-pool-<cluster-name> #Follow naming convention Karpenenter-nodepoolname-clustername
+    Owner: Organization_name
+    Expires: Never
+    Department: Engineering
+    Product: ""
+    Environment: staging
+
+  userData:  |
+    #!/bin/bash
+    set -ex
+    if ! grep -q imageGCHighThresholdPercent /etc/kubernetes/kubelet/kubelet-config.json;
+    then
+        sed -i '/"apiVersion*/a \ \ "imageGCHighThresholdPercent": 60,' /etc/kubernetes/kubelet/kubelet-config.json
+    fi
+    if ! grep -q imageGCLowThresholdPercent /etc/kubernetes/kubelet/kubelet-config.json;
+    then
+        sed -i '/"imageGCHigh*/a \ \ "imageGCLowThresholdPercent": 40,' /etc/kubernetes/kubelet/kubelet-config.json
+    fi
+    if ! grep -q eventRecordQPS /etc/kubernetes/kubelet/kubelet-config.json;
+    then
+        sed -i '/"imageGCLow*/a \ \ "eventRecordQPS": 5,' /etc/kubernetes/kubelet/kubelet-config.json
+    fi
+    yum update -y && yum install vim wget curl -y

@@ -1,4 +1,0 @@
-
-spec:
-  labels:
-    eks.amazonaws.com/nodegroup: "Mgt-ng"

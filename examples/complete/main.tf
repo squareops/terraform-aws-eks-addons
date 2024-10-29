@@ -77,26 +77,10 @@ module "eks-addons" {
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
   karpenter_helm_config = {
-    values = [file("${path.module}/config/karpenter.yaml")]
+    enable_service_monitor = false # to enable monitoring for kafalserpenter
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
-  ## KARPENTER-PROVISIONER
-  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
-  karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner-%s", local.name)
-    karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
-    provisioner_values            = file("./config/karpenter-management.yaml")
-    instance_capacity_type        = ["spot"]
-    excluded_instance_type        = ["nano", "micro", "small"]
-    ec2_instance_family           = ["t3"]
-    ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Karpenter"
-    private_subnet_selector_value = "${local.name}-${local.region}a"
-    security_group_selector_key   = "aws:eks:cluster-name"
-    security_group_selector_value = "${local.environment}-${local.name}"
-    instance_hypervisor           = ["nitro"]
-    kms_key_arn                   = local.kms_key_arn
-  }
   ## coreDNS-HPA (cluster-proportional-autoscaler)
   coredns_hpa_enabled = false # to enable core-dns HPA
   coredns_hpa_helm_config = {
