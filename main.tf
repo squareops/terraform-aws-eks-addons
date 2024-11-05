@@ -60,8 +60,9 @@ module "aws-load-balancer-controller" {
 
 ## NODE TERMINATION HANDLER
 module "aws-node-termination-handler" {
-  source = "./modules/aws-node-termination-handler"
-  count  = var.aws_node_termination_handler_enabled ? 1 : 0
+  source     = "./modules/aws-node-termination-handler"
+  count      = var.aws_node_termination_handler_enabled ? 1 : 0
+  depends_on = [module.service-monitor-crd]
   helm_config = {
     version = var.node_termination_handler_version
     values  = var.aws_node_termination_handler_helm_config.values
@@ -91,6 +92,7 @@ module "aws_vpc_cni" {
 module "cert-manager" {
   source                            = "./modules/cert-manager"
   count                             = var.cert_manager_enabled ? 1 : 0
+  depends_on                        = [module.aws_vpc_cni, module.service-monitor-crd]
   helm_config                       = var.cert_manager_helm_config
   manage_via_gitops                 = var.argocd_manage_add_ons
   irsa_policies                     = var.cert_manager_irsa_policies
@@ -173,6 +175,7 @@ data "kubernetes_service" "ingress-nginx" {
 module "karpenter" {
   source                    = "./modules/karpenter"
   count                     = var.karpenter_enabled ? 1 : 0
+  depends_on                = [module.aws_vpc_cni, module.service-monitor-crd]
   worker_iam_role_name      = var.worker_iam_role_name
   eks_cluster_name          = var.eks_cluster_name
   helm_config               = var.karpenter_helm_config
@@ -221,8 +224,9 @@ module "metrics-server" {
 
 ## RELOADER
 module "reloader" {
-  source = "./modules/reloader"
-  count  = var.reloader_enabled ? 1 : 0
+  source     = "./modules/reloader"
+  count      = var.reloader_enabled ? 1 : 0
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd]
   helm_config = {
     values                 = var.reloader_helm_config.values
     namespace              = "kube-system"
@@ -266,7 +270,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 module "argocd" {
   source     = "./modules/argocd"
-  depends_on = [kubernetes_namespace.argocd]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd]
   count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -283,7 +287,7 @@ module "argocd" {
 # argo-workflow
 module "argocd-workflow" {
   source     = "./modules/argocd-workflow"
-  depends_on = [kubernetes_namespace.argocd]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd]
   count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
     values              = var.argoworkflow_config.values
