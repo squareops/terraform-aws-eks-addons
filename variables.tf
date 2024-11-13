@@ -501,6 +501,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = string
     k8s_dashboard_hostname              = string
     private_alb_enabled                 = bool
+    ingress_class_name                  = string
   })
 
   default = {
@@ -508,6 +509,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
+    ingress_class_name                  = "nginx"
   }
 }
 
@@ -639,4 +641,28 @@ variable "karpenter_node_iam_instance_profile" {
   description = "Karpenter Node IAM Instance profile id"
   type        = string
   default     = ""
+}
+
+
+variable "private_ingress_nginx_enabled" {
+  description = "Create a private NLB for ingress-nginx"
+  type        = bool
+  default     = false
+}
+
+variable "private_ingress_nginx_config" {
+  description = "Configure private-ingress-nginx to setup addons"
+  type = object({
+    ingress_class_name     = string
+    enable_service_monitor = bool
+    values                 = any
+    namespace              = string
+  })
+
+  default = {
+    ingress_class_name     = "private-nginx"
+    enable_service_monitor = false
+    values                 = {}
+    namespace              = "private-nginx"
+  }
 }

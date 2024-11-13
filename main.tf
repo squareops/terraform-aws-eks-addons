@@ -171,6 +171,33 @@ data "kubernetes_service" "ingress-nginx" {
   }
 }
 
+## NGINX INGRESS
+module "ingress-nginx-private" {
+  source            = "./modules/ingress-nginx"
+  count             = var.private_ingress_nginx_enabled ? 1 : 0
+  depends_on        = [module.aws_vpc_cni, module.service-monitor-crd]
+  helm_config       = var.private_ingress_nginx_config
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+  ip_family         = data.aws_eks_cluster.eks.kubernetes_network_config[0].ip_family
+
+  # Template values for private-ingress-nginx
+  namespace              = var.private_ingress_nginx_config.namespace
+  private_nlb_enabled    = true
+  ingress_class_name     = var.private_ingress_nginx_config.ingress_class_name
+  enable_service_monitor = var.private_ingress_nginx_config.enable_service_monitor
+}
+
+# INGRESS-NGINX DATA SOURCE
+data "kubernetes_service" "private-ingress-nginx" {
+  count      = var.private_ingress_nginx_enabled ? 1 : 0
+  depends_on = [module.ingress-nginx-private]
+  metadata {
+    name      = "${var.private_ingress_nginx_config.ingress_class_name}-ingress-nginx-controller"
+    namespace = var.private_ingress_nginx_config.namespace
+  }
+}
+
 ## KARPENTER
 module "karpenter" {
   source                    = "./modules/karpenter"
@@ -191,16 +218,15 @@ module "karpenter" {
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd, module.aws-load-balancer-controller]
+  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.service-monitor-crd, module.aws-load-balancer-controller, module.ingress-nginx-private]
   k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
-  ingress_class_name                  = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
 }
 
 ## KEDA
-
 module "keda" {
   source            = "./modules/keda"
   count             = var.keda_enabled ? 1 : 0
@@ -270,7 +296,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 module "argocd" {
   source     = "./modules/argocd"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private]
   count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -287,7 +313,7 @@ module "argocd" {
 # argo-workflow
 module "argocd-workflow" {
   source     = "./modules/argocd-workflow"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private]
   count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
     values              = var.argoworkflow_config.values
@@ -403,7 +429,7 @@ resource "kubernetes_secret" "kubecost" {
 
 resource "kubernetes_ingress_v1" "kubecost" {
   count                  = var.kubecost_enabled ? 1 : 0
-  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost, module.ingress-nginx]
+  depends_on             = [aws_eks_addon.kubecost, kubernetes_secret.kubecost, module.ingress-nginx, module.ingress-nginx-private]
   wait_for_load_balancer = true
   metadata {
     name      = "kubecost"
