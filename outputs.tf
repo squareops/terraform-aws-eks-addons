@@ -15,7 +15,7 @@ output "internal_nginx_ingress_controller_dns_hostname" {
 
 output "private_nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the private ingress NGINX Ingress Controller."
-  value       = data.kubernetes_service.private-ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname
+  value       = var.private_ingress_nginx_enabled ? data.kubernetes_service.private-ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
 }
 
 output "ebs_encryption_enable" {

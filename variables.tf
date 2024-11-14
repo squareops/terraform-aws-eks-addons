@@ -527,6 +527,9 @@ variable "argocd_config" {
     autoscaling_enabled          = bool
     slack_notification_token     = string
     argocd_notifications_enabled = bool
+    argocd_ingress_load_balancer = string
+    private_alb_enabled          = bool
+    alb_acm_certificate_arn      = string
     ingress_class_name           = string
     namespace                    = string
   })
@@ -538,7 +541,10 @@ variable "argocd_config" {
     autoscaling_enabled          = false
     slack_notification_token     = ""
     argocd_notifications_enabled = false
-    ingress_class_name           = ""
+    argocd_ingress_load_balancer = "nlb"
+    private_alb_enabled          = false
+    alb_acm_certificate_arn      = ""
+    ingress_class_name           = "nginx"
     namespace                    = "argocd"
   }
 }

@@ -296,7 +296,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 module "argocd" {
   source     = "./modules/argocd"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private, module.aws-load-balancer-controller]
   count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -305,7 +305,10 @@ module "argocd" {
     autoscaling_enabled          = var.argocd_config.autoscaling_enabled
     slack_notification_token     = var.argocd_config.slack_notification_token
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
-    ingress_class_name           = var.argocd_config.ingress_class_name
+    ingress_class_name           = var.argocd_config.argocd_ingress_load_balancer == "alb" ? "alb" : var.argocd_config.ingress_class_name
+    argocd_ingress_load_balancer = var.argocd_config.argocd_ingress_load_balancer
+    private_alb_enabled          = var.argocd_config.private_alb_enabled
+    alb_acm_certificate_arn      = var.argocd_config.alb_acm_certificate_arn
   }
   namespace = var.argocd_config.namespace
 }
@@ -313,7 +316,7 @@ module "argocd" {
 # argo-workflow
 module "argocd-workflow" {
   source     = "./modules/argocd-workflow"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.ingress-nginx-private, module.aws-load-balancer-controller]
   count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
     values              = var.argoworkflow_config.values
