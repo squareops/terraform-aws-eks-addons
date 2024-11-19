@@ -557,19 +557,25 @@ variable "argoworkflow_enabled" {
 
 variable "argoworkflow_config" {
   type = object({
-    values              = any
-    namespace           = string
-    hostname            = string
-    ingress_class_name  = string
-    autoscaling_enabled = bool
+    values                             = any
+    namespace                          = string
+    hostname                           = string
+    ingress_class_name                 = string
+    autoscaling_enabled                = bool
+    argoworkflow_ingress_load_balancer = string
+    private_alb_enabled                = bool
+    alb_acm_certificate_arn            = string
   })
 
   default = {
-    values              = {}
-    namespace           = "argocd"
-    hostname            = ""
-    ingress_class_name  = ""
-    autoscaling_enabled = true
+    values                             = {}
+    namespace                          = "argocd"
+    hostname                           = ""
+    ingress_class_name                 = ""
+    autoscaling_enabled                = true
+    argoworkflow_ingress_load_balancer = "nlb"
+    private_alb_enabled                = false
+    alb_acm_certificate_arn            = ""
   }
 }
 
