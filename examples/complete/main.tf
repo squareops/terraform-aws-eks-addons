@@ -81,11 +81,15 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
-  ## coreDNS-HPA (cluster-proportional-autoscaler)
+  ## coreDNS-HPA 
   coredns_hpa_enabled = false # to enable core-dns HPA
   coredns_hpa_helm_config = {
     values = [file("${path.module}/config/coredns-hpa.yaml")]
   }
+
+  ## ClusterProportionalAutoscaler (Configured for CoreDNS)
+  cluster_proportional_autoscaler_enabled    = false  # to enable cluster proportional autoscaler
+  cluster_proportional_autoscaler_helm_config = [file("${path.module}/config/cluster-proportional_autoscaler.yaml")]
 
   ## EXTERNAL-SECRETS
   external_secrets_enabled = false # to enable external secrets

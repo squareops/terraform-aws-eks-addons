@@ -4,8 +4,8 @@
 #  replicas = max(replicas, min)
 config:
   linear:
-    coresPerReplica: 256
-    nodesPerReplica: 16
+    coresPerReplica: 10
+    nodesPerReplica: 2
     min: 1
     max: 100
     preventSinglePointFailure: true
@@ -13,9 +13,11 @@ config:
 
 # Target to scale. In format: deployment/*, replicationcontroller/* or replicaset/* (not case sensitive).
 # The following option should be defined in user defined values.yaml using var.helm_config
+options:
+ target: deployment/coredns
 
-#options:
-#  target:
+podAnnotations:
+  co.elastic.logs/enabled: "true"
 
 podSecurityContext:
   seccompProfile:
@@ -24,7 +26,7 @@ podSecurityContext:
   fsGroup: 65534
 
 nodeSelector:
-  kubernetes.io/os: ${operating_system}
+  kubernetes.io/os: linux
 
 resources:
    limits:
@@ -37,3 +39,13 @@ resources:
 tolerations:
   - key: "CriticalAddonsOnly"
     operator: "Exists"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"

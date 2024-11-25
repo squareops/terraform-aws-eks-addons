@@ -132,6 +132,18 @@ module "coredns_hpa" {
   helm_config = var.coredns_hpa_helm_config
 }
 
+## CLUSTER PROPORTIONAL AUTOSCALER
+module "cluster-proportional-autoscaler" {
+  source            = "./modules/cluster-proportional-autoscaler"
+  count             = var.cluster_proportional_autoscaler_enabled ? 1 : 0
+  helm_config       = {
+    values = var.cluster_proportional_autoscaler_helm_config
+  }
+  chart_version = var.cluster_proportional_autoscaler_chart_version
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}
+
 ## EXTERNAL SECRETS
 module "external-secrets" {
   source                                = "./modules/external-secret"
