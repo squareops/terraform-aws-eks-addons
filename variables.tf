@@ -678,3 +678,21 @@ variable "private_ingress_nginx_config" {
     namespace              = "private-nginx"
   }
 }
+
+variable "cluster_proportional_autoscaler_enabled" {
+  description = "Whether to enable the Cluster proportional Autoscaler add-on or not."
+  default     = false
+  type        = bool
+}
+
+variable "cluster_proportional_autoscaler_chart_version" {
+  description = "Version of the cluster proportional autoscaler helm chart"
+  default     = "1.1.0"
+  type        = string
+}
+
+variable "cluster_proportional_autoscaler_helm_config" {
+  description = "Configuration options for the Cluster Proportional Autoscaler Helm chart."
+  type        = any
+  default     = {}
+}
