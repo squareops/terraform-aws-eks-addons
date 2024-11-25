@@ -20,10 +20,10 @@ options:
 resources:
   limits:
     cpu: 100m
-    memory: 128Mi
+    memory: 150Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 50m
+    memory: 75Mi
 
 affinity:
   nodeAffinity:

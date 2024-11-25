@@ -134,12 +134,12 @@ module "coredns_hpa" {
 
 ## CLUSTER PROPORTIONAL AUTOSCALER
 module "cluster-proportional-autoscaler" {
-  source            = "./modules/cluster-proportional-autoscaler"
-  count             = var.cluster_proportional_autoscaler_enabled ? 1 : 0
-  helm_config       = {
+  source = "./modules/cluster-proportional-autoscaler"
+  count  = var.cluster_proportional_autoscaler_enabled ? 1 : 0
+  helm_config = {
     values = var.cluster_proportional_autoscaler_helm_config
   }
-  chart_version = var.cluster_proportional_autoscaler_chart_version
+  chart_version     = var.cluster_proportional_autoscaler_chart_version
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
 }
@@ -235,7 +235,7 @@ module "kubernetes-dashboard" {
   alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
-  ingress_class_name = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "alb" : (var.private_nlb_enabled ? "internal-nginx" : var.kubernetes_dashboard_config.ingress_class_name)
+  ingress_class_name                  = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "alb" : (var.private_nlb_enabled ? "internal-nginx" : var.kubernetes_dashboard_config.ingress_class_name)
 }
 
 ## KEDA

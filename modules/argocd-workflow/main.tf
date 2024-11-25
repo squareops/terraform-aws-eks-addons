@@ -105,11 +105,11 @@ resource "kubernetes_ingress_v1" "argoworkflow-ingress" {
       "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
       "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress"
       } : {
-      "cert-manager.io/cluster-issuer"                   = "letsencrypt-prod"
-      "nginx.ingress.kubernetes.io/force-ssl-redirect"   = "true"
-      "nginx.ingress.kubernetes.io/ssl-passthrough"      = "true"
-      "kubernetes.io/ingress.class"                      = var.argoworkflow_config.ingress_class_name
-      "kubernetes.io/tls-acme"                           = "false"
+      "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
+      "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
+      "nginx.ingress.kubernetes.io/ssl-passthrough"    = "true"
+      "kubernetes.io/ingress.class"                    = var.argoworkflow_config.ingress_class_name
+      "kubernetes.io/tls-acme"                         = "false"
     }
   }
   spec {
@@ -118,7 +118,7 @@ resource "kubernetes_ingress_v1" "argoworkflow-ingress" {
       host = var.argoworkflow_config.hostname
       http {
         path {
-          path = "/"
+          path      = "/"
           path_type = "Prefix"
           backend {
             service {

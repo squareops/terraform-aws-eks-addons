@@ -692,7 +692,7 @@ variable "cluster_proportional_autoscaler_chart_version" {
 }
 
 variable "cluster_proportional_autoscaler_helm_config" {
-description = "Configuration options for the Cluster Proportional Autoscaler Helm chart."
+  description = "Configuration options for the Cluster Proportional Autoscaler Helm chart."
   type        = any
   default     = {}
 }

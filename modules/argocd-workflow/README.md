@@ -32,7 +32,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | Specify the configuration settings for Argocd-Workflow, including the hostname, and custom YAML values. | `any` | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "argoworkflow_ingress_load_balancer": "nlb",<br/>  "autoscaling_enabled": "true",<br/>  "hostname": "",<br/>  "ingress_class_name": "",<br/>  "namespace": "",<br/>  "private_alb_enabled": false,<br/>  "values": {}<br/>}</pre> | no |
+| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | Specify the configuration settings for Argocd-Workflow, including the hostname, and custom YAML values. | `any` | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argoworkflow_ingress_load_balancer": "nlb",<br>  "autoscaling_enabled": "true",<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "",<br>  "private_alb_enabled": false,<br>  "values": {}<br>}</pre> | no |
 | <a name="input_argoworkflow_host"></a> [argoworkflow\_host](#input\_argoworkflow\_host) | Define the host for argo workflow server | `string` | `""` | no |
 | <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | Argo workflow chart version | `string` | `"0.29.2"` | no |
 | <a name="input_ingress_class_name"></a> [ingress\_class\_name](#input\_ingress\_class\_name) | Enter ingress class name which is created in EKS cluster | `string` | `"nginx"` | no |
