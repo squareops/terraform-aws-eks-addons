@@ -49,6 +49,7 @@ No modules.
 | <a name="input_ingress_class_name"></a> [ingress\_class\_name](#input\_ingress\_class\_name) | resource name for nginx and internal nginx | `any` | `""` | no |
 | <a name="input_k8s_dashboard_hostname"></a> [k8s\_dashboard\_hostname](#input\_k8s\_dashboard\_hostname) | Specify the hostname for the k8s dashboard. | `string` | `""` | no |
 | <a name="input_k8s_dashboard_ingress_load_balancer"></a> [k8s\_dashboard\_ingress\_load\_balancer](#input\_k8s\_dashboard\_ingress\_load\_balancer) | Controls whether to enable ALB Ingress or not. | `string` | `"nlb"` | no |
+| <a name="input_private_alb_enabled"></a> [private\_alb\_enabled](#input\_private\_alb\_enabled) | Specify if require private load balancer | `bool` | `false` | no |
 
 ## Outputs
 

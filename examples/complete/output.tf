@@ -38,11 +38,6 @@ output "kubecost" {
   description = "Kubecost endpoint and credentials"
 }
 
-output "istio_ingressgateway_dns_hostname" {
-  value       = module.eks-addons.istio_ingressgateway_dns_hostname
-  description = "DNS hostname of the Istio Ingress Gateway"
-}
-
 output "k8s_dashboard_admin_token" {
   value       = module.eks-addons.k8s_dashboard_admin_token
   description = "Kubernetes-Dashboard Admin Token"
@@ -51,4 +46,19 @@ output "k8s_dashboard_admin_token" {
 output "k8s_dashboard_read_only_token" {
   value       = module.eks-addons.k8s_dashboard_read_only_token
   description = "Kubernetes-Dashboard Read Only Token"
+}
+
+output "argocd" {
+  description = "ArgoCD Credentials"
+  value       = module.eks-addons.argocd_credentials
+}
+
+output "argoworkflow_hostname" {
+  description = "Argocd Workflow hostname"
+  value       = module.eks-addons.argoworkflow_hostname
+}
+
+output "argoworkflow_credentials" {
+  description = "Argocd Workflow credentials"
+  value       = module.eks-addons.argoworkflow_credentials
 }

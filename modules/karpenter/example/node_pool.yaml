@@ -1,0 +1,41 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: node-pool # Change name for every Different labels
+spec:
+  template:
+    metadata:
+      labels:
+        Monitor-Services: "true" # Enter your Labels here
+        managedBy: karpenter
+        nodepool: node-pool # Change name as NodePool name
+      # annotations:
+      #   key: value
+    spec:
+      # References the Cloud Provider's NodeClass resource, see your cloud provider specific documentation
+      nodeClassRef:
+        group: karpenter.k8s.aws  # Updated since only a single version will be served
+        kind: EC2NodeClass
+        name: node-class
+      requirements:
+        - key: karpenter.sh/capacity-type # Update the capacity type for ec2 instances
+          operator: In
+          values: ["spot"]
+        - key: karpenter.k8s.aws/instance-family # Update the instance-family according to the AMI selected.
+          operator: In
+          values: ["t3"]
+        - key: node.kubernetes.io/instance-type # Update the instance-type according to the AMI selected.
+          operator: In
+          values: ["t3.small"]
+        - key: karpenter.k8s.aws/instance-size
+          operator: NotIn
+          values: ["nano", "micro", "small"]
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: kubernetes.io/arch # Update the architecture according to the AMI selected.
+          operator: In
+          values: ["amd64"]
+        - key: "topology.kubernetes.io/zone" # Select zones according the the subnets provided.
+          operator: In
+          values: ["us-east-1a", "us-east-1b"]

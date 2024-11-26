@@ -1,4 +1,5 @@
 data "aws_iam_policy_document" "aws_node_termination_handler_queue_policy_document" {
+  count = var.enable_notifications ? 1 : 0
   statement {
     actions = [
       "sqs:SendMessage"
@@ -11,7 +12,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_queue_policy_docume
       ]
     }
     resources = [
-      aws_sqs_queue.aws_node_termination_handler_queue.arn
+      aws_sqs_queue.aws_node_termination_handler_queue[0].arn
     ]
   }
 }

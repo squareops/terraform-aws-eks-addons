@@ -136,7 +136,7 @@ variable "external_secrets_enabled" {
   type        = bool
 }
 
-variable "enable_private_nlb" {
+variable "private_nlb_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false
@@ -215,10 +215,14 @@ variable "aws_load_balancer_controller_enabled" {
 variable "aws_load_balancer_controller_helm_config" {
   description = "Configuration for the AWS Load Balancer Controller Helm release"
   type = object({
-    values = list(string)
+    values                        = any
+    namespace                     = string
+    load_balancer_controller_name = string
   })
   default = {
-    values = []
+    values                        = []
+    namespace                     = ""
+    load_balancer_controller_name = ""
   }
 }
 
@@ -226,12 +230,6 @@ variable "argocd_manage_add_ons" {
   description = "Enable managing add-on configuration via ArgoCD App of Apps"
   type        = bool
   default     = false
-}
-
-variable "aws_load_balancer_version" {
-  description = "Specify the version of the AWS Load Balancer Controller for Ingress"
-  default     = "1.4.4"
-  type        = string
 }
 
 variable "name" {
@@ -330,29 +328,6 @@ variable "service_monitor_crd_enabled" {
   type        = bool
 }
 
-variable "istio_enabled" {
-  description = "Enable istio for service mesh."
-  default     = false
-  type        = bool
-}
-
-variable "istio_config" {
-  description = "Configuration to provide settings for Istio"
-  type = object({
-    ingress_gateway_enabled       = bool
-    ingress_gateway_namespace     = optional(string, "istio-ingressgateway")
-    envoy_access_logs_enabled     = bool
-    prometheus_monitoring_enabled = bool
-    istio_values_yaml             = any
-  })
-  default = {
-    ingress_gateway_enabled       = true
-    envoy_access_logs_enabled     = true
-    prometheus_monitoring_enabled = true
-    istio_values_yaml             = ""
-  }
-}
-
 variable "velero_enabled" {
   description = "Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters."
   default     = false
@@ -378,23 +353,6 @@ variable "velero_notification_enabled" {
   description = "Enable or disable the notification for velero backup."
   default     = false
   type        = bool
-}
-
-variable "karpenter_provisioner_enabled" {
-  description = "Enable or disable the installation of Karpenter, which is a Kubernetes cluster autoscaler."
-  default     = false
-  type        = bool
-}
-
-variable "karpenter_provisioner_config" {
-  description = "Configuration to provide settings for Karpenter, including which private subnet to use, instance capacity types, and excluded instance types."
-  default = {
-    private_subnet_name    = ""
-    instance_capacity_type = ["spot"]
-    excluded_instance_type = ["nano", "micro", "small"]
-    instance_hypervisor    = ["nitro"]
-  }
-  type = any
 }
 
 variable "ingress_nginx_enabled" {
@@ -495,7 +453,7 @@ variable "ipv6_enabled" {
 }
 
 variable "defectdojo_enabled" {
-  description = "Enable istio for service mesh."
+  description = "Enable defectdojo for service mesh."
   default     = false
   type        = bool
 }
@@ -534,6 +492,87 @@ variable "kubernetes_dashboard_enabled" {
   description = "Determines whether k8s-dashboard is enabled or not"
   default     = false
   type        = bool
+}
+
+variable "kubernetes_dashboard_config" {
+  description = "Specify all the configuration setup here"
+  type = object({
+    k8s_dashboard_ingress_load_balancer = string
+    alb_acm_certificate_arn             = string
+    k8s_dashboard_hostname              = string
+    private_alb_enabled                 = bool
+  })
+
+  default = {
+    k8s_dashboard_ingress_load_balancer = ""
+    alb_acm_certificate_arn             = ""
+    k8s_dashboard_hostname              = ""
+    private_alb_enabled                 = false
+  }
+}
+
+variable "argocd_enabled" {
+  description = "Determine whether argocd is enabled or not"
+  default     = false
+  type        = bool
+}
+
+variable "argocd_config" {
+  type = object({
+    hostname                     = string
+    values_yaml                  = any
+    redis_ha_enabled             = bool
+    autoscaling_enabled          = bool
+    slack_notification_token     = string
+    argocd_notifications_enabled = bool
+    ingress_class_name           = string
+    namespace                    = string
+  })
+
+  default = {
+    hostname                     = ""
+    values_yaml                  = {}
+    redis_ha_enabled             = false
+    autoscaling_enabled          = false
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = ""
+    namespace                    = "argocd"
+  }
+}
+
+variable "argoworkflow_enabled" {
+  description = "Determine whether argocd-workflow is enabled or not"
+  default     = false
+  type        = bool
+}
+
+variable "argoworkflow_config" {
+  type = object({
+    values              = any
+    namespace           = string
+    hostname            = string
+    ingress_class_name  = string
+    autoscaling_enabled = bool
+  })
+
+  default = {
+    values              = {}
+    namespace           = "argocd"
+    hostname            = ""
+    ingress_class_name  = ""
+    autoscaling_enabled = true
+  }
+}
+
+variable "argoproject_config" {
+  type = object({
+    name = string
+  })
+
+  default = {
+    name = ""
+  }
 }
 
 variable "k8s_dashboard_hostname" {

@@ -3,16 +3,21 @@ locals {
   environment = ""
   name        = ""
   additional_tags = {
-    Owner      = "Organization_Name"
-    Expires    = "Never"
-    Department = "Engineering"
+    Owner       = "Organization_Name"
+    Expires     = "Never"
+    Department  = "Engineering"
+    Product     = ""
+    Environment = local.environment
   }
-  kms_key_arn  = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
-  ipv6_enabled = false
+  argocd_namespace        = "argo-cd"                                       # Give Namespace
+  kms_key_arn             = "arn:aws:kms:us-west-1:xxxxxxx:key/mrk-xxxxxxx" # pass ARN of EKS created KMS key
+  ipv6_enabled            = false
+  alb_acm_certificate_arn = ""
 }
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
+  version              = "3.1.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -21,7 +26,7 @@ module "eks-addons" {
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
-  worker_iam_role_name = "update-eks-node-role"                   # enter role name created by eks module
+  worker_iam_role_name = "eks-node-role"                          # enter role name created by eks module
   worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
@@ -60,6 +65,7 @@ module "eks-addons" {
   aws_node_termination_handler_helm_config = {
     values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
     enable_service_monitor = false # to enable monitoring for node termination handler
+    enable_notifications   = true
   }
 
   ## KEDA
@@ -71,25 +77,8 @@ module "eks-addons" {
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
   karpenter_helm_config = {
-    values = [file("${path.module}/config/karpenter.yaml")]
-  }
-
-  ## KARPENTER-PROVISIONER
-  karpenter_provisioner_enabled = false # to enable provisioning nodes with Karpenter in the EKS cluster
-  karpenter_provisioner_config = {
-    provisioner_name              = format("karpenter-provisioner-%s", local.name)
-    karpenter_label               = ["Mgt-Services", "Monitor-Services", "ECK-Services"]
-    provisioner_values            = file("./config/karpenter-management.yaml")
-    instance_capacity_type        = ["spot"]
-    excluded_instance_type        = ["nano", "micro", "small"]
-    ec2_instance_family           = ["t3"]
-    ec2_instance_type             = ["t3.medium"]
-    private_subnet_selector_key   = "Environment"
-    private_subnet_selector_value = local.environment
-    security_group_selector_key   = "aws:eks:cluster-name"
-    security_group_selector_value = "${local.environment}-${local.name}"
-    instance_hypervisor           = ["nitro"]
-    kms_key_arn                   = local.kms_key_arn
+    enable_service_monitor = false # to enable monitoring for kafalserpenter
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)
@@ -121,7 +110,7 @@ module "eks-addons" {
 
   ## INGRESS-NGINX
   ingress_nginx_enabled = false # to enable ingress nginx
-  enable_private_nlb    = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "true" together
+  private_nlb_enabled   = false # to enable Internal (Private) Ingress , set this and ingress_nginx_enable "false" together
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
@@ -132,14 +121,45 @@ module "eks-addons" {
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
   aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
-    values = [file("${path.module}/config/aws-alb.yaml")]
+    values                        = [file("${path.module}/config/aws-alb.yaml")]
+    namespace                     = "alb" # enter namespace according to the requirement (example: "alb")
+    load_balancer_controller_name = "alb" # enter ingress class name according to your requirement (example: "aws-load-balancer-controller")
   }
 
   ## KUBERNETES-DASHBOARD
-  kubernetes_dashboard_enabled        = false
-  k8s_dashboard_ingress_load_balancer = "nlb"                                              ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
-  alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxxx" # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-  k8s_dashboard_hostname              = "k8s-dashboard.prod.in"                            # Enter Hostname
+  kubernetes_dashboard_enabled = false
+  kubernetes_dashboard_config = {
+    k8s_dashboard_ingress_load_balancer = "nlb"                            ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+    k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
+  }
+
+  ## ArgoCD
+  argocd_enabled = false
+  argocd_config = {
+    hostname                     = "argocd.rnd.squareops.in"
+    values_yaml                  = file("${path.module}/config/argocd.yaml")
+    namespace                    = local.argocd_namespace
+    redis_ha_enabled             = true
+    autoscaling_enabled          = true
+    slack_notification_token     = ""
+    argocd_notifications_enabled = false
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+  argoproject_config = {
+    name = "argo-project" # enter name for aro-project appProjects
+  }
+
+  ## ArgoCD-Workflow
+  argoworkflow_enabled = false
+  argoworkflow_config = {
+    values              = file("${path.module}/config/argocd-workflow.yaml")
+    namespace           = local.argocd_namespace
+    autoscaling_enabled = true
+    hostname            = "argocd-workflow.rnd.squareops.in"
+    ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
 
   # VELERO
   velero_enabled              = false # to enable velero
@@ -171,14 +191,4 @@ module "eks-addons" {
   ## FALCO
   falco_enabled = false # to enable falco
   slack_webhook = "xoxb-379541400966-iibMHnnoaPzVl"
-
-  # ISTIO
-  istio_enabled = false # to enable istio service mesh
-  istio_config = {
-    ingress_gateway_enabled       = false
-    envoy_access_logs_enabled     = false
-    prometheus_monitoring_enabled = false
-    istio_values_yaml             = file("./config/istio.yaml")
-
-  }
 }

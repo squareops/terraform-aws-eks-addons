@@ -1,0 +1,66 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: node-class # Replace with the required name
+spec:
+  subnetSelectorTerms:
+    # Select any subnet that has the below mentioned tags OR any subnet with the below mentioned IDs
+    - tags:
+        Addons-service: true
+        Karpenter: eks-addons-us-east-1a
+    - id: subnet-xxxxx # replace with your subnet id
+    - id: subnet-xxxxx # replace with your subnet id
+
+  securityGroupSelectorTerms:
+    # Select on any security group that has "aws:eks:cluster-name: ${cluster-name}" tag OR any security group with the "my-security-group" name
+    # OR any security group with ID "sg-xxxxxx"
+    - tags:
+        aws:eks:cluster-name: cluster-1 # Add name of the cluster
+    # - name: my-security-group
+    # - id: sg-xxxxxx
+
+  # Optional, IAM role to use for the node identity.
+  role: "role-name"
+  # Optional, IAM instance profile to use for the node identity.
+  # Must specify one of "role" or "instanceProfile" for Karpenter to launch nodes
+  # instanceProfile: "eks-node-instance-profile"
+
+  amiFamily: Bottlerocket
+  amiSelectorTerms:
+    - owner: "amazon"
+      # name: "bottlerocket-aws-k8s-1.30-aarch64*"  # Use this for ARM images, update K8s version as required. Use format "bottlerocket-aws-k8s-"+k8s version+"-aarch64*"
+      name: "bottlerocket-aws-k8s-1.30-x86_64*"  # Use this for AMD images update K8s version as required. Use format "bottlerocket-aws-k8s"+k8s version+"-x86_64*"
+
+
+  # Optional, configures storage devices for the instance
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 20Gi
+        volumeType: gp3
+        encrypted: true
+        kmsKeyID: "kms-key-arn" # Enter your KMS Key ID from EKS cluster console
+        deleteOnTermination: true
+    - deviceName: /dev/xvdb
+      ebs:
+        volumeSize: 20Gi
+        volumeType: gp3
+        encrypted: true
+        kmsKeyID: "kms-key-arn" # Enter your KMS Key ID from EKS cluster console
+        deleteOnTermination: true
+
+  tags:
+    managed-by: karpenter
+    Name: karpenter-node-pool-<clustername> #Follow naming convention Karpenenter-nodepoolname-clustername
+    Owner: Organization_name
+    Expires: Never
+    Department: Engineering
+    Product: ""
+    Environment: staging
+
+  userData:  |
+    [bootstrap]
+      [bootstrap.bottlerocket-kubernetes]
+      "image-gc-high-threshold-percent" = 60
+      "image-gc-low-threshold-percent" = 40
+      "event-qps" = 5

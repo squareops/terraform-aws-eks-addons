@@ -22,6 +22,7 @@ resource "aws_eks_addon" "vpc_cni" {
     var.addon_context.tags,
     try(var.addon_config.tags, {})
   )
+  configuration_values = "{\"env\": {\"ENABLE_PREFIX_DELEGATION\": \"true\"}}"
 }
 
 module "irsa_addon" {
@@ -79,22 +80,22 @@ data "aws_iam_policy_document" "ipv6_policy" {
   }
 }
 
-resource "kubectl_manifest" "update_aws_vpc_cni" {
-  yaml_body = <<-EOT
-    apiVersion: apps/v1
-    kind: DaemonSet
-    metadata:
-      name: aws-node
-      namespace: kube-system
-    spec:
-      template:
-        spec:
-          containers:
-            - name: aws-node
-              env:
-                - name: ENABLE_PREFIX_DELEGATION
-                  value: "true"
-  EOT
+# resource "kubectl_manifest" "update_aws_vpc_cni" {
+#   yaml_body = <<-EOT
+#     apiVersion: apps/v1
+#     kind: DaemonSet
+#     metadata:
+#       name: aws-node
+#       namespace: kube-system
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#             - name: aws-node
+#               env:
+#                 - name: ENABLE_PREFIX_DELEGATION
+#                   value: "true"
+#   EOT
 
-  depends_on = [aws_eks_addon.vpc_cni]
-}
+#   depends_on = [aws_eks_addon.vpc_cni]
+# }

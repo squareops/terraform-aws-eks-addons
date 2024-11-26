@@ -2,3 +2,13 @@ clusterName: ${eks_cluster_id}
 region: ${aws_region}
 image:
   repository: ${repository}
+
+ingressClass: ${load_balancer_controller_name}
+ingressClassParams:
+  name: ${load_balancer_controller_name}
+  create: true
+  webhookServiceName: ${load_balancer_controller_name}-webhook-service
+
+enableServiceMutatorWebhook: false
+
+nameOverride: ${load_balancer_controller_name}

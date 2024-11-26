@@ -4,6 +4,17 @@ Karpenter is an open-source node provisioning project built for Kubernetes. Karp
 
 For more details checkout [Karpenter](https://karpenter.sh/docs/getting-started/) docs
 
+
+| Module Release           | Karpenter v0.32.x | Karpenter v1.0.0  |
+|-------------------|------------------|------------------|
+| 3.0.0     | &#x2714;        | &#x274C;         |
+| 3.1.1     | &#x274C;         | &#x2714;        |
+
+## Notes
+1. The module release v3.1.1 support karpenter version 1.0.0  which have nodepool and ec2nodeclass support. For Karpenter version <=0.32.x refer the previous release.
+2. If you are already using Karpenter below version 0.32.x, kindly refer to the [Karpenter v1 Migration Guide](https://karpenter.sh/docs/getting-started/migration/v1/) for important upgrade instructions.  
+For more details, check out the [Karpenter documentation](https://karpenter.sh/docs/).
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -11,6 +22,7 @@ For more details checkout [Karpenter](https://karpenter.sh/docs/getting-started/
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.72 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0, < 4.0.0 |
 
 ## Providers
 
@@ -40,7 +52,9 @@ For more details checkout [Karpenter](https://karpenter.sh/docs/getting-started/
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_addon_context"></a> [addon\_context](#input\_addon\_context) | Input configuration for the addon | <pre>object({<br>    aws_caller_identity_account_id = string<br>    aws_caller_identity_arn        = string<br>    aws_eks_cluster_endpoint       = string<br>    aws_partition_id               = string<br>    aws_region_name                = string<br>    eks_cluster_id                 = string<br>    eks_oidc_issuer_url            = string<br>    eks_oidc_provider_arn          = string<br>    tags                           = map(string)<br>    irsa_iam_role_path             = string<br>    irsa_iam_permissions_boundary  = string<br>  })</pre> | n/a | yes |
+| <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | Helm cart version for karpenter CRDs | `string` | `"1.0.6"` | no |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Fetch Cluster ID of the cluster | `string` | `""` | no |
+| <a name="input_enable_service_monitor"></a> [enable\_service\_monitor](#input\_enable\_service\_monitor) | Specifies whether a ServiceMonitor should be created. | `bool` | `false` | no |
 | <a name="input_helm_config"></a> [helm\_config](#input\_helm\_config) | Helm provider config for the Karpenter | `any` | `{}` | no |
 | <a name="input_irsa_policies"></a> [irsa\_policies](#input\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
 | <a name="input_karpenter_helm_config"></a> [karpenter\_helm\_config](#input\_karpenter\_helm\_config) | Helm provider config for the Karpenter | `any` | `{}` | no |

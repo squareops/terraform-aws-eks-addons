@@ -144,11 +144,11 @@ admissionController:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   nodeSelector: {}
 
@@ -324,11 +324,11 @@ recommender:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   nodeSelector: {}
 
@@ -530,11 +530,11 @@ updater:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
       cpu: 10m
-      memory: 60Mi
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi
 
   nodeSelector: {}
 

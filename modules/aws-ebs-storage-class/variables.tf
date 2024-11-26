@@ -20,3 +20,9 @@ variable "availability_zone" {
   type        = any
   description = "List of Azs"
 }
+
+variable "tags_all" {
+  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
+  type        = map(string)
+  default     = {}
+}

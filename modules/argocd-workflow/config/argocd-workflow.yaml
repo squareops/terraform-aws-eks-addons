@@ -1,0 +1,98 @@
+## Custom resource configuration
+crds:
+  # -- Install and upgrade CRDs
+  install: true
+  # -- Keep CRDs on chart uninstall
+  keep: false
+  # -- Annotations to be added to all CRDs
+  annotations: {}
+
+controller:
+  rbac:
+    # -- Adds Role and RoleBinding for the controller.
+    create: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: "prometheus-operator"
+  # serviceAccount:
+  #   # -- Create a service account for the controller
+  #   create: true
+  #   # -- Service account name
+  #   name: "argo-workflow-controller-sa"
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+# mainContainer adds default config for main container that could be overriden in workflows template
+mainContainer:
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi
+
+# executor controls how the init and wait container should be customized
+executor:
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi
+
+server:
+  # serviceAccount:
+  #   # -- Create a service account for the server
+  #   create: true
+  #   # -- Service account name
+  #   name: "argo-workflow-server-sa"
+  autoscaling:
+    enabled: ${autoscaling_enabled}
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+
+  ingress:
+    enabled: true
+    ingressClassName: ${ingress_class_name}
+    hosts:
+      - ${ingress_host}
+    # -- List of ingress paths
+    paths:
+      - /
+    tls:
+      - secretName: argo-workflow-token
+        hosts:
+          - ${ingress_host}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi

@@ -5,12 +5,12 @@ output "environment" {
 
 output "nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
-  value       = var.ingress_nginx_enabled ? var.enable_private_nlb ? null : data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+  value       = var.ingress_nginx_enabled ? var.private_nlb_enabled ? null : data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
 }
 
 output "internal_nginx_ingress_controller_dns_hostname" {
   description = "DNS hostname of the NGINX Ingress Controller."
-  value       = var.enable_private_nlb ? data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
+  value       = var.private_nlb_enabled ? data.kubernetes_service.ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname : null
 }
 
 output "ebs_encryption_enable" {
@@ -41,11 +41,6 @@ output "kubecost" {
   } : null
 }
 
-output "istio_ingressgateway_dns_hostname" {
-  description = "DNS hostname of the Istio Ingress Gateway."
-  value       = var.istio_enabled ? try(data.kubernetes_service.istio-ingress[0].status[0].load_balancer[0].ingress[0].hostname, null) : null
-}
-
 output "defectdojo" {
   description = "DefectDojo endpoint and credentials"
   value = var.defectdojo_enabled ? {
@@ -63,4 +58,19 @@ output "k8s_dashboard_admin_token" {
 output "k8s_dashboard_read_only_token" {
   description = "Kubernetes-Dashboard Read Only Token"
   value       = var.kubernetes_dashboard_enabled ? module.kubernetes-dashboard[0].k8s-dashboard-read-only-token : ""
+}
+
+output "argocd_credentials" {
+  description = "Argocd_Info"
+  value       = var.argocd_enabled ? module.argocd[0].argocd : null
+}
+
+output "argoworkflow_hostname" {
+  description = "Argocd Workflow hostname"
+  value       = var.argoworkflow_enabled ? module.argocd-workflow[0].argoworkflow_host : null
+}
+
+output "argoworkflow_credentials" {
+  description = "Argocd Workflow credentials"
+  value       = var.argoworkflow_enabled ? module.argocd-workflow[0].argo_workflow_token : null
 }

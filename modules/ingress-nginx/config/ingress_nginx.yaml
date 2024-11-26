@@ -5,8 +5,9 @@ controller:
     enabled: true
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
-      service.beta.kubernetes.io/aws-load-balancer-internal: "${enable_private_nlb}"
+      service.beta.kubernetes.io/aws-load-balancer-internal: "${private_nlb_enabled}"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "${additional_tags}"
     externalTrafficPolicy: Cluster
 
 
@@ -17,11 +18,11 @@ controller:
 
   resources:
     limits:
-      cpu: 500m
-      memory: 750Mi
-    requests:
       cpu: 50m
-      memory: 200Mi
+      memory: 300Mi
+    requests:
+      cpu: 25m
+      memory: 150Mi
   autoscaling:
     enabled: true
     minReplicas: 2

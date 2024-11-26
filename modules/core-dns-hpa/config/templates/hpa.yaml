@@ -14,12 +14,12 @@ spec:
   - type: Resource
     resource:
       name: cpu
-      target: 
+      target:
         type: Utilization
         averageUtilization: {{ .Values.targetCPUUtilizationPercentage}}
   - type: Resource
     resource:
       name: memory
       target:
-        type: AverageValue
-        averageValue: {{ .Values.targetMemoryUtilizationPercentage}}
+        type: Utilization
+        averageUtilization: {{ .Values.targetMemoryUtilizationPercentage}}

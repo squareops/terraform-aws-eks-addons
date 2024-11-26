@@ -41,7 +41,7 @@ locals {
       value = false
     },
     { name  = "queueURL"
-      value = aws_sqs_queue.aws_node_termination_handler_queue.url
+      value = var.enable_notifications ? aws_sqs_queue.aws_node_termination_handler_queue[0].url : ""
     }
   ]
 
@@ -53,7 +53,7 @@ locals {
     irsa_iam_policies                 = concat([aws_iam_policy.aws_node_termination_handler_irsa.arn], var.irsa_policies)
   }
 
-  event_rules = flatten([
+  event_rules = var.enable_notifications ? flatten([
     length(var.autoscaling_group_names) > 0 ?
     [{
       name          = substr("NTHASGTermRule-${var.addon_context.eks_cluster_id}", 0, 63),
@@ -85,5 +85,5 @@ EOF
 {"source": ["aws.health"],"detail-type": ["AWS Health Event"]}
 EOF
     }
-  ])
+  ]) : []
 }
