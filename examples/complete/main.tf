@@ -17,7 +17,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "3.1.1"
+  version              = "3.1.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
