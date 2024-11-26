@@ -51,4 +51,5 @@ No inputs.
 | <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
 | <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
+| <a name="output_private_nginx_ingress_controller_dns_hostname"></a> [private\_nginx\_ingress\_controller\_dns\_hostname](#output\_private\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
