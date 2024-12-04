@@ -322,6 +322,12 @@ variable "amazon_eks_vpc_cni_enabled" {
   type        = bool
 }
 
+variable "vpc_cni_version" {
+  description = "Specify VPC CNI addons version"
+  default = "v1.19.0-eksbuild.1"
+  type = string
+}
+
 variable "service_monitor_crd_enabled" {
   description = "Enable or disable the installation of Custom Resource Definitions (CRDs) for Prometheus Service Monitor. "
   default     = false

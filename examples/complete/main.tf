@@ -17,7 +17,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "3.1.0"
+  version              = "3.1.2"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -32,6 +32,7 @@ module "eks-addons" {
 
   #VPC-CNI-DRIVER
   amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
+  vpc_cni_version = "v1.19.0-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
