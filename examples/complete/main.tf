@@ -145,7 +145,10 @@ module "eks-addons" {
     autoscaling_enabled          = true
     slack_notification_token     = ""
     argocd_notifications_enabled = false
-    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "nginx", "private-nginx")
+    argocd_ingress_load_balancer = "nlb"   ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled          = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn      = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
   }
   argoproject_config = {
     name = "argo-project" # enter name for aro-project appProjects
@@ -154,11 +157,14 @@ module "eks-addons" {
   ## ArgoCD-Workflow
   argoworkflow_enabled = false
   argoworkflow_config = {
-    values              = file("${path.module}/config/argocd-workflow.yaml")
-    namespace           = local.argocd_namespace
-    autoscaling_enabled = true
-    hostname            = "argocd-workflow.rnd.squareops.in"
-    ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    values                             = file("${path.module}/config/argocd-workflow.yaml")
+    namespace                          = local.argocd_namespace
+    autoscaling_enabled                = true
+    hostname                           = "argocd-workflow.rnd.squareops.in"
+    ingress_class_name                 = "nginx" # enter ingress class name according to your requirement (example: "nginx", "private-nginx")
+    argoworkflow_ingress_load_balancer = "nlb"   ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    private_alb_enabled                = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn            = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
   }
 
   # VELERO

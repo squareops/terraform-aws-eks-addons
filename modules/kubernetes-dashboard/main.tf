@@ -34,6 +34,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       "alb.ingress.kubernetes.io/backend-protocol"     = "HTTPS"
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
+      "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress"
       } : {
       "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
       "kubernetes.io/ingress.class"                       = var.ingress_class_name
@@ -48,6 +49,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
     }
   }
   spec {
+    ingress_class_name = var.ingress_class_name
     rule {
       host = var.k8s_dashboard_hostname
       http {

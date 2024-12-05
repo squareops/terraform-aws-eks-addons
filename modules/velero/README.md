@@ -70,7 +70,7 @@
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region for the EKS cluster | `string` | `"us-east-2"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `map('BusinessUnit`,`XYZ`) | `map(string)` | `{}` | no |
-| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | velero configurations | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_cron_time": "",<br>  "slack_appToken": "",<br>  "slack_botToken": "",<br>  "slack_channel_name": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
+| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | velero configurations | `any` | <pre>{<br/>  "backup_bucket_name": "",<br/>  "namespaces": "",<br/>  "retention_period_in_days": 45,<br/>  "schedule_cron_time": "",<br/>  "slack_appToken": "",<br/>  "slack_botToken": "",<br/>  "slack_channel_name": "",<br/>  "velero_backup_name": ""<br/>}</pre> | no |
 | <a name="input_velero_notification_enabled"></a> [velero\_notification\_enabled](#input\_velero\_notification\_enabled) | Enable or disable the notification for velero backup. | `bool` | `false` | no |
 | <a name="input_velero_values_yaml"></a> [velero\_values\_yaml](#input\_velero\_values\_yaml) | Custom config values for velero helm | `string` | `""` | no |
 

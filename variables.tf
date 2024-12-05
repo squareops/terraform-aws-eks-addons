@@ -501,6 +501,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = string
     k8s_dashboard_hostname              = string
     private_alb_enabled                 = bool
+    ingress_class_name                  = string
   })
 
   default = {
@@ -508,6 +509,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
+    ingress_class_name                  = "nginx"
   }
 }
 
@@ -525,6 +527,9 @@ variable "argocd_config" {
     autoscaling_enabled          = bool
     slack_notification_token     = string
     argocd_notifications_enabled = bool
+    argocd_ingress_load_balancer = string
+    private_alb_enabled          = bool
+    alb_acm_certificate_arn      = string
     ingress_class_name           = string
     namespace                    = string
   })
@@ -536,7 +541,10 @@ variable "argocd_config" {
     autoscaling_enabled          = false
     slack_notification_token     = ""
     argocd_notifications_enabled = false
-    ingress_class_name           = ""
+    argocd_ingress_load_balancer = "nlb"
+    private_alb_enabled          = false
+    alb_acm_certificate_arn      = ""
+    ingress_class_name           = "nginx"
     namespace                    = "argocd"
   }
 }
@@ -549,19 +557,25 @@ variable "argoworkflow_enabled" {
 
 variable "argoworkflow_config" {
   type = object({
-    values              = any
-    namespace           = string
-    hostname            = string
-    ingress_class_name  = string
-    autoscaling_enabled = bool
+    values                             = any
+    namespace                          = string
+    hostname                           = string
+    ingress_class_name                 = string
+    autoscaling_enabled                = bool
+    argoworkflow_ingress_load_balancer = string
+    private_alb_enabled                = bool
+    alb_acm_certificate_arn            = string
   })
 
   default = {
-    values              = {}
-    namespace           = "argocd"
-    hostname            = ""
-    ingress_class_name  = ""
-    autoscaling_enabled = true
+    values                             = {}
+    namespace                          = "argocd"
+    hostname                           = ""
+    ingress_class_name                 = ""
+    autoscaling_enabled                = true
+    argoworkflow_ingress_load_balancer = "nlb"
+    private_alb_enabled                = false
+    alb_acm_certificate_arn            = ""
   }
 }
 

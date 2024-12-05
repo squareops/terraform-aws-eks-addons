@@ -25,7 +25,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_metrics_server_vpa_config"></a> [metrics\_server\_vpa\_config](#input\_metrics\_server\_vpa\_config) | Configuration to provide settings of vpa over metrics server | `any` | <pre>{<br>  "maxCPU": "100m",<br>  "maxMemory": "500Mi",<br>  "metricsServerDeploymentName": "metrics-server",<br>  "minCPU": "25m",<br>  "minMemory": "150Mi"<br>}</pre> | no |
+| <a name="input_metrics_server_vpa_config"></a> [metrics\_server\_vpa\_config](#input\_metrics\_server\_vpa\_config) | Configuration to provide settings of vpa over metrics server | `any` | <pre>{<br/>  "maxCPU": "100m",<br/>  "maxMemory": "500Mi",<br/>  "metricsServerDeploymentName": "metrics-server",<br/>  "minCPU": "25m",<br/>  "minMemory": "150Mi"<br/>}</pre> | no |
 
 ## Outputs
 
