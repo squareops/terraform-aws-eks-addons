@@ -22,7 +22,7 @@ resource "aws_eks_addon" "vpc_cni" {
     var.addon_context.tags,
     try(var.addon_config.tags, {})
   )
-  configuration_values = "{\"env\": {\"ENABLE_PREFIX_DELEGATION\": \"true\"}}"
+  configuration_values = "{\"env\": {\"ENABLE_PREFIX_DELEGATION\": \"true\"}, \"enableNetworkPolicy\": \"true\"}"
 }
 
 module "irsa_addon" {
