@@ -21,11 +21,12 @@ module "eks-addons" {
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
-  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Subnet IDs
+  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Private Subnet IDs
+  public_subnets       = ["subnet-xxxxx", "subnet-xxxxx"] # pass Public Subnet IDs
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
-  kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
+   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
   worker_iam_role_name = "eks-node-role"                          # enter role name created by eks module
   worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
@@ -98,7 +99,7 @@ module "eks-addons" {
   cert_manager_helm_config = {
     values                         = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor         = false # to enable monitoring for Cert Manager
-    cert_manager_letsencrypt_email = "email@email.com"
+    cert_manager_letsencrypt_email = "mona@squareops.com"
   }
 
   ## CONFIG-RELOADER
@@ -115,7 +116,7 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
     ingress_class_name     = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
-    namespace              = "nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
+    namespace              = "nginx" 
   }
 
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER

@@ -4,6 +4,7 @@ controller:
     enabled: true
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: external
+      service.beta.kubernetes.io/aws-load-balancer-subnets: ${nlb_subnets}
       service.beta.kubernetes.io/aws-load-balancer-internal: "${private_nlb_enabled}"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip

@@ -159,6 +159,9 @@ module "ingress-nginx" {
   private_nlb_enabled    = var.private_nlb_enabled
   ingress_class_name     = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
+  private_subnet_ids     = var.private_subnet_ids
+  public_subnets         = var.public_subnets
+  nlb_subnets = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnets
 }
 
 # INGRESS-NGINX DATA SOURCE
