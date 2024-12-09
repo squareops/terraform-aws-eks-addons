@@ -655,7 +655,7 @@ EOT
 #   description = "List of private subnet IDs"
 # }
 
-variable "public_subnets" {
+variable "public_subnet_ids" {
   type        = list(string)
   description = "List of public subnet IDs"
 }

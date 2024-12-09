@@ -22,7 +22,7 @@ module "eks-addons" {
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
   private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Private Subnet IDs
-  public_subnets       = ["subnet-xxxxx", "subnet-xxxxx"] # pass Public Subnet IDs
+  public_subnet_ids    = ["subnet-xxxxx", "subnet-xxxxx"] # pass Public Subnet IDs
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn

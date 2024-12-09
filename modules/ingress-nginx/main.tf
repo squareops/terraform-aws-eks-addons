@@ -4,7 +4,7 @@ locals {
   template_path   = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
   additional_tags = join(",", [for k, v in var.addon_context.tags : "${k}=${v}"])
 
-  nlb_subnets = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnets
+  nlb_subnets = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnet_ids
 
   # Read module's template file
   template_values = templatefile(local.template_path, {
