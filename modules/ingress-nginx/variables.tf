@@ -54,3 +54,24 @@ variable "namespace" {
   description = "Creates namespace for the controller need to install"
   type        = string
 }
+
+variable "nlb_subnets" {
+  description = <<EOT
+Subnets to use for the NLB. This variable should be automatically assigned based on the 
+value of `private_nlb_enabled` and whether to use `private_subnets` or `public_subnets`.
+EOT
+  type        = list(string)
+  default     = [] # Default to an empty list to ensure optional usage
+}
+
+variable "private_subnet_ids" {
+  type        = list(string)
+  description = "List of private subnet IDs"
+}
+
+variable "public_subnets" {
+  type        = list(string)
+  description = "List of public subnet IDs"
+}
+
+

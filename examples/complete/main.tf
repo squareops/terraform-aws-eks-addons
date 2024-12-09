@@ -21,7 +21,8 @@ module "eks-addons" {
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
-  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Subnet IDs
+  private_subnet_ids   = ["subnet-xxxxx", "subnet-xxxxx"] # pass Private Subnet IDs
+  public_subnets       = ["subnet-xxxxx", "subnet-xxxxx"] # pass Public Subnet IDs
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
@@ -115,7 +116,7 @@ module "eks-addons" {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
     ingress_class_name     = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
-    namespace              = "nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
+    namespace              = "nginx" 
   }
 
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER

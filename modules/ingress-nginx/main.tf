@@ -4,6 +4,8 @@ locals {
   template_path   = "${path.module}/config/${var.ip_family == "ipv4" ? "ingress_nginx.yaml" : "ingress_nginx_ipv6.yaml"}"
   additional_tags = join(",", [for k, v in var.addon_context.tags : "${k}=${v}"])
 
+  nlb_subnets = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnets
+
   # Read module's template file
   template_values = templatefile(local.template_path, {
     enable_service_monitor = var.enable_service_monitor
@@ -11,6 +13,7 @@ locals {
     nlb_scheme             = local.nlb_scheme
     ingress_class_name     = var.ingress_class_name
     additional_tags        = local.additional_tags # Pass the dynamically created string
+    nlb_subnets             = join(",", local.nlb_subnets)
   })
 
   # Convert the template values to a map
