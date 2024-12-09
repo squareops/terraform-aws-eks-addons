@@ -26,7 +26,7 @@ module "eks-addons" {
   environment          = local.environment
   ipv6_enabled         = local.ipv6_enabled
   kms_key_arn          = local.kms_key_arn
-   kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
+  kms_policy_arn       = "arn:aws:iam::xxx:policy/eks-kms-policy" # eks module will create kms_policy_arn
   worker_iam_role_name = "eks-node-role"                          # enter role name created by eks module
   worker_iam_role_arn  = "arn:aws:iam::xxx:role/eks-node-role"    # enter roll ARN
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
@@ -99,7 +99,7 @@ module "eks-addons" {
   cert_manager_helm_config = {
     values                         = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor         = false # to enable monitoring for Cert Manager
-    cert_manager_letsencrypt_email = "mona@squareops.com"
+    cert_manager_letsencrypt_email = "email@email.com"
   }
 
   ## CONFIG-RELOADER

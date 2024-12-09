@@ -161,7 +161,7 @@ module "ingress-nginx" {
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
   private_subnet_ids     = var.private_subnet_ids
   public_subnets         = var.public_subnets
-  nlb_subnets = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnets
+  nlb_subnets            = var.private_nlb_enabled ? var.private_subnet_ids : var.public_subnets
 }
 
 # INGRESS-NGINX DATA SOURCE
