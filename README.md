@@ -112,6 +112,15 @@ module "eks-addons" {
     namespace              = "nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
   }
 
+  ## ADDITIONAL-PRIVATE-INGRESS-NGINX
+  private_ingress_nginx_enabled = false # to enable private ingress nginx
+  private_ingress_nginx_config = {
+    values                 = [file("${path.module}/config/private-ingress-nginx.yaml")]
+    enable_service_monitor = false           # enable monitoring in nginx ingress
+    ingress_class_name     = "private-nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
+    namespace              = "private-nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
+  }
+
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
   aws_load_balancer_controller_enabled = false # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
@@ -127,6 +136,7 @@ module "eks-addons" {
     private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
+    ingress_class_name                  = "nginx"
   }
 
   ## ArgoCD
@@ -365,9 +375,11 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="module_cert-manager"></a> [cert-manager](#module\_cert-manager) | ./modules/cert-manager | n/a |
 | <a name="module_cert-manager-le-http-issuer"></a> [cert-manager-le-http-issuer](#module\_cert-manager-le-http-issuer) | ./modules/cert-manager-le-http-issuer | n/a |
 | <a name="module_cluster-autoscaler"></a> [cluster-autoscaler](#module\_cluster-autoscaler) | ./modules/cluster-autoscaler | n/a |
+| <a name="module_cluster-proportional-autoscaler"></a> [cluster-proportional-autoscaler](#module\_cluster-proportional-autoscaler) | ./modules/cluster-proportional-autoscaler | n/a |
 | <a name="module_coredns_hpa"></a> [coredns\_hpa](#module\_coredns\_hpa) | ./modules/core-dns-hpa | n/a |
 | <a name="module_external-secrets"></a> [external-secrets](#module\_external-secrets) | ./modules/external-secret | n/a |
 | <a name="module_ingress-nginx"></a> [ingress-nginx](#module\_ingress-nginx) | ./modules/ingress-nginx | n/a |
+| <a name="module_ingress-nginx-private"></a> [ingress-nginx-private](#module\_ingress-nginx-private) | ./modules/ingress-nginx | n/a |
 | <a name="module_karpenter"></a> [karpenter](#module\_karpenter) | ./modules/karpenter | n/a |
 | <a name="module_keda"></a> [keda](#module\_keda) | ./modules/keda | n/a |
 | <a name="module_kubernetes-dashboard"></a> [kubernetes-dashboard](#module\_kubernetes-dashboard) | ./modules/kubernetes-dashboard | n/a |
@@ -405,6 +417,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [kubernetes_secret.defectdojo](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/secret) | data source |
 | [kubernetes_service.ingress-nginx](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
+| [kubernetes_service.private-ingress-nginx](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/service) | data source |
 
 ## Inputs
 
@@ -413,11 +426,11 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
 | <a name="input_amazon_eks_aws_ebs_csi_driver_config"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_config](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_config) | configMap for AWS EBS CSI Driver add-on | `any` | `{}` | no |
 | <a name="input_amazon_eks_vpc_cni_enabled"></a> [amazon\_eks\_vpc\_cni\_enabled](#input\_amazon\_eks\_vpc\_cni\_enabled) | Enable or disable the installation of the Amazon EKS VPC CNI addon. | `bool` | `false` | no |
-| <a name="input_argocd_config"></a> [argocd\_config](#input\_argocd\_config) | n/a | <pre>object({<br>    hostname                     = string<br>    values_yaml                  = any<br>    redis_ha_enabled             = bool<br>    autoscaling_enabled          = bool<br>    slack_notification_token     = string<br>    argocd_notifications_enabled = bool<br>    ingress_class_name           = string<br>    namespace                    = string<br>  })</pre> | <pre>{<br>  "argocd_notifications_enabled": false,<br>  "autoscaling_enabled": false,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "redis_ha_enabled": false,<br>  "slack_notification_token": "",<br>  "values_yaml": {}<br>}</pre> | no |
+| <a name="input_argocd_config"></a> [argocd\_config](#input\_argocd\_config) | n/a | <pre>object({<br>    hostname                     = string<br>    values_yaml                  = any<br>    redis_ha_enabled             = bool<br>    autoscaling_enabled          = bool<br>    slack_notification_token     = string<br>    argocd_notifications_enabled = bool<br>    argocd_ingress_load_balancer = string<br>    private_alb_enabled          = bool<br>    alb_acm_certificate_arn      = string<br>    ingress_class_name           = string<br>    namespace                    = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argocd_ingress_load_balancer": "nlb",<br>  "argocd_notifications_enabled": false,<br>  "autoscaling_enabled": false,<br>  "hostname": "",<br>  "ingress_class_name": "nginx",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "redis_ha_enabled": false,<br>  "slack_notification_token": "",<br>  "values_yaml": {}<br>}</pre> | no |
 | <a name="input_argocd_enabled"></a> [argocd\_enabled](#input\_argocd\_enabled) | Determine whether argocd is enabled or not | `bool` | `false` | no |
 | <a name="input_argocd_manage_add_ons"></a> [argocd\_manage\_add\_ons](#input\_argocd\_manage\_add\_ons) | Enable managing add-on configuration via ArgoCD App of Apps | `bool` | `false` | no |
 | <a name="input_argoproject_config"></a> [argoproject\_config](#input\_argoproject\_config) | n/a | <pre>object({<br>    name = string<br>  })</pre> | <pre>{<br>  "name": ""<br>}</pre> | no |
-| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values              = any<br>    namespace           = string<br>    hostname            = string<br>    ingress_class_name  = string<br>    autoscaling_enabled = bool<br>  })</pre> | <pre>{<br>  "autoscaling_enabled": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values                             = any<br>    namespace                          = string<br>    hostname                           = string<br>    ingress_class_name                 = string<br>    autoscaling_enabled                = bool<br>    argoworkflow_ingress_load_balancer = string<br>    private_alb_enabled                = bool<br>    alb_acm_certificate_arn            = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argoworkflow_ingress_load_balancer": "nlb",<br>  "autoscaling_enabled": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "values": {}<br>}</pre> | no |
 | <a name="input_argoworkflow_enabled"></a> [argoworkflow\_enabled](#input\_argoworkflow\_enabled) | Determine whether argocd-workflow is enabled or not | `bool` | `false` | no |
 | <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
@@ -437,6 +450,9 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Whether to enable the Cluster Autoscaler add-on or not. | `bool` | `false` | no |
 | <a name="input_cluster_autoscaler_helm_config"></a> [cluster\_autoscaler\_helm\_config](#input\_cluster\_autoscaler\_helm\_config) | CoreDNS Autoscaler Helm Chart config | `any` | `{}` | no |
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
+| <a name="input_cluster_proportional_autoscaler_chart_version"></a> [cluster\_proportional\_autoscaler\_chart\_version](#input\_cluster\_proportional\_autoscaler\_chart\_version) | Version of the cluster proportional autoscaler helm chart | `string` | `"1.1.0"` | no |
+| <a name="input_cluster_proportional_autoscaler_enabled"></a> [cluster\_proportional\_autoscaler\_enabled](#input\_cluster\_proportional\_autoscaler\_enabled) | Whether to enable the Cluster proportional Autoscaler add-on or not. | `bool` | `false` | no |
+| <a name="input_cluster_proportional_autoscaler_helm_config"></a> [cluster\_proportional\_autoscaler\_helm\_config](#input\_cluster\_proportional\_autoscaler\_helm\_config) | Configuration options for the Cluster Proportional Autoscaler Helm chart. | `any` | `{}` | no |
 | <a name="input_coredns_hpa_enabled"></a> [coredns\_hpa\_enabled](#input\_coredns\_hpa\_enabled) | Determines whether Horizontal Pod Autoscaling (HPA) for CoreDNS is enabled. | `bool` | `false` | no |
 | <a name="input_coredns_hpa_helm_config"></a> [coredns\_hpa\_helm\_config](#input\_coredns\_hpa\_helm\_config) | CoreDNS Autoscaler Helm Chart config | `any` | `{}` | no |
 | <a name="input_custom_image_registry_uri"></a> [custom\_image\_registry\_uri](#input\_custom\_image\_registry\_uri) | Custom image registry URI map of `{region = dkr.endpoint }` | `map(string)` | `{}` | no |
@@ -479,13 +495,15 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_kubeclarity_namespace"></a> [kubeclarity\_namespace](#input\_kubeclarity\_namespace) | Name of the Kubernetes namespace where the kubeclarity deployment will be deployed. | `string` | `"kubeclarity"` | no |
 | <a name="input_kubecost_enabled"></a> [kubecost\_enabled](#input\_kubecost\_enabled) | Enable or disable the deployment of an Kubecost for Kubernetes. | `bool` | `false` | no |
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
-| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify all the configuration setup here | <pre>object({<br>    k8s_dashboard_ingress_load_balancer = string<br>    alb_acm_certificate_arn             = string<br>    k8s_dashboard_hostname              = string<br>    private_alb_enabled                 = bool<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "k8s_dashboard_hostname": "",<br>  "k8s_dashboard_ingress_load_balancer": "",<br>  "private_alb_enabled": false<br>}</pre> | no |
+| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify all the configuration setup here | <pre>object({<br>    k8s_dashboard_ingress_load_balancer = string<br>    alb_acm_certificate_arn             = string<br>    k8s_dashboard_hostname              = string<br>    private_alb_enabled                 = bool<br>    ingress_class_name                  = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "ingress_class_name": "nginx",<br>  "k8s_dashboard_hostname": "",<br>  "k8s_dashboard_ingress_load_balancer": "",<br>  "private_alb_enabled": false<br>}</pre> | no |
 | <a name="input_kubernetes_dashboard_enabled"></a> [kubernetes\_dashboard\_enabled](#input\_kubernetes\_dashboard\_enabled) | Determines whether k8s-dashboard is enabled or not | `bool` | `false` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_metrics_server_helm_config"></a> [metrics\_server\_helm\_config](#input\_metrics\_server\_helm\_config) | Metrics Server Helm Chart config | `any` | `{}` | no |
 | <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
+| <a name="input_private_ingress_nginx_config"></a> [private\_ingress\_nginx\_config](#input\_private\_ingress\_nginx\_config) | Configure private-ingress-nginx to setup addons | <pre>object({<br>    ingress_class_name     = string<br>    enable_service_monitor = bool<br>    values                 = any<br>    namespace              = string<br>  })</pre> | <pre>{<br>  "enable_service_monitor": false,<br>  "ingress_class_name": "private-nginx",<br>  "namespace": "private-nginx",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_private_ingress_nginx_enabled"></a> [private\_ingress\_nginx\_enabled](#input\_private\_ingress\_nginx\_enabled) | Create a private NLB for ingress-nginx | `bool` | `false` | no |
 | <a name="input_private_nlb_enabled"></a> [private\_nlb\_enabled](#input\_private\_nlb\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets of the VPC which can be used by EFS | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | <a name="input_reloader_enabled"></a> [reloader\_enabled](#input\_reloader\_enabled) | Enable or disable Reloader, a Kubernetes controller to watch changes in ConfigMap and Secret objects and trigger an application reload on their changes. | `bool` | `false` | no |
@@ -522,6 +540,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="output_kubeclarity"></a> [kubeclarity](#output\_kubeclarity) | Kubeclarity endpoint and credentials |
 | <a name="output_kubecost"></a> [kubecost](#output\_kubecost) | Kubecost endpoint and credentials |
 | <a name="output_nginx_ingress_controller_dns_hostname"></a> [nginx\_ingress\_controller\_dns\_hostname](#output\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the NGINX Ingress Controller. |
+| <a name="output_private_nginx_ingress_controller_dns_hostname"></a> [private\_nginx\_ingress\_controller\_dns\_hostname](#output\_private\_nginx\_ingress\_controller\_dns\_hostname) | DNS hostname of the private ingress NGINX Ingress Controller. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Contribution & Issue Reporting
