@@ -1,0 +1,211 @@
+## Custom resource configuration
+# -- Install and upgrade CRDs
+installCRDs: true
+# -- Keep CRD's on helm uninstall
+keepCRDs: false
+
+global:
+  # -- Annotations for all deployed Deployments
+  deploymentAnnotations: {}
+  # -- Labels for all deployed Deployments
+  deploymentLabels: {}
+  # -- Number of old deployment ReplicaSets to retain. The rest will be garbage collected.
+  revisionHistoryLimit: 10
+
+controller:
+  # -- Assign custom [affinity] rules to the deployment
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+  replicas: 2
+
+  # -- Resource limits and requests for the controller pods.
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi
+
+
+  # Controller container ports
+  containerPorts:
+    # -- Metrics container port
+    metrics: 8090
+    # -- Healthz container port
+    healthz: 8080
+
+  metrics:
+    # -- Deploy metrics service
+    enabled: true
+    service:
+      # -- Metrics service port name
+      portName: metrics
+      # -- Metrics service port
+      port: 8090
+      # -- Service annotations
+      annotations: {}
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: "prometheus-operator"
+
+  ## Configure Pod Disruption Budget for the controller
+  pdb:
+    # -- Labels to be added to controller [Pod Disruption Budget]
+    labels: {}
+    # -- Annotations to be added to controller [Pod Disruption Budget]
+    annotations: {}
+    # -- Deploy a [Pod Disruption Budget] for the controller
+    enabled: true
+    # -- Minimum number / percentage of pods that should remain scheduled
+    minAvailable: 1
+    # -- Maximum number / percentage of pods that may be made unavailable
+    maxUnavailable: 1
+
+dashboard:
+  # -- Deploy dashboard server
+  enabled: true
+  # -- Set cluster role to readonly
+  readonly: false
+  # -- Value of label `app.kubernetes.io/component`
+  component: rollouts-dashboard
+  # -- Annotations to be added to the dashboard deployment
+  deploymentAnnotations: {}
+  # -- Labels to be added to the dashboard deployment
+  deploymentLabels: {}
+  # -- Annotations to be added to application dashboard pods
+  podAnnotations: {}
+  # -- Labels to be added to the application dashboard pods
+  podLabels: {}
+  # -- [Node selector]
+  nodeSelector: {}
+  # -- [Tolerations] for use with node taints
+  tolerations: []
+  # -- Assign custom [affinity] rules to the deployment
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+
+  # -- The number of dashboard pods to run
+  replicas: 1
+  resources:
+   limits:
+     cpu: 20m
+     memory: 100Mi
+   requests:
+     cpu: 10m
+     memory: 50Mi  # -- Security Context to set on pod level
+
+  # service:
+  #   # -- Sets the type of the Service
+  #   type: ClusterIP
+  #   # -- The class of the load balancer implementation
+  #   loadBalancerClass: ""
+  #   # -- LoadBalancer will get created with the IP specified in this field
+  #   loadBalancerIP: ""
+  #   # -- Source IP ranges to allow access to service from
+  #   loadBalancerSourceRanges: []
+  #   # -- Dashboard service external IPs
+  #   externalIPs: []
+  #   # -- Service annotations
+  #   annotations: {}
+  #   # -- Service labels
+  #   labels: {}
+  #   # -- Service port name
+  #   portName: dashboard
+  #   # -- Service port
+  #   port: 3100
+  #   # -- Service target port
+  #   targetPort: 3100
+  #   # -- (int) Service nodePort
+  #   nodePort:
+
+  ## Ingress configuration.
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+  ingress:
+    # -- Enable dashboard ingress support
+    enabled: true
+    # -- Dashboard ingress annotations
+    annotations: {}
+    # -- Dashboard ingress labels
+    labels: {}
+    # -- Dashboard ingress class name
+    ingressClassName: ${ingress_class_name}
+
+    # -- Dashboard ingress hosts
+    ## Argo Rollouts Dashboard Ingress.
+    ## Hostnames must be provided if Ingress is enabled.
+    ## Secrets must be manually created in the namespace
+    hosts: 
+      # -- List of ingress paths        
+      - ${ingress_host}
+    # -- Dashboard ingress paths
+    paths:
+      - /
+    # -- Dashboard ingress path type
+    pathType: Prefix
+    tls:
+      - secretName: argo-workflow-token
+        hosts:
+          - ${ingress_host}
+
+# notifications:
+#   configmap:
+#     # -- Whether to create notifications configmap
+#     create: true
+
+#   secret:
+#     # -- Whether to create notifications secret.
+#     ## If you want to manually create secret, do not forget to add proper label to it: "app.kubernetes.io/component: {{ .Values.controller.component }}".
+#     create: false
+#     # -- Generic key:value pairs to be inserted into the notifications secret
+#     items: {}
+#       # slack-token:
+#     # -- Annotations to be added to the notifications secret
+#     annotations: {}
+
+#   # -- Configures notification services
+#   notifiers: {}
+#     # service.slack: |
+#     #   token: $slack-token
+
+#   # -- Notification templates
+#   templates: {}
+#     # template.my-purple-template: |
+#     #   message: |
+#     #     Rollout {{.rollout.metadata.name}} has purple image
+#     #   slack:
+#     #       attachments: |
+#     #           [{
+#     #             "title": "{{ .rollout.metadata.name}}",
+#     #             "color": "#800080"
+#     #           }]
+
+#   # -- The trigger defines the condition when the notification should be sent
+#   triggers: {}
+#     # trigger.on-purple: |
+#     #   - send: [my-purple-template]
+#     #     when: rollout.spec.template.spec.containers[0].image == 'argoproj/rollouts-demo:purple'
+
+#   # -- The subscriptions define the subscriptions to the triggers in a general way for all rollouts
+#   subscriptions: []
+#     # - recipients:
+#     #   - slack:<channel>
+#     #   triggers:
+#     #   - on-rollout-completed
+#     #   - on-rollout-aborted

@@ -74,3 +74,13 @@ output "argoworkflow_credentials" {
   description = "Argocd Workflow credentials"
   value       = var.argoworkflow_enabled ? module.argocd-workflow[0].argo_workflow_token : null
 }
+
+output "argorollout_hostname" {
+  description = "Argo rollout hostname"
+  value       = var.argorollout_enabled ? module.argo-rollout[0].argorollout_host : null
+}
+
+output "argorollout_credentials" {
+  description = "Argocd rollout credentials"
+  value       = var.argorollout_enabled ? module.argo-rollout[0].argo_rollout_token : null
+}
