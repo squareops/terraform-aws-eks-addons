@@ -144,7 +144,7 @@ module "external-secrets" {
   external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
 }
 
-## NGINX INGRESS
+# NGINX INGRESS
 module "ingress-nginx" {
   source            = "./modules/ingress-nginx"
   count             = var.ingress_nginx_enabled ? 1 : 0
@@ -199,7 +199,9 @@ module "kubernetes-dashboard" {
   alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
-  ingress_class_name                  = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  ingress_class_name                  = var.kubernetes_dashboard_config == "alb" ? "alb" : (var.private_nlb_enabled ? "internal-nginx" : var.kubernetes_dashboard_config.ingress_class_name)
+  private_subnet_ids                  = var.private_subnet_ids
+  public_subnet_ids                   = var.public_subnet_ids
 }
 
 ## KEDA
@@ -273,7 +275,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 module "argocd" {
   source     = "./modules/argocd"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx,module.aws-load-balancer-controller]
   count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -282,22 +284,34 @@ module "argocd" {
     autoscaling_enabled          = var.argocd_config.autoscaling_enabled
     slack_notification_token     = var.argocd_config.slack_notification_token
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
-    ingress_class_name           = var.argocd_config.ingress_class_name
+    ingress_class_name           = var.argocd_config.argocd_ingress_load_balancer == "alb" ? "alb" : (var.private_nlb_enabled ? "internal-nginx" : var.argocd_config.ingress_class_name)
+    argocd_ingress_load_balancer = var.argocd_config.argocd_ingress_load_balancer
+    private_alb_enabled          = var.argocd_config.private_alb_enabled
+    alb_acm_certificate_arn      = var.argocd_config.alb_acm_certificate_arn
   }
+  private_subnet_ids           = var.private_subnet_ids
+  public_subnet_ids            = var.public_subnet_ids
   namespace = var.argocd_config.namespace
 }
 
 # argo-workflow
 module "argocd-workflow" {
   source     = "./modules/argocd-workflow"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx,module.aws-load-balancer-controller]
   count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
     values              = var.argoworkflow_config.values
     hostname            = var.argoworkflow_config.hostname
-    ingress_class_name  = var.argoworkflow_config.ingress_class_name
+    ingress_class_name                 = var.argoworkflow_config.argoworkflow_ingress_load_balancer == "alb" ? "alb" : (var.private_nlb_enabled ? "internal-nginx" : var.argoworkflow_config.ingress_class_name)
+    argoworkflow_ingress_load_balancer = var.argoworkflow_config.argoworkflow_ingress_load_balancer
+    private_alb_enabled                = var.argoworkflow_config.private_alb_enabled
+    alb_acm_certificate_arn            = var.argoworkflow_config.alb_acm_certificate_arn
+    
+
     autoscaling_enabled = var.argoworkflow_config.autoscaling_enabled
   }
+  private_subnet_ids           = var.private_subnet_ids
+  public_subnet_ids            = var.public_subnet_ids
   namespace = var.argoworkflow_config.namespace
 }
 

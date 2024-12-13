@@ -12,3 +12,6 @@ ingressClassParams:
 enableServiceMutatorWebhook: false
 
 nameOverride: ${load_balancer_controller_name}
+
+# disableIngressClassAnnotation: 
+

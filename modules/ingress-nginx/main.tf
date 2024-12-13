@@ -20,8 +20,6 @@ locals {
   template_values_map = yamldecode(local.template_values)
 }
 
-# Namespace creation
-
 resource "kubernetes_namespace" "this" {
   count = try(var.helm_config.create_namespace, true) && local.namespace != "kube-system" ? 1 : 0
   metadata {
@@ -47,3 +45,5 @@ module "helm_addon" {
   manage_via_gitops = var.manage_via_gitops
   addon_context     = var.addon_context
 }
+
+
