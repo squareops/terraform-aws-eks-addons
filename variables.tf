@@ -509,7 +509,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
-    ingress_class_name                  = "nginx"
+    ingress_class_name                  = ""
   }
 }
 
@@ -544,7 +544,7 @@ variable "argocd_config" {
     argocd_ingress_load_balancer = "nlb"
     private_alb_enabled          = false
     alb_acm_certificate_arn      = ""
-    ingress_class_name           = "nginx"
+    ingress_class_name           = ""
     namespace                    = "argocd"
   }
 }
