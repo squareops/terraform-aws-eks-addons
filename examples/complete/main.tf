@@ -167,6 +167,7 @@ module "eks-addons" {
     values             = file("${path.module}/config/argo-rollout.yaml")
     namespace          = local.argocd_namespace
     hostname           = "argo-rollout.rnd.squareops.in"
+    enable_dashboard   = false
     ingress_class_name = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
 

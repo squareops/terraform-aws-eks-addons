@@ -577,6 +577,7 @@ variable "argorollout_config" {
     namespace          = string
     hostname           = string
     ingress_class_name = string
+    enable_dashboard   = bool
   })
 
   default = {
@@ -584,6 +585,7 @@ variable "argorollout_config" {
     namespace          = "argocd"
     hostname           = ""
     ingress_class_name = ""
+    enable_dashboard   = false
   }
 }
 

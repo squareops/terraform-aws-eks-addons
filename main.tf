@@ -263,9 +263,9 @@ module "vpa-crds" {
 
 ## argocd
 resource "kubernetes_namespace" "argocd" {
-  count = var.argoworkflow_enabled || var.argocd_enabled ? 1 : 0
+  count = var.argoworkflow_enabled || var.argocd_enabled || var.argorollout_enabled ? 1 : 0
   metadata {
-    name = var.argocd_enabled ? var.argocd_config.namespace : var.argoworkflow_config.namespace
+    name = var.argocd_enabled ? var.argocd_config.namespace : var.argoworkflow_enabled ? var.argoworkflow_config.namespace : var.argorollout_config.namespace
   }
 }
 module "argocd" {
@@ -316,6 +316,7 @@ module "argo-rollout" {
     values             = var.argorollout_config.values
     hostname           = var.argorollout_config.hostname
     ingress_class_name = var.argorollout_config.ingress_class_name
+    enable_dashboard   = var.argorollout_config.enable_dashboard
   }
   namespace = var.argorollout_config.namespace
 }

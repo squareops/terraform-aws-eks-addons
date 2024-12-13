@@ -17,6 +17,7 @@ variable "argorollout_config" {
     values              = {}
     namespace           = ""
     hostname            = ""
+    enable_dashboard    = false
   }
   description = "Specify the configuration settings for Argocd-Rollout, including the hostname, and custom YAML values."
 }

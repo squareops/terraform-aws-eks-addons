@@ -72,7 +72,7 @@ controller:
 
 dashboard:
   # -- Deploy dashboard server
-  enabled: true
+  enabled: ${enable_argoworkflow_dashboard}
   # -- Set cluster role to readonly
   readonly: false
   # -- Value of label `app.kubernetes.io/component`
@@ -110,30 +110,6 @@ dashboard:
      cpu: 10m
      memory: 50Mi  # -- Security Context to set on pod level
 
-  # service:
-  #   # -- Sets the type of the Service
-  #   type: ClusterIP
-  #   # -- The class of the load balancer implementation
-  #   loadBalancerClass: ""
-  #   # -- LoadBalancer will get created with the IP specified in this field
-  #   loadBalancerIP: ""
-  #   # -- Source IP ranges to allow access to service from
-  #   loadBalancerSourceRanges: []
-  #   # -- Dashboard service external IPs
-  #   externalIPs: []
-  #   # -- Service annotations
-  #   annotations: {}
-  #   # -- Service labels
-  #   labels: {}
-  #   # -- Service port name
-  #   portName: dashboard
-  #   # -- Service port
-  #   port: 3100
-  #   # -- Service target port
-  #   targetPort: 3100
-  #   # -- (int) Service nodePort
-  #   nodePort:
-
   ## Ingress configuration.
   ## ref: https://kubernetes.io/docs/user-guide/ingress/
   ##
@@ -141,7 +117,9 @@ dashboard:
     # -- Enable dashboard ingress support
     enabled: true
     # -- Dashboard ingress annotations
-    annotations: {}
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    
     # -- Dashboard ingress labels
     labels: {}
     # -- Dashboard ingress class name
