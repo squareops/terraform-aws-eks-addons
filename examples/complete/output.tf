@@ -62,3 +62,8 @@ output "argoworkflow_credentials" {
   description = "Argocd Workflow credentials"
   value       = module.eks-addons.argoworkflow_credentials
 }
+
+output "private_nginx_ingress_controller_dns_hostname" {
+  description = "DNS hostname of the NGINX Ingress Controller that can be used to access it from within the cluster."
+  value       = module.eks-addons.private_nginx_ingress_controller_dns_hostname
+}

@@ -74,3 +74,8 @@ output "argoworkflow_credentials" {
   description = "Argocd Workflow credentials"
   value       = var.argoworkflow_enabled ? module.argocd-workflow[0].argo_workflow_token : null
 }
+
+output "private_nginx_ingress_controller_dns_hostname" {
+  description = "DNS hostname of the private ingress NGINX Ingress Controller."
+  value       = data.kubernetes_service.private-ingress-nginx[0].status[0].load_balancer[0].ingress[0].hostname
+}

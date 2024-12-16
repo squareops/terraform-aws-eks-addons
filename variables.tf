@@ -509,7 +509,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
-    ingress_class_name                  = ""
+    ingress_class_name                  = "nginx"
   }
 }
 
@@ -669,6 +669,23 @@ variable "public_subnet_ids" {
   description = "List of public subnet IDs"
 }
 
-
-
-
+variable "private_ingress_nginx_enabled" {
+  description = "Create a private NLB for ingress-nginx"
+  type        = bool
+  default     = false
+}
+variable "private_ingress_nginx_config" {
+  description = "Configure private-ingress-nginx to setup addons"
+  type = object({
+    ingress_class_name     = string
+    enable_service_monitor = bool
+    values                 = any
+    namespace              = string
+  })
+  default = {
+    ingress_class_name     = "private-nginx"
+    enable_service_monitor = false
+    values                 = {}
+    namespace              = "private-nginx"
+  }
+}

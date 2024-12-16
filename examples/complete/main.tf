@@ -119,6 +119,15 @@ module "eks-addons" {
     namespace              = "nginx" 
   }
 
+ ## ADDITIONAL-PRIVATE-INGRESS-NGINX
+  private_ingress_nginx_enabled = false # to enable private ingress nginx
+  private_ingress_nginx_config = {
+    values                 = [file("${path.module}/config/private-ingress-nginx.yaml")]
+    enable_service_monitor = false           # enable monitoring in nginx ingress
+    ingress_class_name     = "internal-nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
+    namespace              = "internal-nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")
+  }
+
   ## AWS-APPLICATION-LOAD-BALANCER-CONTROLLER
   aws_load_balancer_controller_enabled = false  # to enable load balancer controller
   aws_load_balancer_controller_helm_config = {
@@ -133,7 +142,7 @@ module "eks-addons" {
     k8s_dashboard_ingress_load_balancer = "nlb"                            ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
     private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
-    ingress_class_name                  = "nginx"                          # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
+    ingress_class_name                  = "internal-nginx"
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
   }
 
@@ -148,7 +157,7 @@ module "eks-addons" {
     slack_notification_token     = ""
     argocd_notifications_enabled = false
     ingress_class_name           = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
-    argocd_ingress_load_balancer = "alb"   ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
+    argocd_ingress_load_balancer = "nlb"   ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
     private_alb_enabled          = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn      = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
 
@@ -166,7 +175,7 @@ module "eks-addons" {
     hostname            = "argocd-workflow.rnd.squareops.in"
     ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
     argoworkflow_ingress_load_balancer = "alb"   ##Choose your load balancer type (e.g., NLB or ALB). Enable load balancer controller, if you require ALB, Enable Ingress Nginx if NLB.
-    private_alb_enabled                = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    private_alb_enabled                = "true" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn            = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
 
   }

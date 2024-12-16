@@ -39,6 +39,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       } : {
       "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
       "kubernetes.io/ingress.class"                       = var.ingress_class_name
+      "app.kubernetes.io/instance"                        = var.ingress_class_name == "nginx" ? "nginx" : "internal-nginx"
       "kubernetes.io/tls-acme"                            = "false"
       "nginx.ingress.kubernetes.io/backend-protocol"      = "HTTPS"
       "nginx.ingress.kubernetes.io/rewrite-target"        = "/$2"

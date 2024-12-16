@@ -54,6 +54,7 @@ resource "kubernetes_ingress_v1" "argocd-ingress" {
       "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
       "nginx.ingress.kubernetes.io/ssl-passthrough"    = "true"
       "kubernetes.io/ingress.class"                    = var.argocd_config.ingress_class_name
+      "app.kubernetes.io/instance"                     = var.argocd_config.ingress_class_name == "nginx" ? "nginx" : "internal-nginx"
       "kubernetes.io/tls-acme"                         = "false"
     }
   }
