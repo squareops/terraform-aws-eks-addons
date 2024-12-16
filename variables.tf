@@ -740,7 +740,7 @@ variable "kubeclarity_version" {
 
 variable "kubecost_version" {
   description = "Version of the kubecost addon"
-  default     = "1.108.1"
+  default     = "v2.1.0-eksbuild.1"
   type        = string
 }
 
