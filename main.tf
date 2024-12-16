@@ -24,6 +24,7 @@ module "aws-ebs-csi-driver" {
     },
     var.self_managed_aws_ebs_csi_driver_helm_config,
   )
+  addon_version                              = var.ebs_csi_driver_version
 }
 
 ## EFS CSI DRIVER
@@ -56,6 +57,7 @@ module "aws-load-balancer-controller" {
   addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
   namespace                     = var.aws_load_balancer_controller_helm_config.namespace
   load_balancer_controller_name = var.aws_load_balancer_controller_helm_config.load_balancer_controller_name
+  addon_version                 = var.aws_load_balancer_controller_version
 }
 
 ## NODE TERMINATION HANDLER
@@ -72,6 +74,7 @@ module "aws-node-termination-handler" {
   addon_context           = local.addon_context
   enable_service_monitor  = var.aws_node_termination_handler_helm_config.enable_service_monitor
   enable_notifications    = var.aws_node_termination_handler_helm_config.enable_notifications
+  chart_version           = var.aws_node_termination_handler_version
 }
 
 ## VPC-CNI
@@ -102,6 +105,7 @@ module "cert-manager" {
   install_letsencrypt_issuers       = var.cert_manager_install_letsencrypt_r53_issuers
   letsencrypt_email                 = var.cert_manager_helm_config.cert_manager_letsencrypt_email
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
+  addon_version                           = var.cert_manager_version
 }
 
 ## CERT MANAGER LETSENCRYPT
@@ -124,6 +128,7 @@ module "cluster-autoscaler" {
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version           = var.cluster_autoscaler_version
 }
 
 ## COREDNS HPA
@@ -143,6 +148,7 @@ module "external-secrets" {
   irsa_policies                         = var.external_secrets_irsa_policies
   external_secrets_ssm_parameter_arns   = var.external_secrets_ssm_parameter_arns
   external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
+  addon_version                               = var.external_secrets_version
 }
 
 ## NGINX INGRESS
@@ -160,6 +166,7 @@ module "ingress-nginx" {
   private_nlb_enabled    = var.private_nlb_enabled
   ingress_class_name     = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
+  addon_version          = var.ingress_nginx_version
 }
 
 # INGRESS-NGINX DATA SOURCE
@@ -186,6 +193,7 @@ module "karpenter" {
   addon_context             = local.addon_context
   kms_key_arn               = var.karpenter_enabled ? var.kms_key_arn : ""
   enable_service_monitor    = var.karpenter_helm_config.enable_service_monitor
+  chart_version             = var.karpenter_version
 }
 
 ## KUBERNETES DASHBOARD
@@ -198,6 +206,7 @@ module "kubernetes-dashboard" {
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
   ingress_class_name                  = var.private_nlb_enabled ? "internal-${var.ingress_nginx_config.ingress_class_name}" : var.ingress_nginx_config.ingress_class_name
+  addon_version                       = var.kubernetes_dashboard_version
 }
 
 ## KEDA
@@ -209,6 +218,7 @@ module "keda" {
   irsa_policies     = var.keda_irsa_policies
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version     = var.keda_version
 }
 
 ## METRIC SERVER
@@ -221,6 +231,7 @@ module "metrics-server" {
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version     = var.metrics_server_version
 }
 
 ## RELOADER
@@ -236,6 +247,7 @@ module "reloader" {
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version     = var.reloader_version
 }
 
 ## SINGLE AZ SC
@@ -283,6 +295,7 @@ module "argocd" {
     ingress_class_name           = var.argocd_config.ingress_class_name
   }
   namespace = var.argocd_config.namespace
+  chart_version   = var.argocd_version
 }
 
 # argo-workflow
@@ -297,6 +310,7 @@ module "argocd-workflow" {
     autoscaling_enabled = var.argoworkflow_config.autoscaling_enabled
   }
   namespace = var.argoworkflow_config.namespace
+  chart_version   = var.argoworkflow_version
 }
 
 # argo-project
@@ -352,7 +366,7 @@ resource "helm_release" "kubeclarity" {
   count      = var.kubeclarity_enabled ? 1 : 0
   name       = "kubeclarity"
   chart      = "kubeclarity"
-  version    = "2.23.0"
+  version    = var.kubeclarity_version
   namespace  = var.kubeclarity_namespace
   repository = "https://openclarity.github.io/kubeclarity"
   values = [
@@ -365,18 +379,11 @@ resource "helm_release" "kubeclarity" {
 
 #Kubecost
 
-data "aws_eks_addon_version" "kubecost" {
-  count              = var.kubecost_enabled ? 1 : 0
-  addon_name         = "kubecost_kubecost"
-  kubernetes_version = data.aws_eks_cluster.eks.version
-  most_recent        = true
-}
-
 resource "aws_eks_addon" "kubecost" {
   count                    = var.kubecost_enabled ? 1 : 0
   cluster_name             = var.eks_cluster_name
   addon_name               = "kubecost_kubecost"
-  addon_version            = data.aws_eks_addon_version.kubecost[0].version
+  addon_version            = var.kubecost_version
   service_account_role_arn = var.worker_iam_role_arn
   preserve                 = true
 }
@@ -495,7 +502,7 @@ resource "helm_release" "falco" {
   chart      = "falco"
   repository = "https://falcosecurity.github.io/charts"
   timeout    = 600
-  version    = "4.0.0"
+  version    = var.falco_version
   values = [
     templatefile("${path.module}/modules/falco/config/values.yaml", {
       slack_webhook = var.slack_webhook

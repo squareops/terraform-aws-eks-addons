@@ -646,3 +646,106 @@ variable "karpenter_node_iam_instance_profile" {
   type        = string
   default     = ""
 }
+
+
+variable "ebs_csi_driver_version" {
+  description = "Version of the ebs csi driver addon"
+  default     = "v1.36.0-eksbuild.1"
+  type        = string
+}
+
+variable "metrics_server_version" {
+  description = "Version of the metrics server addon"
+  default     = "3.12.1"
+  type        = string
+}
+
+variable "cluster_autoscaler_version" {
+  description = "Version of the cluster autoscaler addon"
+  default     = "9.37.0"
+  type        = string
+}
+
+variable "aws_node_termination_handler_version" {
+  description = "Version of the aws node termination handler addon"
+  default     = "0.21.0"
+  type        = string
+}
+
+variable "keda_version" {
+  description = "Version of the keda addon"
+  default     = "2.14.2"
+  type        = string
+}
+
+variable "karpenter_version" {
+  description = "Version of the karpenter addon"
+  default     = "1.0.6"
+  type        = string
+}
+
+variable "external_secrets_version" {
+  description = "Version of the external secrets addon"
+  default     = "0.9.19"
+  type        = string
+}
+
+variable "cert_manager_version" {
+  description = "Version of the cert manager addon"
+  default     = "v1.15.1"
+  type        = string
+}
+
+variable "reloader_version" {
+  description = "Version of the reloader addon"
+  default     = "v1.0.115"
+  type        = string
+}
+
+variable "ingress_nginx_version" {
+  description = "Version of the ingress nginx addon"
+  default     = "4.11.0"
+  type        = string
+}
+
+variable "aws_load_balancer_controller_version" {
+  description = "Version of the aws load balancer controller addon"
+  default     = "1.8.1"
+  type        = string
+}
+
+variable "kubernetes_dashboard_version" {
+  description = "Version of the kubernetes dashboard addon"
+  default     = "6.0.8"
+  type        = string
+}
+
+variable "argocd_version" {
+  description = "Version of the argocd addon"
+  default     = "7.3.11"
+  type        = string
+}
+
+variable "argoworkflow_version" {
+  description = "Version of the argoworkflow addon"
+  default     = "0.29.2"
+  type        = string
+}
+
+variable "kubeclarity_version" {
+  description = "Version of the kubeclarity addon"
+  default     = "2.23.0"
+  type        = string
+}
+
+variable "kubecost_version" {
+  description = "Version of the kubecost addon"
+  default     = "1.108.1"
+  type        = string
+}
+
+variable "falco_version" {
+  description = "Version of the falco addon"
+  default     = "4.0.0"
+  type        = string
+}
