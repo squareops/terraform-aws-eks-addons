@@ -39,3 +39,19 @@ variable "namespace" {
   type        = string
   default     = "kube-system"
 }
+
+# variable "public_subnet_ids" {
+#   type        = list(string)
+#   description = "List of public subnet IDs"
+# }
+
+# variable "private_alb_enabled" {
+#   description = "Control wheather to install public nlb or private nlb. Default is private"
+#   type        = bool
+#   default     = false
+# }
+
+# variable "private_subnet_ids" {
+#   type        = list(string)
+#   description = "List of private subnet IDs"
+# }

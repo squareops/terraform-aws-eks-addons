@@ -27,3 +27,16 @@ variable "private_alb_enabled" {
   type        = bool
   default     = false
 }
+
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "List of public subnet IDs"
+}
+
+variable "private_subnet_ids" {
+  description = "Private subnets of the VPC which can be used by EFS"
+  default     = [""]
+  type        = list(string)
+}
+
