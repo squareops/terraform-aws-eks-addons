@@ -39,3 +39,9 @@ variable "namespace" {
   type        = string
   default     = "kube-system"
 }
+
+variable "addon_version" {
+  description = "Kubernetes Dashboard Version"
+  type        = string
+  default     = ""
+}

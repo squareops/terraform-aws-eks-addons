@@ -56,3 +56,9 @@ variable "kubernetes_svc_image_pull_secrets" {
   type        = list(string)
   default     = []
 }
+
+variable "addon_version" {
+  description = "cert manager helm version"
+  type        = string
+  default     = ""
+}

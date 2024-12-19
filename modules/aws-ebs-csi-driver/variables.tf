@@ -38,3 +38,9 @@ variable "helm_config" {
   type        = any
   default     = {}
 }
+
+variable "addon_version" {
+  description = "EKS addon version for ebs csi driver"
+  type        = string
+  default     = ""
+}

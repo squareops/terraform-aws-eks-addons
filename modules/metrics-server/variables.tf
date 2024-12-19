@@ -24,3 +24,9 @@ variable "addon_context" {
     tags                           = map(string)
   })
 }
+
+variable "addon_version" {
+  description = "Helm Chart version for Metrics Server"
+  type        = string
+  default     = ""
+}

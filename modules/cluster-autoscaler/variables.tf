@@ -31,3 +31,9 @@ variable "addon_context" {
     irsa_iam_permissions_boundary  = string
   })
 }
+
+variable "addon_version" {
+  description = "Helm chart version of cluster autoscaler"
+  type        = string
+  default     = ""
+}

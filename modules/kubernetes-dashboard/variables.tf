@@ -27,3 +27,9 @@ variable "private_alb_enabled" {
   type        = bool
   default     = false
 }
+
+variable "addon_version" {
+  description = "Helm Chart version for Kubernetes-dashboard"
+  default     = ""
+  type        = string
+}

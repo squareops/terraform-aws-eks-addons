@@ -26,3 +26,9 @@ variable "addon_context" {
     irsa_iam_permissions_boundary  = string
   })
 }
+
+variable "addon_version" {
+  description = "reloader helm chart version"
+  type        = string
+  default     = ""
+}

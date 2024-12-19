@@ -28,7 +28,7 @@ module "helm_addon" {
   helm_config = merge({
     name        = local.name
     chart       = local.name
-    version     = "9.37.0"
+    version     = var.addon_version
     repository  = "https://kubernetes.github.io/autoscaler"
     namespace   = local.namespace
     description = "Cluster AutoScaler helm Chart deployment configuration."

@@ -44,3 +44,9 @@ variable "external_secrets_secrets_manager_arns" {
   type        = list(string)
   default     = ["arn:aws:secretsmanager:*:*:secret:*"]
 }
+
+variable "addon_version" {
+  description = "external secrets helm chart version"
+  type        = string
+  default     = ""
+}

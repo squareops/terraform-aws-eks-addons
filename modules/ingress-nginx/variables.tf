@@ -54,3 +54,9 @@ variable "namespace" {
   description = "Creates namespace for the controller need to install"
   type        = string
 }
+
+variable "addon_version" {
+  description = "Ingress Nginx helm chart version"
+  type        = string
+  default     = ""
+}

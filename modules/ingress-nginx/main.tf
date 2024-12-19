@@ -34,7 +34,7 @@ module "helm_addon" {
       name        = var.ingress_class_name
       chart       = "ingress-nginx"
       repository  = "https://kubernetes.github.io/ingress-nginx"
-      version     = "4.11.0"
+      version     = var.addon_version
       namespace   = var.namespace
       description = "The NGINX HelmChart Ingress Controller deployment configuration"
       values      = [yamlencode(merge(local.template_values_map, var.helm_config))]
