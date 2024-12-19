@@ -226,12 +226,11 @@ module "metrics-server" {
   source = "./modules/metrics-server"
   count  = var.metrics_server_enabled ? 1 : 0
   helm_config = {
-    version = var.metrics_server_helm_version
+    version = var.metrics_server_version
     values  = var.metrics_server_helm_config
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
-  addon_version     = var.metrics_server_version
 }
 
 ## RELOADER
