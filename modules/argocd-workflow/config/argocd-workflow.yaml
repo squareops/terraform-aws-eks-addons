@@ -69,7 +69,7 @@ server:
     targetMemoryUtilizationPercentage: 70
 
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: ${ingress_class_name}
     hosts:
       - ${ingress_host}
