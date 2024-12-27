@@ -501,6 +501,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = string
     k8s_dashboard_hostname              = string
     private_alb_enabled                 = bool
+    ingress_class_name                  = string
   })
 
   default = {
@@ -508,6 +509,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
+    ingress_class_name                  = ""
   }
 }
 
