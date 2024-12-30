@@ -270,7 +270,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 module "argocd" {
   source     = "./modules/argocd"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx,module.aws-load-balancer-controller]
   count      = var.argocd_enabled ? 1 : 0
   argocd_config = {
     hostname                     = var.argocd_config.hostname
@@ -290,7 +290,7 @@ module "argocd" {
 # argo-workflow
 module "argocd-workflow" {
   source     = "./modules/argocd-workflow"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx,module.aws-load-balancer-controller]
   count      = var.argoworkflow_enabled ? 1 : 0
   argoworkflow_config = {
     values                             = var.argoworkflow_config.values
