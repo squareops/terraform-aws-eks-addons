@@ -43,6 +43,7 @@ For more details [Ingress-Nginx can be found here](https://kubernetes.github.io/
 | <a name="input_manage_via_gitops"></a> [manage\_via\_gitops](#input\_manage\_via\_gitops) | Determines if the add-on should be managed via GitOps. | `bool` | `false` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Creates namespace for the controller need to install | `string` | n/a | yes |
 | <a name="input_private_nlb_enabled"></a> [private\_nlb\_enabled](#input\_private\_nlb\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
+| <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Pass the IDs of the Subnets | `list(string)` | n/a | yes |
 
 ## Outputs
 

@@ -21,7 +21,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | 3.1.0 |
+| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | 3.3.0 |
 
 ## Resources
 

@@ -104,6 +104,7 @@ resource "kubernetes_ingress_v1" "argoworkflow-ingress" {
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
       "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress"
+      "alb.ingress.kubernetes.io/subnets"              = join(",", var.argoworkflow_config.subnet_ids)
       } : {
       "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
       "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"

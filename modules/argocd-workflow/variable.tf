@@ -22,6 +22,7 @@ variable "argoworkflow_config" {
     argoworkflow_ingress_load_balancer = "nlb"
     private_alb_enabled                = false
     alb_acm_certificate_arn            = ""
+    subnet_ids                         = []
   }
   description = "Specify the configuration settings for Argocd-Workflow, including the hostname, and custom YAML values."
 }
