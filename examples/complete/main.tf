@@ -17,7 +17,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "3.1.0"
+  version              = "3.2.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = "vpc-xxxxxx"                     # pass VPC ID
@@ -159,6 +159,16 @@ module "eks-addons" {
     autoscaling_enabled = true
     hostname            = "argocd-workflow.rnd.squareops.in"
     ingress_class_name  = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+
+  ## ArgoRollout
+  argorollout_enabled = false
+  argorollout_config = {
+    values             = file("${path.module}/config/argo-rollout.yaml")
+    namespace          = local.argocd_namespace
+    hostname           = "argo-rollout.rnd.squareops.in"
+    enable_dashboard   = false
+    ingress_class_name = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
   }
 
   # VELERO
