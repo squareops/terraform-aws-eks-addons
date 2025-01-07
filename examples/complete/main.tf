@@ -184,6 +184,16 @@ module "eks-addons" {
     alb_acm_certificate_arn            = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
   }
 
+  ## ArgoRollout
+  argorollout_enabled = false
+  argorollout_config = {
+    values             = file("${path.module}/config/argo-rollout.yaml")
+    namespace          = local.argocd_namespace
+    hostname           = "argo-rollout.rnd.squareops.in"
+    enable_dashboard   = false
+    ingress_class_name = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+  }
+
   # VELERO
   velero_enabled              = false # to enable velero
   velero_notification_enabled = false # To enable slack notification for Velero

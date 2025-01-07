@@ -354,6 +354,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_argo-project"></a> [argo-project](#module\_argo-project) | ./modules/argocd-projects | n/a |
+| <a name="module_argo-rollout"></a> [argo-rollout](#module\_argo-rollout) | ./modules/argo-rollout | n/a |
 | <a name="module_argocd"></a> [argocd](#module\_argocd) | ./modules/argocd | n/a |
 | <a name="module_argocd-workflow"></a> [argocd-workflow](#module\_argocd-workflow) | ./modules/argocd-workflow | n/a |
 | <a name="module_aws-ebs-csi-driver"></a> [aws-ebs-csi-driver](#module\_aws-ebs-csi-driver) | ./modules/aws-ebs-csi-driver | n/a |
@@ -419,7 +420,9 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_argocd_enabled"></a> [argocd\_enabled](#input\_argocd\_enabled) | Determine whether argocd is enabled or not | `bool` | `false` | no |
 | <a name="input_argocd_manage_add_ons"></a> [argocd\_manage\_add\_ons](#input\_argocd\_manage\_add\_ons) | Enable managing add-on configuration via ArgoCD App of Apps | `bool` | `false` | no |
 | <a name="input_argoproject_config"></a> [argoproject\_config](#input\_argoproject\_config) | n/a | <pre>object({<br>    name = string<br>  })</pre> | <pre>{<br>  "name": ""<br>}</pre> | no |
-| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values                             = any<br>    namespace                          = string<br>    hostname                           = string<br>    ingress_class_name                 = string<br>    autoscaling_enabled                = bool<br>    argoworkflow_ingress_load_balancer = string<br>    private_alb_enabled                = bool<br>    alb_acm_certificate_arn            = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argoworkflow_ingress_load_balancer": "nlb",<br>  "autoscaling_enabled": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argorollout_config"></a> [argorollout\_config](#input\_argorollout\_config) | n/a | <pre>object({<br>    values             = any<br>    namespace          = string<br>    hostname           = string<br>    ingress_class_name = string<br>  })</pre> | <pre>{<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argorollout_enabled"></a> [argorollout\_enabled](#input\_argorollout\_enabled) | Determine whether argocd-rollout is enabled or not | `bool` | `false` | no |
+| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values              = any<br>    namespace           = string<br>    hostname            = string<br>    ingress_class_name  = string<br>    autoscaling_enabled = bool<br>  })</pre> | <pre>{<br>  "autoscaling_enabled": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "values": {}<br>}</pre> | no |
 | <a name="input_argoworkflow_enabled"></a> [argoworkflow\_enabled](#input\_argoworkflow\_enabled) | Determine whether argocd-workflow is enabled or not | `bool` | `false` | no |
 | <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
@@ -514,6 +517,8 @@ Velero is designed to work with cloud native environments, making it a popular c
 | Name | Description |
 |------|-------------|
 | <a name="output_argocd_credentials"></a> [argocd\_credentials](#output\_argocd\_credentials) | Argocd\_Info |
+| <a name="output_argorollout_credentials"></a> [argorollout\_credentials](#output\_argorollout\_credentials) | Argocd rollout credentials |
+| <a name="output_argorollout_hostname"></a> [argorollout\_hostname](#output\_argorollout\_hostname) | Argo rollout hostname |
 | <a name="output_argoworkflow_credentials"></a> [argoworkflow\_credentials](#output\_argoworkflow\_credentials) | Argocd Workflow credentials |
 | <a name="output_argoworkflow_hostname"></a> [argoworkflow\_hostname](#output\_argoworkflow\_hostname) | Argocd Workflow hostname |
 | <a name="output_defectdojo"></a> [defectdojo](#output\_defectdojo) | DefectDojo endpoint and credentials |

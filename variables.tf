@@ -602,6 +602,30 @@ variable "argoworkflow_config" {
   }
 }
 
+variable "argorollout_enabled" {
+  description = "Determine whether argo-rollout is enabled or not"
+  default     = false
+  type        = bool
+}
+
+variable "argorollout_config" {
+  type = object({
+    values             = any
+    namespace          = string
+    hostname           = string
+    ingress_class_name = string
+    enable_dashboard   = bool
+  })
+
+  default = {
+    values             = {}
+    namespace          = "argocd"
+    hostname           = ""
+    ingress_class_name = ""
+    enable_dashboard   = false
+  }
+}
+
 variable "argoproject_config" {
   type = object({
     name = string
