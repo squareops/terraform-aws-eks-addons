@@ -8,6 +8,7 @@ variable "argocd_config" {
     slack_notification_token     = ""
     argocd_notifications_enabled = false
     ingress_class_name           = ""
+    subnet_ids                   = []
   }
   description = "Specify the configuration settings for Argocd, including the hostname, redis_ha_enabled, autoscaling, notification settings, and custom YAML values."
 }

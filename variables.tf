@@ -95,7 +95,13 @@ variable "efs_storage_class_enabled" {
 }
 
 variable "private_subnet_ids" {
-  description = "Private subnets of the VPC which can be used by EFS"
+  description = "Private subnets of the VPC which can be used by EFS, argocd, workflow and k8s dashboard"
+  default     = [""]
+  type        = list(string)
+}
+
+variable "public_subnet_ids" {
+  description = "Public subnets of the VPC which can be used by argocd, workflow and k8s dashboard"
   default     = [""]
   type        = list(string)
 }
@@ -136,7 +142,7 @@ variable "external_secrets_enabled" {
   type        = bool
 }
 
-variable "private_nlb_enabled" {
+variable "private_ingress_nginx_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false
@@ -156,6 +162,23 @@ variable "ingress_nginx_config" {
     enable_service_monitor = false
     values                 = {}
     namespace              = "ingress-nginx"
+  }
+}
+
+variable "private_ingress_nginx_config" {
+  description = "Configure private-ingress-nginx to setup addons"
+  type = object({
+    ingress_class_name     = string
+    enable_service_monitor = bool
+    values                 = any
+    namespace              = string
+  })
+
+  default = {
+    ingress_class_name     = "private-nginx"
+    enable_service_monitor = false
+    values                 = {}
+    namespace              = "private-nginx"
   }
 }
 

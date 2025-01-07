@@ -54,3 +54,8 @@ variable "namespace" {
   description = "Creates namespace for the controller need to install"
   type        = string
 }
+
+variable "subnet_ids" {
+  description = "Pass the IDs of the Subnets"
+  type        = list(string)
+}
