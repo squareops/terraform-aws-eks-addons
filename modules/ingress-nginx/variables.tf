@@ -59,3 +59,9 @@ variable "subnet_ids" {
   description = "Pass the IDs of the Subnets"
   type        = list(string)
 }
+
+variable "addon_version" {
+  description = "Ingress Nginx helm chart version"
+  type        = string
+  default     = ""
+}

@@ -15,7 +15,7 @@ resource "helm_release" "kubernetes-dashboard" {
   chart      = "kubernetes-dashboard"
   repository = "https://kubernetes.github.io/dashboard/"
   timeout    = 600
-  version    = "6.0.8"
+  version    = var.addon_version
 }
 
 resource "kubernetes_ingress_v1" "k8s-ingress" {

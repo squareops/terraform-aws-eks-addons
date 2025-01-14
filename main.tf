@@ -24,6 +24,7 @@ module "aws-ebs-csi-driver" {
     },
     var.self_managed_aws_ebs_csi_driver_helm_config,
   )
+  addon_version = var.ebs_csi_driver_version
 }
 
 ## EFS CSI DRIVER
@@ -56,6 +57,7 @@ module "aws-load-balancer-controller" {
   addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
   namespace                     = var.aws_load_balancer_controller_helm_config.namespace
   load_balancer_controller_name = var.aws_load_balancer_controller_helm_config.load_balancer_controller_name
+  addon_version                 = var.aws_load_balancer_controller_version
 }
 
 ## NODE TERMINATION HANDLER
@@ -72,6 +74,7 @@ module "aws-node-termination-handler" {
   addon_context           = local.addon_context
   enable_service_monitor  = var.aws_node_termination_handler_helm_config.enable_service_monitor
   enable_notifications    = var.aws_node_termination_handler_helm_config.enable_notifications
+  chart_version           = var.aws_node_termination_handler_version
 }
 
 ## VPC-CNI
@@ -83,6 +86,7 @@ module "aws_vpc_cni" {
     {
       kubernetes_version      = local.eks_cluster_version
       additional_iam_policies = [var.kms_policy_arn]
+      version                 = var.vpc_cni_version
     }
   )
   addon_context = local.addon_context
@@ -101,6 +105,7 @@ module "cert-manager" {
   install_letsencrypt_issuers       = var.cert_manager_install_letsencrypt_r53_issuers
   letsencrypt_email                 = var.cert_manager_helm_config.cert_manager_letsencrypt_email
   kubernetes_svc_image_pull_secrets = var.cert_manager_kubernetes_svc_image_pull_secrets
+  addon_version                     = var.cert_manager_version
 }
 
 ## CERT MANAGER LETSENCRYPT
@@ -123,6 +128,7 @@ module "cluster-autoscaler" {
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version     = var.cluster_autoscaler_version
 }
 
 ## COREDNS HPA
@@ -154,6 +160,7 @@ module "external-secrets" {
   irsa_policies                         = var.external_secrets_irsa_policies
   external_secrets_ssm_parameter_arns   = var.external_secrets_ssm_parameter_arns
   external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
+  addon_version                         = var.external_secrets_version
 }
 
 ## NGINX INGRESS
@@ -170,6 +177,7 @@ module "ingress-nginx" {
   ingress_class_name     = var.ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.ingress_nginx_config.enable_service_monitor
   subnet_ids             = var.public_subnet_ids
+  addon_version          = var.ingress_nginx_version
 }
 
 # INGRESS-NGINX DATA SOURCE
@@ -196,6 +204,7 @@ module "private-ingress-nginx" {
   ingress_class_name     = var.private_ingress_nginx_config.ingress_class_name
   enable_service_monitor = var.private_ingress_nginx_config.enable_service_monitor
   subnet_ids             = var.private_subnet_ids
+  addon_version          = var.private_ingress_nginx_version
 }
 
 # INGRESS-NGINX DATA SOURCE
@@ -235,6 +244,7 @@ module "kubernetes-dashboard" {
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
   ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
   subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+  addon_version                       = var.kubernetes_dashboard_version
 }
 
 ## KEDA
@@ -253,7 +263,7 @@ module "metrics-server" {
   source = "./modules/metrics-server"
   count  = var.metrics_server_enabled ? 1 : 0
   helm_config = {
-    version = var.metrics_server_helm_version
+    version = var.metrics_server_version
     values  = var.metrics_server_helm_config
   }
   manage_via_gitops = var.argocd_manage_add_ons
@@ -273,6 +283,7 @@ module "reloader" {
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  addon_version     = var.reloader_version
 }
 
 ## SINGLE AZ SC
@@ -322,6 +333,7 @@ module "argocd" {
     private_alb_enabled          = var.argocd_config.private_alb_enabled
     alb_acm_certificate_arn      = var.argocd_config.alb_acm_certificate_arn
     subnet_ids                   = var.argocd_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+    chart_version                = var.argocd_version
   }
   namespace = var.argocd_config.namespace
 }
@@ -341,6 +353,7 @@ module "argocd-workflow" {
     alb_acm_certificate_arn            = var.argoworkflow_config.alb_acm_certificate_arn
     autoscaling_enabled                = var.argoworkflow_config.autoscaling_enabled
     subnet_ids                         = var.argoworkflow_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+    chart_version                      = var.argoworkflow_version
   }
   namespace = var.argoworkflow_config.namespace
 }
@@ -417,7 +430,7 @@ resource "helm_release" "kubeclarity" {
   count      = var.kubeclarity_enabled ? 1 : 0
   name       = "kubeclarity"
   chart      = "kubeclarity"
-  version    = "2.23.0"
+  version    = var.kubeclarity_version
   namespace  = var.kubeclarity_namespace
   repository = "https://openclarity.github.io/kubeclarity"
   values = [
@@ -441,7 +454,7 @@ resource "aws_eks_addon" "kubecost" {
   count                    = var.kubecost_enabled ? 1 : 0
   cluster_name             = var.eks_cluster_name
   addon_name               = "kubecost_kubecost"
-  addon_version            = data.aws_eks_addon_version.kubecost[0].version
+  addon_version            = var.kubecost_version
   service_account_role_arn = var.worker_iam_role_arn
   preserve                 = true
 }
@@ -560,7 +573,7 @@ resource "helm_release" "falco" {
   chart      = "falco"
   repository = "https://falcosecurity.github.io/charts"
   timeout    = 600
-  version    = "4.0.0"
+  version    = var.falco_version
   values = [
     templatefile("${path.module}/modules/falco/config/values.yaml", {
       slack_webhook = var.slack_webhook

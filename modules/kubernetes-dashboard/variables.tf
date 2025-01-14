@@ -33,3 +33,9 @@ variable "subnet_ids" {
   type        = list(string)
   default     = [""]
 }
+
+variable "addon_version" {
+  description = "Helm Chart version for Kubernetes-dashboard"
+  default     = ""
+  type        = string
+}

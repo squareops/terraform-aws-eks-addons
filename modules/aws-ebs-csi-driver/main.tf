@@ -10,14 +10,14 @@ data "aws_eks_addon_version" "this" {
   addon_name = local.name
   # Need to allow both config routes - for managed and self-managed configs
   kubernetes_version = try(var.addon_config.kubernetes_version, var.helm_config.kubernetes_version)
-  most_recent        = true
+  # most_recent        = true
 }
 
 resource "aws_eks_addon" "aws_ebs_csi_driver" {
   count                    = var.enable_amazon_eks_aws_ebs_csi_driver && !var.enable_self_managed_aws_ebs_csi_driver ? 1 : 0
   cluster_name             = var.addon_context.eks_cluster_id
   addon_name               = local.name
-  addon_version            = try(var.addon_config.addon_version, data.aws_eks_addon_version.this.version)
+  addon_version            = var.addon_version
   service_account_role_arn = local.create_irsa ? module.irsa_addon[0].irsa_iam_role_arn : try(var.addon_config.service_account_role_arn, null)
   preserve                 = try(var.addon_config.preserve, true)
   configuration_values     = jsonencode({ node = { enableWindows = false } })
