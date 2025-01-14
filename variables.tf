@@ -841,3 +841,9 @@ variable "falco_version" {
   default     = "4.0.0"
   type        = string
 }
+
+variable "efs_version" {
+  description = "Version of the efs addon"
+  default     = "2.3.2"
+  type        = string
+}

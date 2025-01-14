@@ -35,6 +35,7 @@ module "aws-efs-csi-driver" {
   irsa_policies     = [var.kms_policy_arn]
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
+  chart_version     = var.efs_version
 }
 
 ## EFS FILESYSTEM WITH Storage class

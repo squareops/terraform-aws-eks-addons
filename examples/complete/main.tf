@@ -38,8 +38,8 @@ module "eks-addons" {
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
-  amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
-  vpc_cni_version            = "v1.19.0-eksbuild.1"
+  amazon_eks_vpc_cni_enabled = true # enable VPC-CNI
+  vpc_cni_version            = "v1.19.2-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
@@ -54,6 +54,7 @@ module "eks-addons" {
 
   ## EfS-STORAGE-CLASS
   efs_storage_class_enabled = false # to enable EBS storage class
+  efs_version               = "2.3.2"
 
   ## SERVICE-MONITORING-CRDs
   service_monitor_crd_enabled = false # enable service monitor along with K8S-dashboard (required CRD) or when require service monitor in reloader and cert-manager
