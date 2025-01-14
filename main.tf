@@ -132,6 +132,18 @@ module "coredns_hpa" {
   helm_config = var.coredns_hpa_helm_config
 }
 
+## CLUSTER PROPORTIONAL AUTOSCALER
+module "cluster-proportional-autoscaler" {
+  source = "./modules/cluster-proportional-autoscaler"
+  count  = var.cluster_proportional_autoscaler_enabled ? 1 : 0
+  helm_config = {
+    values = var.cluster_proportional_autoscaler_helm_config
+  }
+  chart_version     = var.cluster_proportional_autoscaler_chart_version
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}
+
 ## EXTERNAL SECRETS
 module "external-secrets" {
   source                                = "./modules/external-secret"
@@ -345,13 +357,18 @@ module "argo-project" {
 # Argo-Rollout
 module "argo-rollout" {
   source     = "./modules/argo-rollout"
-  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx]
+  depends_on = [module.aws_vpc_cni, module.service-monitor-crd, kubernetes_namespace.argocd, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
   count      = var.argorollout_enabled ? 1 : 0
   argorollout_config = {
-    values             = var.argorollout_config.values
-    hostname           = var.argorollout_config.hostname
-    ingress_class_name = var.argorollout_config.ingress_class_name
-    enable_dashboard   = var.argorollout_config.enable_dashboard
+    values                            = var.argorollout_config.values
+    hostname                          = var.argorollout_config.hostname
+    ingress_class_name                = var.argorollout_config.ingress_class_name
+    enable_dashboard                  = var.argorollout_config.enable_dashboard
+    argorollout_ingress_load_balancer = var.argorollout_config.argorollout_ingress_load_balancer
+    private_alb_enabled               = var.argorollout_config.private_alb_enabled
+    alb_acm_certificate_arn           = var.argorollout_config.alb_acm_certificate_arn
+    subnet_ids                        = var.argorollout_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+    chart_version                     = var.argorollout_config.chart_version
   }
   namespace = var.argorollout_config.namespace
 }

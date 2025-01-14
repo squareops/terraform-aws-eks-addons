@@ -610,19 +610,27 @@ variable "argorollout_enabled" {
 
 variable "argorollout_config" {
   type = object({
-    values             = any
-    namespace          = string
-    hostname           = string
-    ingress_class_name = string
-    enable_dashboard   = bool
+    values                            = any
+    namespace                         = string
+    hostname                          = string
+    ingress_class_name                = string
+    enable_dashboard                  = bool
+    argorollout_ingress_load_balancer = string
+    private_alb_enabled               = bool
+    alb_acm_certificate_arn           = string
+    chart_version                     = string
   })
 
   default = {
-    values             = {}
-    namespace          = "argocd"
-    hostname           = ""
-    ingress_class_name = ""
-    enable_dashboard   = false
+    values                            = {}
+    namespace                         = "argocd"
+    hostname                          = ""
+    ingress_class_name                = ""
+    enable_dashboard                  = false
+    argorollout_ingress_load_balancer = "nlb"
+    private_alb_enabled               = false
+    alb_acm_certificate_arn           = ""
+    chart_version                     = "2.38.0"
   }
 }
 
@@ -700,4 +708,22 @@ variable "karpenter_node_iam_instance_profile" {
   description = "Karpenter Node IAM Instance profile id"
   type        = string
   default     = ""
+}
+
+variable "cluster_proportional_autoscaler_enabled" {
+  description = "Whether to enable the Cluster proportional Autoscaler add-on or not."
+  default     = false
+  type        = bool
+}
+
+variable "cluster_proportional_autoscaler_chart_version" {
+  description = "Version of the cluster proportional autoscaler helm chart"
+  default     = "1.1.0"
+  type        = string
+}
+
+variable "cluster_proportional_autoscaler_helm_config" {
+  description = "Configuration options for the Cluster Proportional Autoscaler Helm chart."
+  type        = any
+  default     = {}
 }

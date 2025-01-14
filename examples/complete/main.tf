@@ -23,7 +23,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "3.3.0"
+  version              = "4.0.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -72,7 +72,7 @@ module "eks-addons" {
   aws_node_termination_handler_helm_config = {
     values                 = [file("${path.module}/config/aws-node-termination-handler.yaml")]
     enable_service_monitor = false # to enable monitoring for node termination handler
-    enable_notifications   = true
+    enable_notifications   = false
   }
 
   ## KEDA
@@ -93,6 +93,11 @@ module "eks-addons" {
   coredns_hpa_helm_config = {
     values = [file("${path.module}/config/coredns-hpa.yaml")]
   }
+
+  ## ClusterProportionalAutoscaler (Configured for CoreDNS)
+  cluster_proportional_autoscaler_enabled       = true # to enable cluster proportional autoscaler
+  cluster_proportional_autoscaler_helm_config   = [file("${path.module}/config/cluster-proportional-autoscaler.yaml")]
+  cluster_proportional_autoscaler_chart_version = "1.1.0"
 
   ## EXTERNAL-SECRETS
   external_secrets_enabled = false # to enable external secrets
@@ -187,11 +192,15 @@ module "eks-addons" {
   ## ArgoRollout
   argorollout_enabled = false
   argorollout_config = {
-    values             = file("${path.module}/config/argo-rollout.yaml")
-    namespace          = local.argocd_namespace
-    hostname           = "argo-rollout.rnd.squareops.in"
-    enable_dashboard   = false
-    ingress_class_name = "nginx" # enter ingress class name according to your requirement (example: "ingress-nginx", "internal-ingress")
+    values                            = file("${path.module}/config/argo-rollout.yaml")
+    namespace                         = local.argocd_namespace
+    hostname                          = "argo-rollout.rnd.squareops.in"
+    enable_dashboard                  = false
+    ingress_class_name                = "nginx" # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
+    argorollout_ingress_load_balancer = "nlb"   # Pass either "nlb/alb" to choose load balancer controller as ingress-nginx controller or ALB controller
+    private_alb_enabled               = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
+    alb_acm_certificate_arn           = ""      # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
+    chart_version                     = "2.38.0"
   }
 
   # VELERO
