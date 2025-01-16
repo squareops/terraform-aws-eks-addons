@@ -23,7 +23,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.0.0"
+  version              = "4.0.1"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -63,6 +63,10 @@ module "eks-addons" {
   metrics_server_enabled     = false # to enable metrics server
   metrics_server_version     = "3.12.1"
   metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
+
+  # VerticalPodAutoscaler
+  vpa_enabled = false
+  vpa_version = "9.9.0"
   vpa_config = {
     values = [file("${path.module}/config/vpa-crd.yaml")]
   }

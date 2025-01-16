@@ -28,6 +28,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | chart version for VPA | `string` | `"9.9.0"` | no |
 | <a name="input_helm-config"></a> [helm-config](#input\_helm-config) | vpa config from user end | `any` | `{}` | no |
 
 ## Outputs

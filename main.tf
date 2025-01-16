@@ -306,9 +306,11 @@ module "service-monitor-crd" {
 
 ## VPA-CRDS
 module "vpa-crds" {
-  source      = "./modules/vpa-crds"
-  count       = var.metrics_server_enabled ? 1 : 0
-  helm-config = var.vpa_config.values[0]
+  source        = "./modules/vpa-crds"
+  count         = var.vpa_enabled ? 1 : 0
+  depends_on    = [module.metrics-server]
+  chart_version = var.vpa_version
+  helm-config   = var.vpa_config.values[0]
 }
 
 ## argocd
@@ -522,7 +524,7 @@ resource "kubernetes_ingress_v1" "kubecost" {
 
 module "metrics-server-vpa" {
   source     = "./modules/metrics-server-vpa"
-  count      = var.metrics_server_enabled ? 1 : 0
+  count      = var.vpa_enabled ? 1 : 0
   depends_on = [module.vpa-crds]
 }
 
