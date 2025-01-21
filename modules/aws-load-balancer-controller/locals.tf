@@ -9,7 +9,7 @@ locals {
     create_namespace = true
     chart            = "aws-load-balancer-controller"
     repository       = "https://aws.github.io/eks-charts"
-    version          = "1.8.1"
+    version          = var.addon_version
     values           = [yamlencode(merge(local.default_helm_values_map, local.helm_config_map))]
     description      = "aws-load-balancer-controller Helm Chart for ingress resources"
   }

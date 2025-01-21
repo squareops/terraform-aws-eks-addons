@@ -13,7 +13,7 @@ resource "helm_release" "falco" {
   chart      = "falco"
   repository = "https://falcosecurity.github.io/charts"
   timeout    = 600
-  version    = "4.0.0"
+  version    = var.version
   values = [
     templatefile("${path.module}/values.yaml", {
       slack_webhook = var.slack_webhook

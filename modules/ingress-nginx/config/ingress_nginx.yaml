@@ -8,12 +8,12 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-internal: "${private_nlb_enabled}"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
       service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "${additional_tags}"
+      service.beta.kubernetes.io/aws-load-balancer-subnets: ${nlb_subnets}
     externalTrafficPolicy: Cluster
-
-
   ingressClassResource:
     enabled: true
     name: ${ingress_class_name}
+    controllerValue: k8s.io/ingress-nginx/${ingress_class_name}
   ingressClass: ${ingress_class_name}
 
   resources:

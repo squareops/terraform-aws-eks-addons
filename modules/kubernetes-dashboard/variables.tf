@@ -27,3 +27,15 @@ variable "private_alb_enabled" {
   type        = bool
   default     = false
 }
+
+variable "subnet_ids" {
+  description = "Subnet IDs required for load balancers"
+  type        = list(string)
+  default     = [""]
+}
+
+variable "addon_version" {
+  description = "Helm Chart version for Kubernetes-dashboard"
+  default     = ""
+  type        = string
+}
