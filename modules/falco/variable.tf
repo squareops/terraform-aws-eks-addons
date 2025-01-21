@@ -9,3 +9,9 @@ variable "slack_webhook" {
   type        = string
   default     = ""
 }
+
+variable "version" {
+  description = "Helm Chart version of Falco"
+  type        = string
+  default     = ""
+}

@@ -36,6 +36,7 @@ For more details [Ingress-Nginx can be found here](https://kubernetes.github.io/
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_addon_context"></a> [addon\_context](#input\_addon\_context) | Input configuration for the addon | <pre>object({<br>    aws_caller_identity_account_id = string<br>    aws_caller_identity_arn        = string<br>    aws_eks_cluster_endpoint       = string<br>    aws_partition_id               = string<br>    aws_region_name                = string<br>    eks_cluster_id                 = string<br>    eks_oidc_issuer_url            = string<br>    eks_oidc_provider_arn          = string<br>    tags                           = map(string)<br>  })</pre> | n/a | yes |
+| <a name="input_addon_version"></a> [addon\_version](#input\_addon\_version) | Ingress Nginx helm chart version | `string` | `""` | no |
 | <a name="input_enable_service_monitor"></a> [enable\_service\_monitor](#input\_enable\_service\_monitor) | Enable or disable Service Monitor add-on for monitoring Kubernetes services. | `bool` | `false` | no |
 | <a name="input_helm_config"></a> [helm\_config](#input\_helm\_config) | Ingress NGINX Helm Configuration | `any` | `{}` | no |
 | <a name="input_ingress_class_name"></a> [ingress\_class\_name](#input\_ingress\_class\_name) | resource name for nginx and internal nginx | `any` | `""` | no |
@@ -43,6 +44,7 @@ For more details [Ingress-Nginx can be found here](https://kubernetes.github.io/
 | <a name="input_manage_via_gitops"></a> [manage\_via\_gitops](#input\_manage\_via\_gitops) | Determines if the add-on should be managed via GitOps. | `bool` | `false` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Creates namespace for the controller need to install | `string` | n/a | yes |
 | <a name="input_private_nlb_enabled"></a> [private\_nlb\_enabled](#input\_private\_nlb\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
+| <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Pass the IDs of the Subnets | `list(string)` | n/a | yes |
 
 ## Outputs
 

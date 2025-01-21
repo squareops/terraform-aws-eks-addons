@@ -21,7 +21,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | 3.2.0 |
+| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | ../../ | n/a |
 
 ## Resources
 
@@ -39,6 +39,7 @@ No inputs.
 | Name | Description |
 |------|-------------|
 | <a name="output_argocd"></a> [argocd](#output\_argocd) | ArgoCD Credentials |
+| <a name="output_argorollout_credentials"></a> [argorollout\_credentials](#output\_argorollout\_credentials) | ArgoRollout  Credentials |
 | <a name="output_argoworkflow_credentials"></a> [argoworkflow\_credentials](#output\_argoworkflow\_credentials) | Argocd Workflow credentials |
 | <a name="output_argoworkflow_hostname"></a> [argoworkflow\_hostname](#output\_argoworkflow\_hostname) | Argocd Workflow hostname |
 | <a name="output_defectdojo"></a> [defectdojo](#output\_defectdojo) | DefectDojo endpoint and credentials |

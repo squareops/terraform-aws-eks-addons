@@ -1,4 +1,5 @@
 locals {
+  alb_scheme    = var.argoworkflow_config.private_alb_enabled ? "internal" : "internet-facing"
   template_path = "${path.module}/config/argocd-workflow.yaml"
 
   # read modules template file
@@ -83,5 +84,57 @@ resource "kubernetes_secret" "argo_workflow_token_secret" {
   data = {
     # Use 'try' to attempt accessing the token and handle cases where the secret isn't available yet
     token = try(data.kubernetes_secret.argo-workflow-secret.data["token"], "")
+  }
+}
+
+resource "kubernetes_ingress_v1" "argoworkflow-ingress" {
+  depends_on             = [helm_release.argo_workflow]
+  wait_for_load_balancer = true
+  metadata {
+    name      = "argoworkflow-ingress"
+    namespace = var.namespace
+    annotations = var.argoworkflow_config.argoworkflow_ingress_load_balancer == "alb" ? {
+      "kubernetes.io/ingress.class"                    = "alb"
+      "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
+      "alb.ingress.kubernetes.io/target-type"          = "ip"
+      "alb.ingress.kubernetes.io/certificate-arn"      = var.argoworkflow_config.alb_acm_certificate_arn,
+      "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
+      "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
+      "alb.ingress.kubernetes.io/backend-protocol"     = "HTTP"
+      "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
+      "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
+      "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress"
+      "alb.ingress.kubernetes.io/subnets"              = join(",", var.argoworkflow_config.subnet_ids)
+      } : {
+      "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
+      "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
+      "nginx.ingress.kubernetes.io/ssl-passthrough"    = "true"
+      "kubernetes.io/ingress.class"                    = var.argoworkflow_config.ingress_class_name
+      "kubernetes.io/tls-acme"                         = "false"
+    }
+  }
+  spec {
+    ingress_class_name = var.argoworkflow_config.ingress_class_name
+    rule {
+      host = var.argoworkflow_config.hostname
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "argo-workflow-argo-workflows-server"
+              port {
+                number = 2746
+              }
+            }
+          }
+        }
+      }
+    }
+    tls {
+      secret_name = var.argoworkflow_config.argoworkflow_ingress_load_balancer == "alb" ? "" : "argoworkflow-server-tls"
+      hosts       = var.argoworkflow_config.argoworkflow_ingress_load_balancer == "alb" ? [] : [var.argoworkflow_config.hostname]
+    }
   }
 }
