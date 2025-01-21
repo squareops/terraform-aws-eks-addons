@@ -9,6 +9,7 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
       service.beta.kubernetes.io/aws-load-balancer-ip-address-type: dualstack
       service.beta.kubernetes.io/aws-load-balancer-scheme: ${nlb_scheme}
+      service.beta.kubernetes.io/aws-load-balancer-subnets: ${nlb_subnets}
       service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "${additional_tags}"
     externalTrafficPolicy: Cluster
     ipFamilies:

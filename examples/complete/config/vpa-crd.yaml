@@ -65,3 +65,10 @@ crds:
               operator: In
               values:
               - "true"
+  resources:
+    limits:
+      cpu: 10m
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 50Mi

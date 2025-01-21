@@ -1,0 +1,35 @@
+controller:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+  resources:
+    limits:
+      cpu: 20m
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi
+
+dashboard:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+  resources:
+    limits:
+      cpu: 20m
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi

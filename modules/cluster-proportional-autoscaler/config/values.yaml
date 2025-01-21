@@ -4,8 +4,8 @@
 #  replicas = max(replicas, min)
 config:
   linear:
-    coresPerReplica: 256
-    nodesPerReplica: 16
+    coresPerReplica: 10
+    nodesPerReplica: 2
     min: 1
     max: 100
     preventSinglePointFailure: true
@@ -13,9 +13,8 @@ config:
 
 # Target to scale. In format: deployment/*, replicationcontroller/* or replicaset/* (not case sensitive).
 # The following option should be defined in user defined values.yaml using var.helm_config
-
-#options:
-#  target:
+options:
+ target: deployment/coredns
 
 podAnnotations:
   co.elastic.logs/enabled: "true"

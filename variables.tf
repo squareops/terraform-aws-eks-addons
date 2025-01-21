@@ -95,7 +95,13 @@ variable "efs_storage_class_enabled" {
 }
 
 variable "private_subnet_ids" {
-  description = "Private subnets of the VPC which can be used by EFS"
+  description = "Private subnets of the VPC which can be used by EFS, argocd, workflow and k8s dashboard"
+  default     = [""]
+  type        = list(string)
+}
+
+variable "public_subnet_ids" {
+  description = "Public subnets of the VPC which can be used by argocd, workflow and k8s dashboard"
   default     = [""]
   type        = list(string)
 }
@@ -136,7 +142,7 @@ variable "external_secrets_enabled" {
   type        = bool
 }
 
-variable "private_nlb_enabled" {
+variable "private_ingress_nginx_enabled" {
   description = "Control wheather to install public nlb or private nlb. Default is private"
   type        = bool
   default     = false
@@ -156,6 +162,23 @@ variable "ingress_nginx_config" {
     enable_service_monitor = false
     values                 = {}
     namespace              = "ingress-nginx"
+  }
+}
+
+variable "private_ingress_nginx_config" {
+  description = "Configure private-ingress-nginx to setup addons"
+  type = object({
+    ingress_class_name     = string
+    enable_service_monitor = bool
+    values                 = any
+    namespace              = string
+  })
+
+  default = {
+    ingress_class_name     = "private-nginx"
+    enable_service_monitor = false
+    values                 = {}
+    namespace              = "private-nginx"
   }
 }
 
@@ -501,6 +524,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = string
     k8s_dashboard_hostname              = string
     private_alb_enabled                 = bool
+    ingress_class_name                  = string
   })
 
   default = {
@@ -508,6 +532,7 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
+    ingress_class_name                  = ""
   }
 }
 
@@ -527,6 +552,9 @@ variable "argocd_config" {
     argocd_notifications_enabled = bool
     ingress_class_name           = string
     namespace                    = string
+    argocd_ingress_load_balancer = string
+    private_alb_enabled          = bool
+    alb_acm_certificate_arn      = string
   })
 
   default = {
@@ -537,7 +565,10 @@ variable "argocd_config" {
     slack_notification_token     = ""
     argocd_notifications_enabled = false
     ingress_class_name           = ""
+    argocd_ingress_load_balancer = "nlb"
     namespace                    = "argocd"
+    private_alb_enabled          = false
+    alb_acm_certificate_arn      = ""
   }
 }
 
@@ -549,19 +580,57 @@ variable "argoworkflow_enabled" {
 
 variable "argoworkflow_config" {
   type = object({
-    values              = any
-    namespace           = string
-    hostname            = string
-    ingress_class_name  = string
-    autoscaling_enabled = bool
+    values                             = any
+    namespace                          = string
+    hostname                           = string
+    ingress_class_name                 = string
+    autoscaling_enabled                = bool
+    argoworkflow_ingress_load_balancer = string
+    private_alb_enabled                = bool
+    alb_acm_certificate_arn            = string
   })
 
   default = {
-    values              = {}
-    namespace           = "argocd"
-    hostname            = ""
-    ingress_class_name  = ""
-    autoscaling_enabled = true
+    values                             = {}
+    namespace                          = "argocd"
+    hostname                           = ""
+    ingress_class_name                 = ""
+    autoscaling_enabled                = true
+    argoworkflow_ingress_load_balancer = "nlb"
+    private_alb_enabled                = false
+    alb_acm_certificate_arn            = ""
+  }
+}
+
+variable "argorollout_enabled" {
+  description = "Determine whether argo-rollout is enabled or not"
+  default     = false
+  type        = bool
+}
+
+variable "argorollout_config" {
+  type = object({
+    values                            = any
+    namespace                         = string
+    hostname                          = string
+    ingress_class_name                = string
+    enable_dashboard                  = bool
+    argorollout_ingress_load_balancer = string
+    private_alb_enabled               = bool
+    alb_acm_certificate_arn           = string
+    chart_version                     = string
+  })
+
+  default = {
+    values                            = {}
+    namespace                         = "argocd"
+    hostname                          = ""
+    ingress_class_name                = ""
+    enable_dashboard                  = false
+    argorollout_ingress_load_balancer = "nlb"
+    private_alb_enabled               = false
+    alb_acm_certificate_arn           = ""
+    chart_version                     = "2.38.0"
   }
 }
 
@@ -639,4 +708,154 @@ variable "karpenter_node_iam_instance_profile" {
   description = "Karpenter Node IAM Instance profile id"
   type        = string
   default     = ""
+}
+
+variable "cluster_proportional_autoscaler_enabled" {
+  description = "Whether to enable the Cluster proportional Autoscaler add-on or not."
+  default     = false
+  type        = bool
+}
+
+variable "cluster_proportional_autoscaler_chart_version" {
+  description = "Version of the cluster proportional autoscaler helm chart"
+  default     = "1.1.0"
+  type        = string
+}
+
+variable "cluster_proportional_autoscaler_helm_config" {
+  description = "Configuration options for the Cluster Proportional Autoscaler Helm chart."
+  type        = any
+  default     = {}
+}
+
+variable "vpc_cni_version" {
+  description = "Specify VPC CNI addons version"
+  default     = "v1.19.0-eksbuild.1"
+  type        = string
+}
+
+variable "ebs_csi_driver_version" {
+  description = "Version of the ebs csi driver addon"
+  default     = "v1.36.0-eksbuild.1"
+  type        = string
+}
+
+variable "metrics_server_version" {
+  description = "Version of the metrics server addon"
+  default     = "3.12.1"
+  type        = string
+}
+
+variable "cluster_autoscaler_version" {
+  description = "Version of the cluster autoscaler addon"
+  default     = "9.37.0"
+  type        = string
+}
+
+variable "aws_node_termination_handler_version" {
+  description = "Version of the aws node termination handler addon"
+  default     = "0.21.0"
+  type        = string
+}
+
+variable "keda_version" {
+  description = "Version of the keda addon"
+  default     = "2.14.2"
+  type        = string
+}
+
+variable "karpenter_version" {
+  description = "Version of the karpenter addon"
+  default     = "1.0.6"
+  type        = string
+}
+
+variable "external_secrets_version" {
+  description = "Version of the external secrets addon"
+  default     = "0.9.19"
+  type        = string
+}
+
+variable "cert_manager_version" {
+  description = "Version of the cert manager addon"
+  default     = "v1.15.1"
+  type        = string
+}
+
+variable "reloader_version" {
+  description = "Version of the reloader addon"
+  default     = "v1.0.115"
+  type        = string
+}
+
+variable "ingress_nginx_version" {
+  description = "Version of the ingress nginx addon"
+  default     = "4.11.0"
+  type        = string
+}
+
+variable "private_ingress_nginx_version" {
+  description = "Version of the ingress nginx addon"
+  default     = "4.11.0"
+  type        = string
+}
+
+variable "aws_load_balancer_controller_version" {
+  description = "Version of the aws load balancer controller addon"
+  default     = "1.8.1"
+  type        = string
+}
+
+variable "kubernetes_dashboard_version" {
+  description = "Version of the kubernetes dashboard addon"
+  default     = "6.0.8"
+  type        = string
+}
+
+variable "argocd_version" {
+  description = "Version of the argocd addon"
+  default     = "7.3.11"
+  type        = string
+}
+
+variable "argoworkflow_version" {
+  description = "Version of the argoworkflow addon"
+  default     = "0.29.2"
+  type        = string
+}
+
+variable "kubeclarity_version" {
+  description = "Version of the kubeclarity addon"
+  default     = "2.23.0"
+  type        = string
+}
+
+variable "kubecost_version" {
+  description = "Version of the kubecost addon"
+  default     = "v2.1.0-eksbuild.1"
+  type        = string
+}
+
+variable "falco_version" {
+  description = "Version of the falco addon"
+  default     = "4.0.0"
+  type        = string
+}
+
+variable "efs_version" {
+  description = "Version of the efs addon"
+  default     = "2.3.2"
+  type        = string
+}
+
+variable "vpa_enabled" {
+  description = "Choose whether to enable vpa or not"
+  default     = false
+  type        = bool
+}
+
+variable "vpa_version" {
+  description = "Version of VPA CRD"
+  default     = "9.9.0"
+  type        = string
 }

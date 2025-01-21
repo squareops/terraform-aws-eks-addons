@@ -32,3 +32,10 @@ variable "addon_context" {
     irsa_iam_permissions_boundary  = string
   })
 }
+
+
+variable "chart_version" {
+  description = "aws efs addons helm version"
+  type        = string
+  default     = "2.3.2"
+}

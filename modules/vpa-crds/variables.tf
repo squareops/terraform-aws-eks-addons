@@ -3,3 +3,9 @@ variable "helm-config" {
   type        = any
   default     = {}
 }
+
+variable "chart_version" {
+  description = "chart version for VPA"
+  type        = string
+  default     = "9.9.0"
+}
