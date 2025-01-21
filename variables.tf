@@ -847,3 +847,15 @@ variable "efs_version" {
   default     = "2.3.2"
   type        = string
 }
+
+variable "vpa_enabled" {
+  description = "Choose whether to enable vpa or not"
+  default     = false
+  type        = bool
+}
+
+variable "vpa_version" {
+  description = "Version of VPA CRD"
+  default     = "9.9.0"
+  type        = string
+}

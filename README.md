@@ -531,6 +531,8 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_velero_enabled"></a> [velero\_enabled](#input\_velero\_enabled) | Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters. | `bool` | `false` | no |
 | <a name="input_velero_notification_enabled"></a> [velero\_notification\_enabled](#input\_velero\_notification\_enabled) | Enable or disable the notification for velero backup. | `bool` | `false` | no |
 | <a name="input_vpa_config"></a> [vpa\_config](#input\_vpa\_config) | Configure VPA CRD to setup addon | <pre>object({<br>    values = list(string)<br>  })</pre> | <pre>{<br>  "values": []<br>}</pre> | no |
+| <a name="input_vpa_enabled"></a> [vpa\_enabled](#input\_vpa\_enabled) | Choose whether to enable vpa or not | `bool` | `false` | no |
+| <a name="input_vpa_version"></a> [vpa\_version](#input\_vpa\_version) | Version of VPA CRD | `string` | `"9.9.0"` | no |
 | <a name="input_vpc_cni_version"></a> [vpc\_cni\_version](#input\_vpc\_cni\_version) | Specify VPC CNI addons version | `string` | `"v1.19.0-eksbuild.1"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the VPC where the cluster and its nodes will be provisioned | `string` | `""` | no |
 | <a name="input_worker_iam_role_arn"></a> [worker\_iam\_role\_arn](#input\_worker\_iam\_role\_arn) | Specify the IAM role Arn for the nodes | `string` | `""` | no |
