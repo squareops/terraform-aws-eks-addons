@@ -107,7 +107,7 @@ module "eks-addons" {
   }
 
   ## ClusterProportionalAutoscaler (Configured for CoreDNS)
-  cluster_proportional_autoscaler_enabled       = true # to enable cluster proportional autoscaler
+  cluster_proportional_autoscaler_enabled       = false # to enable cluster proportional autoscaler
   cluster_proportional_autoscaler_chart_version = "1.1.0"
   cluster_proportional_autoscaler_helm_config   = [file("${path.module}/config/cluster-proportional-autoscaler.yaml")]
 
