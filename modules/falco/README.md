@@ -33,6 +33,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | Enable or disable Falco deployment | `bool` | `true` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | Slack webhook URL for Falco alerts | `string` | `""` | no |
+| <a name="input_version"></a> [version](#input\_version) | Helm Chart version of Falco | `string` | `""` | no |
 
 ## Outputs
 

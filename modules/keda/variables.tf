@@ -32,3 +32,9 @@ variable "addon_context" {
     irsa_iam_permissions_boundary  = string
   })
 }
+
+variable "addon_version" {
+  description = "Helm version of keda"
+  type        = string
+  default     = ""
+}
