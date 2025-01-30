@@ -48,7 +48,7 @@ locals {
       il-central-1   = "066635153087.dkr.ecr.il-central-1.amazonaws.com",
       me-south-1     = "558608220178.dkr.ecr.me-south-1.amazonaws.com",
       me-central-1   = "759879836304.dkr.ecr.me-central-1.amazonaws.com",
-      mx-central-1   = "730335286997.dkr.ecr.mx-central-1.amazonaws.com", 
+      mx-central-1   = "730335286997.dkr.ecr.mx-central-1.amazonaws.com",
       sa-east-1      = "602401143452.dkr.ecr.sa-east-1.amazonaws.com",
       us-east-1      = "602401143452.dkr.ecr.us-east-1.amazonaws.com",
       us-east-2      = "602401143452.dkr.ecr.us-east-2.amazonaws.com",
