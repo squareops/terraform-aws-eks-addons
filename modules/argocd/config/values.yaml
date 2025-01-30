@@ -74,6 +74,8 @@ configs:
       p, role:readonly, gpgkeys, get, *, allow
       p, role:readonly, logs, get, */*, allow
       g, qa, role:readonly
+  params:
+    application.namespaces: "*"
 
 server:
   config:
