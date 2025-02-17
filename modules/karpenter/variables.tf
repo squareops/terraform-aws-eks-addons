@@ -66,7 +66,7 @@ variable "kms_key_arn" {
 variable "chart_version" {
   description = "Helm cart version for karpenter CRDs"
   type        = string
-  default     = "1.0.6"
+  default     = "1.2.1"
 }
 
 variable "enable_service_monitor" {
