@@ -13,7 +13,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "aman-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"
