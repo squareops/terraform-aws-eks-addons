@@ -4,12 +4,6 @@ variable "helm_config" {
   default     = {}
 }
 
-variable "karpenter_helm_config" {
-  description = "Helm provider config for the Karpenter"
-  type        = any
-  default     = {}
-}
-
 variable "irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)

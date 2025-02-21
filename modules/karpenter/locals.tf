@@ -36,9 +36,12 @@ locals {
               aws:
                 defaultInstanceProfile: ${local.node_iam_instance_profile}
             EOT
-      ), local.template_values_map, var.karpenter_helm_config))]
+      ), local.template_values_map, var.helm_config))]
       description = "karpenter Helm Chart for Node Autoscaling"
-    }
+    },
+    {
+    create_namespace = false  # Explicitly disable namespace creation here
+  }
   )
 
   irsa_config = {

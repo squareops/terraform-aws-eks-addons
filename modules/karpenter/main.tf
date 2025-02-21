@@ -1,6 +1,22 @@
 
+resource "helm_release" "karpenter_crd" {
+  name       = "karpenter-crd"
+  repository = "oci://public.ecr.aws/karpenter"
+  chart      = "karpenter-crd"
+  version    = var.chart_version  # Ensure this is the correct version
+
+  namespace        = local.name
+  create_namespace = true
+
+  description = "Karpenter CRDs"
+  set {
+    name  = "preDeleteHook"
+    value = "true"
+  }
+}
+
 module "helm_addon" {
-  depends_on        = [resource.aws_iam_instance_profile.karpenter_profile]
+  depends_on        = [resource.aws_iam_instance_profile.karpenter_profile , helm_release.karpenter_crd ]
   source            = "../helm-addon"
   manage_via_gitops = var.manage_via_gitops
   helm_config       = local.helm_config
