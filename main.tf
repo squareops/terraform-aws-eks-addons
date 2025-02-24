@@ -239,6 +239,8 @@ module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
   depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
+  kubernetes_dashboard_config = {
+  values_yaml                         = var.kubernetes_dashboard_config.values_yaml
   k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
   alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
   k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
@@ -246,6 +248,8 @@ module "kubernetes-dashboard" {
   ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
   subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
   addon_version                       = var.kubernetes_dashboard_version
+  enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
+}
 }
 
 ## KEDA

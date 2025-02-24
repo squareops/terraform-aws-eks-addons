@@ -1,5 +1,5 @@
 locals {
-  alb_scheme = var.private_alb_enabled ? "internal" : "internet-facing"
+  alb_scheme = var.kubernetes_dashboard_config.private_alb_enabled ? "internal" : "internet-facing"
 }
 
 resource "kubernetes_namespace" "k8s-dashboard" {
@@ -16,6 +16,14 @@ resource "helm_release" "kubernetes-dashboard" {
   repository = "https://kubernetes.github.io/dashboard/"
   timeout    = 600
   version    = var.addon_version
+   values = [
+    templatefile("${path.module}/config/values.yaml", {
+      hostname                  = var.kubernetes_dashboard_config.k8s_dashboard_hostname
+      ingress_class_name        = var.kubernetes_dashboard_config.ingress_class_name
+      enable_service_monitor    = var.kubernetes_dashboard_config.enable_service_monitor
+    }),
+    var.kubernetes_dashboard_config.values_yaml
+  ]
 }
 
 resource "kubernetes_ingress_v1" "k8s-ingress" {
@@ -28,17 +36,17 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       "kubernetes.io/ingress.class"                    = "alb"
       "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
-      "alb.ingress.kubernetes.io/certificate-arn"      = var.alb_acm_certificate_arn,
+      "alb.ingress.kubernetes.io/certificate-arn"      = var.kubernetes_dashboard_config.alb_acm_certificate_arn,
       "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTPS"
       "alb.ingress.kubernetes.io/backend-protocol"     = "HTTPS"
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/ssl-redirect"         = "443"
       "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress"
-      "alb.ingress.kubernetes.io/subnets"              = join(",", var.subnet_ids)
+      "alb.ingress.kubernetes.io/subnets"              = join(",", var.kubernetes_dashboard_config.subnet_ids)
       } : {
       "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
-      "kubernetes.io/ingress.class"                       = var.ingress_class_name
+      "kubernetes.io/ingress.class"                       = var.kubernetes_dashboard_config.ingress_class_name
       "kubernetes.io/tls-acme"                            = "false"
       "nginx.ingress.kubernetes.io/backend-protocol"      = "HTTPS"
       "nginx.ingress.kubernetes.io/rewrite-target"        = "/$2"
@@ -50,13 +58,12 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
     }
   }
   spec {
-    ingress_class_name = var.ingress_class_name
+    ingress_class_name = var.kubernetes_dashboard_config.ingress_class_name
     rule {
-      host = var.k8s_dashboard_hostname
+      host = var.kubernetes_dashboard_config.k8s_dashboard_hostname
       http {
         path {
-          path      = var.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
-          path_type = var.k8s_dashboard_ingress_load_balancer == "alb" ? "Prefix" : "ImplementationSpecific"
+          path      = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
           backend {
             service {
               name = "kubernetes-dashboard"
@@ -69,8 +76,8 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       }
     }
     tls {
-      secret_name = var.k8s_dashboard_ingress_load_balancer == "alb" ? "" : "tls-k8s-dashboard"
-      hosts       = var.k8s_dashboard_ingress_load_balancer == "alb" ? [] : [var.k8s_dashboard_hostname]
+      secret_name = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "" : "tls-k8s-dashboard"
+      hosts       = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? [] : [var.kubernetes_dashboard_config.k8s_dashboard_hostname]
     }
   }
 }
