@@ -239,6 +239,7 @@ module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0
   depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
+  addon_version                       = var.kubernetes_dashboard_version
   kubernetes_dashboard_config = {
   values_yaml                         = var.kubernetes_dashboard_config.values_yaml
   k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
@@ -247,7 +248,6 @@ module "kubernetes-dashboard" {
   private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
   ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
   subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
-  addon_version                       = var.kubernetes_dashboard_version
   enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
 }
 }

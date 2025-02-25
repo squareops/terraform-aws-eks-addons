@@ -1,62 +1,9 @@
 ## Number of replicas
 replicaCount: 1
 
-## @param commonLabels Labels to add to all deployed objects
-##
-commonLabels: {}
-## @param commonAnnotations Annotations to add to all deployed objects
-##
-commonAnnotations: {}
-
-## Here annotations can be added to the kubernetes dashboard deployment
 annotations: {}
 ## Here labels can be added to the kubernetes dashboard deployment
-labels: {}
 
-## Additional container arguments
-##
-# extraArgs:
-#   - --enable-skip-login
-#   - --enable-insecure-login
-#   - --system-banner="Welcome to Kubernetes"
-
-## Additional container environment variables
-##
-extraEnv: []
-# - name: SOME_VAR
-#   value: 'some value'
-
-## Additional volumes to be added to kubernetes dashboard pods
-##
-extraVolumes: []
-# - name: dashboard-kubeconfig
-#   secret:
-#     defaultMode: 420
-#     secretName: dashboard-kubeconfig
-
-## Additional volumeMounts to be added to kubernetes dashboard container
-##
-extraVolumeMounts: []
-# - mountPath: /kubeconfig
-#   name: dashboard-kubeconfig
-#   readOnly: true
-
-## Array of extra K8s manifests to deploy
-##
-extraManifests: []
-# - apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: additional-configmap
-#   data:
-#     mykey: myvalue
-
-## Annotations to be added to kubernetes dashboard pods
-# podAnnotations:
-
-## SecurityContext to be added to kubernetes dashboard pods
-## To disable set the following configuration to null:
-# securityContext: null
 securityContext:
   runAsNonRoot: true
   seccompProfile:
@@ -91,12 +38,7 @@ nodeSelector:
 
 ## List of node taints to tolerate (requires Kubernetes >= 1.6)
 tolerations: []
-#  - key: "key"
-#    operator: "Equal|Exists"
-#    value: "value"
-#    effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
-## Affinity for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 affinity:
     nodeAffinity:
@@ -129,17 +71,6 @@ service:
   type: ClusterIP
   # Dashboard service port
   externalPort: 443
-
-  ## LoadBalancerSourcesRange is a list of allowed CIDR values, which are combined with ServicePort to
-  ## set allowed inbound rules on the security group assigned to the master load balancer
-  # loadBalancerSourceRanges: []
-
-  # clusterIP: ""
-
-  ## A user-specified IP address for load balancer to use as External IP (if supported)
-  # loadBalancerIP:
-
-  ## Additional Kubernetes Dashboard Service annotations
   annotations: {}
 
   ## Here labels can be added to the Kubernetes Dashboard service
@@ -156,31 +87,7 @@ ingress:
   annotations: {}
   ingressClassName: ${ingress_class_name}
   hostname: ${hostname}
-  path: /dashboard(/|$)(.*)
-  pathType: ImplementationSpecific
-  tls: true
 
-  ## Kubernetes Dashboard Ingress labels
-  # labels:
-  #   key: value
-
-  ## Kubernetes Dashboard Ingress annotations
-  # annotations:
-  #   kubernetes.io/ingress.class: nginx
-  #   kubernetes.io/tls-acme: 'true'
-
-  ## If you plan to use TLS backend with enableInsecureLogin set to false
-  ## (default), you need to uncomment the below.
-  ## If you use ingress-nginx < 0.21.0
-  #   nginx.ingress.kubernetes.io/secure-backends: "true"
-  ## if you use ingress-nginx >= 0.21.0
-  #   nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-
-  ## Kubernetes Dashboard Ingress Class
-  # className: "example-lb"
-
-  ## Kubernetes Dashboard Ingress paths
-  ## Both `/` and `/*` are required to work on gce ingress.
   paths:
     - /
   #  - /*
@@ -191,31 +98,8 @@ ingress:
 
 settings:
   {}
-  ## Cluster name that appears in the browser window title if it is set
-  # clusterName: ""
-  ## Max number of items that can be displayed on each list page
-  # itemsPerPage: 10
-  ## Number of seconds between every auto-refresh of logs
-  # logsAutoRefreshTimeInterval: 5
-  ## Number of seconds between every auto-refresh of every resource. Set 0 to disable
-  # resourceAutoRefreshTimeInterval: 5
-  ## Hide all access denied warnings in the notification panel
-  # disableAccessDeniedNotifications: false
-
+ 
 ## Pinned CRDs that will be displayed in dashboard's menu
-pinnedCRDs:
-  []
-  # - kind: customresourcedefinition
-  ##  Fully qualified name of a CRD
-  #   name: prometheuses.monitoring.coreos.com
-  ##  Display name
-  #   displayName: Prometheus
-  ##  Is this CRD namespaced?
-  #   namespaced: true
-
-## Metrics Scraper
-## Container to scrape, store, and retrieve a window of time from the Metrics Server.
-## refs: https://github.com/kubernetes-sigs/dashboard-metrics-scraper
 metricsScraper:
   ## Wether to enable dashboard-metrics-scraper
   enabled: false
