@@ -173,8 +173,8 @@ module "eks-addons" {
     private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
-    ingress_class_name                  = "nginx" 
-    enable_service_monitor              = false                         # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
+    ingress_class_name                  = "nginx"                          # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
+    enable_service_monitor              = false                         
   }
 
   ## ArgoCD
