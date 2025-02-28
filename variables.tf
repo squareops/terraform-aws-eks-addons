@@ -520,17 +520,21 @@ variable "kubernetes_dashboard_enabled" {
 variable "kubernetes_dashboard_config" {
   description = "Specify all the configuration setup here"
   type = object({
+    k8s_dashboard_hostname              = string
+    values_yaml                         = any
+    enable_service_monitor              = bool
     k8s_dashboard_ingress_load_balancer = string
     alb_acm_certificate_arn             = string
-    k8s_dashboard_hostname              = string
     private_alb_enabled                 = bool
     ingress_class_name                  = string
   })
 
   default = {
+    k8s_dashboard_hostname              = ""
+    values_yaml                         = {}
+    enable_service_monitor              = false
     k8s_dashboard_ingress_load_balancer = ""
     alb_acm_certificate_arn             = ""
-    k8s_dashboard_hostname              = ""
     private_alb_enabled                 = false
     ingress_class_name                  = ""
   }
