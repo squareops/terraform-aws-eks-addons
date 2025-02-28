@@ -23,7 +23,7 @@ locals {
 
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.0.2"
+  version              = "4.1.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -38,7 +38,7 @@ module "eks-addons" {
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
-  amazon_eks_vpc_cni_enabled = true # enable VPC-CNI
+  amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
   vpc_cni_version            = "v1.19.2-eksbuild.1"
 
   #EBS-CSI-DRIVER
@@ -168,11 +168,13 @@ module "eks-addons" {
   kubernetes_dashboard_enabled = false
   kubernetes_dashboard_version = "6.0.8"
   kubernetes_dashboard_config = {
+    values_yaml                         = file("${path.module}/config/kubernetes-dashboard.yaml")
     k8s_dashboard_ingress_load_balancer = "nlb"                            # Pass either "nlb/alb" to choose load balancer controller as ingress-nginx controller or ALB controller
     private_alb_enabled                 = false                            # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together
     alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
     ingress_class_name                  = "nginx"                          # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
+    enable_service_monitor              = false                         
   }
 
   ## ArgoCD
