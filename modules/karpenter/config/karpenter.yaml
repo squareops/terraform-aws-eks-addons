@@ -4,8 +4,13 @@ nodeSelector:
 settings:
   clusterName: ${eks_cluster_id}
   clusterEndpoint: ${eks_cluster_endpoint}
+  eksControlPlane: false
+  featureGates:
+    spotToSpotConsolidation: true
+    nodeRepair: true
 
 controller:
+  containerName: controller
   resources:
     requests:
       cpu: 50m
@@ -30,3 +35,9 @@ affinity:
 serviceMonitor:
   # -- Specifies whether a ServiceMonitor should be created.
   enabled: ${enable_service_monitor}
+
+service:
+  # -- Additional annotations for the Service.
+  annotations: {}
+
+schedulerName: default-scheduler

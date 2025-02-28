@@ -1,4 +1,5 @@
 controller:
+  containerName: controller
   resources:
     requests:
       cpu: 50m
@@ -16,3 +17,17 @@ affinity:
           operator: In
           values:
           - "true"
+
+settings:
+  clusterName: ${eks_cluster_id}
+  clusterEndpoint: ${eks_cluster_endpoint}
+  eksControlPlane: false
+  featureGates:
+    spotToSpotConsolidation: true
+    nodeRepair: true
+
+service:
+  # -- Additional annotations for the Service.
+  annotations: {}
+
+schedulerName: default-scheduler

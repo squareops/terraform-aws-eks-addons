@@ -225,6 +225,7 @@ module "karpenter" {
   depends_on                = [module.aws_vpc_cni, module.service-monitor-crd]
   worker_iam_role_name      = var.worker_iam_role_name
   eks_cluster_name          = var.eks_cluster_name
+  chart_version             = var.karpenter_version
   helm_config               = var.karpenter_helm_config
   irsa_policies             = var.karpenter_irsa_policies
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
