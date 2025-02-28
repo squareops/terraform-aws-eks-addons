@@ -235,7 +235,7 @@ module "karpenter" {
   enable_service_monitor    = var.karpenter_helm_config.enable_service_monitor
 }
 
-## KUBERNETES DASHBOARD
+# KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
   source                              = "./modules/kubernetes-dashboard"
   count                               = var.kubernetes_dashboard_enabled ? 1 : 0

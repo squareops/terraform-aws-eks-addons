@@ -1,13 +1,22 @@
+resource "null_resource" "patch_karpenter_crds" {
+  triggers = {
+    karpenter_version = var.chart_version
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      chmod +x ${path.module}/scripts/patch_karpenter_crds.sh
+      bash ${path.module}/scripts/patch_karpenter_crds.sh
+    EOT
+  }
+}
 
 resource "helm_release" "karpenter_crd" {
+  depends_on = [ resource.null_resource.patch_karpenter_crds]  # <-- Ensures order
   name       = "karpenter-crd"
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter-crd"
   version    = var.chart_version  # Ensure this is the correct version
-
-  namespace        = local.name
-  create_namespace = true
-
   description = "Karpenter CRDs"
   set {
     name  = "preDeleteHook"
