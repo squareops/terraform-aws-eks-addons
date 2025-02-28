@@ -91,13 +91,12 @@ module "eks-addons" {
     values = [file("${path.module}/config/keda.yaml")]
   }
 
-  # KARPENTER
+  ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
   karpenter_version = "1.2.1"
   karpenter_helm_config = {
-    values                 = [file("${path.module}/config/karpenter.yaml")]
     enable_service_monitor = false # to enable monitoring for kafalserpenter
-    
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)

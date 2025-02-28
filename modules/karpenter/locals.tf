@@ -38,7 +38,7 @@ locals {
             EOT
       ), local.template_values_map, var.helm_config))]
       description = "karpenter Helm Chart for Node Autoscaling"
-    },
+    }
   )
 
   irsa_config = {
