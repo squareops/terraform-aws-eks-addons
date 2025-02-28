@@ -13,7 +13,7 @@ CRDS=(
 
 # Define Helm release name (should match Terraform Helm release)
 HELM_RELEASE="karpenter-crd"  # Make sure this matches your Helm release name
-KARPENTER_NAMESPACE="karpenter"  # Change if using a different namespace
+KARPENTER_NAMESPACE="default"  # Change if using a different namespace
 
 # Apply Helm labels and annotations if the CRD exists
 for CRD in "${CRDS[@]}"; do
