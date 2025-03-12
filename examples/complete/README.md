@@ -21,7 +21,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | 4.0.2 |
+| <a name="module_eks-addons"></a> [eks-addons](#module\_eks-addons) | squareops/eks-addons/aws | 4.1.1 |
 
 ## Resources
 

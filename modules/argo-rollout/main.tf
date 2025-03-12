@@ -49,7 +49,7 @@ resource "kubernetes_ingress_v1" "argorollout-ingress" {
     name      = "argo-rollouts-dashboard"
     namespace = var.namespace
     annotations = var.argorollout_config.argorollout_ingress_load_balancer == "alb" ? {
-      "kubernetes.io/ingress.class"                    = "alb"
+      "kubernetes.io/ingress.class"                    = var.argorollout_config.ingress_class_name
       "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
       "alb.ingress.kubernetes.io/certificate-arn"      = var.argorollout_config.alb_acm_certificate_arn,

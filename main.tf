@@ -52,7 +52,7 @@ module "aws-efs-filesystem-with-storage-class" {
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   source                        = "./modules/aws-load-balancer-controller"
-  count                         = (var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb") ? 1 : 0
+  count                         = (var.aws_load_balancer_controller_enabled) ? 1 : 0
   helm_config                   = var.aws_load_balancer_controller_helm_config.values
   manage_via_gitops             = var.argocd_manage_add_ons
   addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
@@ -115,7 +115,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
-  ingress_class_name             = var.ingress_nginx_config.ingress_class_name
+  ingress_class_name             = var.cert_manager_helm_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -236,20 +236,20 @@ module "karpenter" {
 
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
-  source                              = "./modules/kubernetes-dashboard"
-  count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
-  addon_version                       = var.kubernetes_dashboard_version
+  source        = "./modules/kubernetes-dashboard"
+  count         = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on    = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
+  addon_version = var.kubernetes_dashboard_version
   kubernetes_dashboard_config = {
-  values_yaml                         = var.kubernetes_dashboard_config.values_yaml
-  k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
-  alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
-  private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
-  ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
-  subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
-  enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
-}
+    values_yaml                         = var.kubernetes_dashboard_config.values_yaml
+    k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
+    alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
+    k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
+    private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
+    ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
+    subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+    enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
+  }
 }
 
 ## KEDA
@@ -335,6 +335,7 @@ module "argocd" {
     autoscaling_enabled          = var.argocd_config.autoscaling_enabled
     slack_notification_token     = var.argocd_config.slack_notification_token
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
+    expose_dashboard             = var.argocd_config.expose_dashboard
     ingress_class_name           = var.argocd_config.ingress_class_name
     argocd_ingress_load_balancer = var.argocd_config.argocd_ingress_load_balancer
     private_alb_enabled          = var.argocd_config.private_alb_enabled
@@ -353,6 +354,7 @@ module "argocd-workflow" {
   argoworkflow_config = {
     values                             = var.argoworkflow_config.values
     hostname                           = var.argoworkflow_config.hostname
+    expose_dashboard                   = var.argoworkflow_config.expose_dashboard
     ingress_class_name                 = var.argoworkflow_config.ingress_class_name
     autoscaling_enabled                = var.argoworkflow_config.autoscaling_enabled
     argoworkflow_ingress_load_balancer = var.argoworkflow_config.argoworkflow_ingress_load_balancer
