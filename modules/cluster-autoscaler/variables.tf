@@ -35,5 +35,5 @@ variable "addon_context" {
 variable "addon_version" {
   description = "Helm chart version of cluster autoscaler"
   type        = string
-  default     = ""
+  default     = "9.46.3"
 }

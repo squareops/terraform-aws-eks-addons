@@ -124,8 +124,7 @@ module "cluster-autoscaler" {
   count               = var.cluster_autoscaler_enabled ? 1 : 0
   eks_cluster_version = local.eks_cluster_version
   helm_config = {
-    version = var.cluster_autoscaler_chart_version
-    values  = var.cluster_autoscaler_helm_config
+    values = var.cluster_autoscaler_helm_config
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context

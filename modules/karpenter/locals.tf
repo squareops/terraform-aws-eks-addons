@@ -10,7 +10,6 @@ locals {
     enable_service_monitor = var.enable_service_monitor
   })
 
-  template_values_map = yamldecode(local.template_values)
   set_values = [{
     name  = "serviceAccount.name"
     value = local.service_account
@@ -24,19 +23,12 @@ locals {
   # https://github.com/aws/karpenter/blob/main/charts/karpenter/Chart.yaml
   helm_config = merge(
     {
-      name       = local.name
-      chart      = local.name
-      repository = "oci://public.ecr.aws/karpenter"
-      version    = var.chart_version
-      namespace  = local.name
-      values = [yamlencode(merge(
-        yamldecode(<<-EOT
-              clusterName: ${var.addon_context.eks_cluster_id}
-              clusterEndpoint: ${var.addon_context.aws_eks_cluster_endpoint}
-              aws:
-                defaultInstanceProfile: ${local.node_iam_instance_profile}
-            EOT
-      ), local.template_values_map, var.karpenter_helm_config))]
+      name        = local.name
+      chart       = local.name
+      repository  = "oci://public.ecr.aws/karpenter"
+      version     = var.chart_version
+      namespace   = local.name
+      values      = [local.template_values, var.helm_config.values]
       description = "karpenter Helm Chart for Node Autoscaling"
     }
   )

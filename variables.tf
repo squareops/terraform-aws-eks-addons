@@ -16,12 +16,6 @@ variable "cluster_autoscaler_enabled" {
   type        = bool
 }
 
-variable "cluster_autoscaler_chart_version" {
-  description = "Version of the cluster autoscaler helm chart"
-  default     = "9.29.0"
-  type        = string
-}
-
 variable "cluster_autoscaler_helm_config" {
   description = "CoreDNS Autoscaler Helm Chart config"
   type        = any
@@ -756,7 +750,7 @@ variable "metrics_server_version" {
 
 variable "cluster_autoscaler_version" {
   description = "Version of the cluster autoscaler addon"
-  default     = "9.37.0"
+  default     = "9.46.3"
   type        = string
 }
 
