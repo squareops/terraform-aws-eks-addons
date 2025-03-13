@@ -36,6 +36,23 @@ variable "subnet_ids" {
 
 variable "addon_version" {
   description = "Helm Chart version for Kubernetes-dashboard"
-  default     = ""
+  default     = "6.0.8"
   type        = string
+}
+
+variable "kubernetes_dashboard_config" {
+  type = any
+  default = {
+    k8s_dashboard_hostname              = ""
+    values_yaml                         = ""
+    ingress_class_name                  = ""
+    enable_service_monitor              = ""
+    subnet_ids                          = []
+    alb_acm_certificate_arn             = ""
+    k8s_dashboard_ingress_load_balancer = "nlb"
+    private_alb_enabled                 = false
+
+
+  }
+  description = "Specify the configuration settings for kubernetes-dashboard , including the hostname, and custom YAML values."
 }

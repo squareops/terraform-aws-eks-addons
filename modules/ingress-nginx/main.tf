@@ -12,9 +12,6 @@ locals {
     nlb_subnets            = join(",", var.subnet_ids)
     additional_tags        = local.additional_tags # Pass the dynamically created string
   })
-
-  # Convert the template values to a map
-  template_values_map = yamldecode(local.template_values)
 }
 
 # Namespace creation
@@ -37,7 +34,7 @@ module "helm_addon" {
       version     = var.addon_version
       namespace   = var.namespace
       description = "The NGINX HelmChart Ingress Controller deployment configuration"
-      values      = [yamlencode(merge(local.template_values_map, var.helm_config))]
+      values      = [local.template_values, var.helm_config.values]
     }
   )
 
