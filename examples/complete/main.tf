@@ -20,10 +20,9 @@ locals {
   private_subnet_ids      = ["subnet-xxxxxx", "subnet-xxxxxx"] # pass Private Subnet IDs
   public_subnet_ids       = ["subnet-xxxxxx", "subnet-xxxxxx"] # pass Public Subnet IDs
 }
-
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.0.2"
+  version              = "4.1.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -38,7 +37,7 @@ module "eks-addons" {
   eks_cluster_name     = data.aws_eks_cluster.cluster.name
 
   #VPC-CNI-DRIVER
-  amazon_eks_vpc_cni_enabled = true # enable VPC-CNI
+  amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
   vpc_cni_version            = "v1.19.2-eksbuild.1"
 
   #EBS-CSI-DRIVER
@@ -96,9 +95,8 @@ module "eks-addons" {
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
   karpenter_version = "1.2.1"
   karpenter_helm_config = {
-    values                 = [file("${path.module}/config/karpenter.yaml")]
     enable_service_monitor = false # to enable monitoring for kafalserpenter
-    
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)
