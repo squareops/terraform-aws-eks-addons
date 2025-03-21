@@ -768,7 +768,7 @@ variable "keda_version" {
 
 variable "karpenter_version" {
   description = "Version of the karpenter addon"
-  default     = "1.2.1"
+  default     = "1.3.1"
   type        = string
 }
 

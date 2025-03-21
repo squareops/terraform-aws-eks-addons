@@ -34,7 +34,7 @@ module "helm_addon" {
       version     = var.addon_version
       namespace   = var.namespace
       description = "The NGINX HelmChart Ingress Controller deployment configuration"
-      values      = [local.template_values, var.helm_config.values]
+      values      = [local.template_values, var.helm_config.values[0]]
     }
   )
 

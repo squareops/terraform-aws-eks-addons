@@ -13,7 +13,10 @@ locals {
 
   helm_config = merge(
     local.default_helm_config,
-    var.helm_config
+    var.helm_config,
+    {
+      values = [file("${path.module}/config/metrics_server.yaml"), var.helm_config.values[0]]
+    }
   )
 
   argocd_gitops_config = {

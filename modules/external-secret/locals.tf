@@ -2,6 +2,8 @@ locals {
   name            = "external-secrets"
   service_account = try(var.helm_config.service_account, "${local.name}-sa")
 
+  template_values = templatefile("${path.module}/config/external-secret.yaml", {})
+
   # https://github.com/external-secrets/external-secrets/blob/main/deploy/charts/external-secrets/Chart.yaml
   helm_config = merge(
     {
@@ -12,7 +14,10 @@ locals {
       namespace   = local.name
       description = "The External Secrets Operator Helm chart default configuration"
     },
-    var.helm_config
+    var.helm_config,
+    {
+      values = [local.template_values, var.helm_config.values[0]]
+    }
   )
 
   set_values = [

@@ -2,7 +2,7 @@ locals {
   name      = "cluster-proportional-autoscaler"
   namespace = "kube-system"
 
-  default_helm_values = [templatefile("${path.module}/config/values.yaml", {})]
+  default_helm_values = templatefile("${path.module}/config/values.yaml", {})
 
   default_helm_config = {
     name        = local.name
@@ -18,10 +18,10 @@ locals {
     local.default_helm_config,
     var.helm_config,
     {
-      values = concat(
+      values = [
         local.default_helm_values, # Values from config folder
-        var.helm_config.values     # Values from the variable
-      )
+        var.helm_config.values[0]  # Values from the variable
+      ]
     }
   )
 }

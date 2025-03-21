@@ -28,7 +28,7 @@ locals {
       repository  = "oci://public.ecr.aws/karpenter"
       version     = var.chart_version
       namespace   = local.name
-      values      = [local.template_values, var.helm_config.values]
+      values      = [local.template_values, var.helm_config.values[0]]
       description = "karpenter Helm Chart for Node Autoscaling"
     }
   )

@@ -73,7 +73,7 @@ module "eks-addons" {
   ## CLUSTER-AUTOSCALER
   cluster_autoscaler_enabled     = false # to enable cluster autoscaller
   cluster_autoscaler_version     = "9.46.3"
-  cluster_autoscaler_helm_config = file("${path.module}/config/cluster-autoscaler.yaml")
+  cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
 
   ## NODE-TERMINATION-HANDLER
   aws_node_termination_handler_enabled = false # to enable node termination handler
@@ -93,10 +93,10 @@ module "eks-addons" {
 
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
-  karpenter_version = "1.2.1"
+  karpenter_version = "1.3.1"
   karpenter_helm_config = {
     enable_service_monitor = false # to enable monitoring for kafalserpenter
-    values                 = file("${path.module}/config/karpenter.yaml")
+    values                 = [file("${path.module}/config/karpenter.yaml")]
   }
 
   ## coreDNS-HPA (cluster-proportional-autoscaler)
@@ -139,7 +139,7 @@ module "eks-addons" {
   ingress_nginx_enabled = false # to enable ingress nginx
   ingress_nginx_version = "4.11.0"
   ingress_nginx_config = {
-    values                 = file("${path.module}/config/ingress-nginx.yaml")
+    values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
     ingress_class_name     = "nginx" # enter ingress class name according to your requirement
     namespace              = "nginx" # enter namespace according to the requirement
@@ -149,7 +149,7 @@ module "eks-addons" {
   private_ingress_nginx_enabled = false # to enable Internal (Private) Ingress
   private_ingress_nginx_version = "4.11.0"
   private_ingress_nginx_config = {
-    values                 = file("${path.module}/config/ingress-nginx.yaml")
+    values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false           # enable monitoring in nginx ingress
     ingress_class_name     = "private-nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress")
     namespace              = "private-nginx" # enter namespace according to the requirement (example: "nginx", "internal-ingress")

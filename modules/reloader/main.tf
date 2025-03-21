@@ -5,6 +5,10 @@ locals {
     enable             = true
     serviceAccountName = local.name
   }
+
+  template_values = templatefile("${path.module}/config/reloader.yaml", {
+    enable_service_monitor = var.helm_config.enable_service_monitor
+  })
 }
 
 module "helm_addon" {
@@ -21,13 +25,10 @@ module "helm_addon" {
       create_namespace = true
       description      = "Reloader Helm Chart deployment configuration"
     },
+    var.helm_config,
     {
-      values = templatefile("${path.module}/config/reloader.yaml",
-        {
-          enable_service_monitor = var.helm_config.enable_service_monitor
-      })
-    },
-    var.helm_config
+      values = [local.template_values, var.helm_config.values[0]]
+    }
   )
 
   manage_via_gitops = var.manage_via_gitops

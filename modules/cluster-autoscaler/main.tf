@@ -23,7 +23,7 @@ module "helm_addon" {
     repository  = "https://kubernetes.github.io/autoscaler"
     namespace   = local.namespace
     description = "Cluster AutoScaler helm Chart deployment configuration."
-    values      = [local.template_values, var.helm_config.values]
+    values      = [local.template_values, var.helm_config.values[0]]
     }
   )
 
