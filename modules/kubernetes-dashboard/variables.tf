@@ -51,8 +51,6 @@ variable "kubernetes_dashboard_config" {
     alb_acm_certificate_arn             = ""
     k8s_dashboard_ingress_load_balancer = "nlb"
     private_alb_enabled                 = false
-
-
   }
   description = "Specify the configuration settings for kubernetes-dashboard , including the hostname, and custom YAML values."
 }

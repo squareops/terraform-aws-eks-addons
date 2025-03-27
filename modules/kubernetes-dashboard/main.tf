@@ -64,6 +64,8 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       http {
         path {
           path = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path_type = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "Prefix" : "ImplementationSpecific"
+
           backend {
             service {
               name = "kubernetes-dashboard"
