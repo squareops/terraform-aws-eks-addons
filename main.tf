@@ -12,7 +12,7 @@ module "aws-ebs-csi-driver" {
   addon_config = merge(
     {
       kubernetes_version      = local.eks_cluster_version
-      additional_iam_policies = [var.kms_policy_arn]
+      additional_iam_policies = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
@@ -32,7 +32,7 @@ module "aws-efs-csi-driver" {
   source            = "./modules/aws-efs-csi-driver"
   count             = var.efs_storage_class_enabled ? 1 : 0
   helm_config       = var.aws_efs_csi_driver_helm_config
-  irsa_policies     = [var.kms_policy_arn]
+  irsa_policies    = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
   chart_version     = var.efs_version
@@ -45,7 +45,7 @@ module "aws-efs-filesystem-with-storage-class" {
   name        = var.name
   vpc_id      = var.vpc_id
   environment = var.environment
-  kms_key_arn = var.kms_key_arn
+  kms_key_arn = var.kms_key_arn != "" ? var.kms_key_arn : null
   subnets     = var.private_subnet_ids
 }
 
@@ -86,7 +86,7 @@ module "aws_vpc_cni" {
   addon_config = merge(
     {
       kubernetes_version      = local.eks_cluster_version
-      additional_iam_policies = [var.kms_policy_arn]
+      additional_iam_policies = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
       version                 = var.vpc_cni_version
     }
   )
@@ -295,7 +295,7 @@ module "reloader" {
 module "single-az-sc" {
   for_each                             = { for sc in var.single_az_sc_config : sc.name => sc }
   source                               = "./modules/aws-ebs-storage-class"
-  kms_key_id                           = var.kms_key_arn
+  kms_key_id                          = var.kms_key_arn != "" ? var.kms_key_arn : null
   availability_zone                    = each.value.zone
   single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
   single_az_ebs_gp3_storage_class_name = each.value.name
