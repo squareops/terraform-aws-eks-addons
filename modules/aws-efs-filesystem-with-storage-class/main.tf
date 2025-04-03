@@ -20,7 +20,7 @@ resource "aws_efs_file_system" "default" {
   count                           = var.enabled ? 1 : 0
   availability_zone_name          = var.availability_zone_name
   encrypted                       = true
-  kms_key_id                      = var.kms_key_arn
+  kms_key_id                      = var.kms_key_arn != "" ? var.kms_key_arn : null
   performance_mode                = var.performance_mode
   provisioned_throughput_in_mibps = var.provisioned_throughput_in_mibps
   throughput_mode                 = var.throughput_mode
