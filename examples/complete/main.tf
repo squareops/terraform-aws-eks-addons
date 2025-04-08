@@ -39,11 +39,11 @@ module "eks-addons" {
 
   #VPC-CNI-DRIVER
   amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
-  vpc_cni_version            = "v1.19.2-eksbuild.1"
+  vpc_cni_version            = "v1.19.3-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
-  ebs_csi_driver_version               = "v1.36.0-eksbuild.1"
+  ebs_csi_driver_version               = "v1.41.0-eksbuild.1"
   amazon_eks_aws_ebs_csi_driver_config = {
     values = [file("${path.module}/config/ebs-csi.yaml")]
   }

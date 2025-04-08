@@ -740,7 +740,7 @@ variable "vpc_cni_version" {
 
 variable "ebs_csi_driver_version" {
   description = "Version of the ebs csi driver addon"
-  default     = "v1.36.0-eksbuild.1"
+  default     = "v1.41.0-eksbuild.1"
   type        = string
 }
 

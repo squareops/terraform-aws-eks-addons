@@ -27,11 +27,11 @@ module "eks-addons" {
 
   #VPC-CNI-DRIVER
   amazon_eks_vpc_cni_enabled = true # enable VPC-CNI
-  vpc_cni_version            = "v1.19.2-eksbuild.1"
+  vpc_cni_version            = "v1.19.3-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
-  ebs_csi_driver_version               = "v1.36.0-eksbuild.1"
+  ebs_csi_driver_version               = "v1.41.0-eksbuild.1"
   amazon_eks_aws_ebs_csi_driver_config = {
     values = [file("${path.module}/config/ebs-csi.yaml")]
   }
@@ -521,7 +521,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_data_plane_wait_arn"></a> [data\_plane\_wait\_arn](#input\_data\_plane\_wait\_arn) | Addon deployment will not proceed until this value is known. Set to node group/Fargate profile ARN to wait for data plane to be ready before provisioning addons | `string` | `""` | no |
 | <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable defectdojo for service mesh. | `bool` | `false` | no |
 | <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
-| <a name="input_ebs_csi_driver_version"></a> [ebs\_csi\_driver\_version](#input\_ebs\_csi\_driver\_version) | Version of the ebs csi driver addon | `string` | `"v1.36.0-eksbuild.1"` | no |
+| <a name="input_ebs_csi_driver_version"></a> [ebs\_csi\_driver\_version](#input\_ebs\_csi\_driver\_version) | Version of the ebs csi driver addon | `string` | `"v1.41.0-eksbuild.1"` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_efs_version"></a> [efs\_version](#input\_efs\_version) | Version of the efs addon | `string` | `"2.3.2"` | no |
 | <a name="input_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#input\_eks\_cluster\_endpoint) | Endpoint for your Kubernetes API server | `string` | `null` | no |
