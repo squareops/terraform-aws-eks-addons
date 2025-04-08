@@ -20,10 +20,9 @@ locals {
   private_subnet_ids      = ["subnet-xxxxxx", "subnet-xxxxxx"] # pass Private Subnet IDs
   public_subnet_ids       = ["subnet-xxxxxx", "subnet-xxxxxx"] # pass Public Subnet IDs
 }
-
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.1.0"
+  version              = "4.2.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -73,7 +72,7 @@ module "eks-addons" {
 
   ## CLUSTER-AUTOSCALER
   cluster_autoscaler_enabled     = false # to enable cluster autoscaller
-  cluster_autoscaler_version     = "9.37.0"
+  cluster_autoscaler_version     = "9.46.3"
   cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
 
   ## NODE-TERMINATION-HANDLER
@@ -94,7 +93,7 @@ module "eks-addons" {
 
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
-  karpenter_version = "1.0.6"
+  karpenter_version = "1.3.1"
   karpenter_helm_config = {
     enable_service_monitor = false # to enable monitoring for kafalserpenter
     values                 = [file("${path.module}/config/karpenter.yaml")]
@@ -124,6 +123,7 @@ module "eks-addons" {
   cert_manager_helm_config = {
     values                         = [file("${path.module}/config/cert-manager.yaml")]
     enable_service_monitor         = false # to enable monitoring for Cert Manager
+    ingress_class_name             = "nginx"
     cert_manager_letsencrypt_email = "email@email.com"
   }
 
@@ -174,7 +174,7 @@ module "eks-addons" {
     alb_acm_certificate_arn             = ""                               # If using ALB in above parameter, ensure you provide the ACM certificate ARN for SSL.
     k8s_dashboard_hostname              = "k8s-dashboard.rnd.squareops.in" # Enter Hostname
     ingress_class_name                  = "nginx"                          # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
-    enable_service_monitor              = false                         
+    enable_service_monitor              = false
   }
 
   ## ArgoCD
@@ -182,6 +182,7 @@ module "eks-addons" {
   argocd_version = "7.3.11"
   argocd_config = {
     hostname                     = "argocd.rnd.squareops.in"
+    expose_dashboard             = true
     values_yaml                  = file("${path.module}/config/argocd.yaml")
     namespace                    = local.argocd_namespace
     redis_ha_enabled             = true
@@ -205,6 +206,7 @@ module "eks-addons" {
     namespace                          = local.argocd_namespace
     autoscaling_enabled                = true
     hostname                           = "argoworkflow.rnd.squareops.in"
+    expose_dashboard                   = true
     ingress_class_name                 = "nginx" # For public nlb use "nginx", for private NLB use "private-nginx", For ALB, use "alb"
     argoworkflow_ingress_load_balancer = "nlb"   # Pass either "nlb/alb" to choose load balancer controller as ingress-nginx controller or ALB controller
     private_alb_enabled                = "false" # to enable Internal (Private) ALB , set this and aws_load_balancer_controller_enabled "true" together

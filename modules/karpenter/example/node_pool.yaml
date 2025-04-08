@@ -6,7 +6,7 @@ spec:
   template:
     metadata:
       labels:
-        Monitor-Services: "true" # Enter your Labels here
+        Monitoring-Services: "true" # Enter your Labels here
         managedBy: karpenter
         nodepool: node-pool # Change name as NodePool name
       # annotations:

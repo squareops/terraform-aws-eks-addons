@@ -16,12 +16,6 @@ variable "cluster_autoscaler_enabled" {
   type        = bool
 }
 
-variable "cluster_autoscaler_chart_version" {
-  description = "Version of the cluster autoscaler helm chart"
-  default     = "9.29.0"
-  type        = string
-}
-
 variable "cluster_autoscaler_helm_config" {
   description = "CoreDNS Autoscaler Helm Chart config"
   type        = any
@@ -554,6 +548,7 @@ variable "argocd_config" {
     autoscaling_enabled          = bool
     slack_notification_token     = string
     argocd_notifications_enabled = bool
+    expose_dashboard             = bool
     ingress_class_name           = string
     namespace                    = string
     argocd_ingress_load_balancer = string
@@ -568,6 +563,7 @@ variable "argocd_config" {
     autoscaling_enabled          = false
     slack_notification_token     = ""
     argocd_notifications_enabled = false
+    expose_dashboard             = true
     ingress_class_name           = ""
     argocd_ingress_load_balancer = "nlb"
     namespace                    = "argocd"
@@ -587,6 +583,7 @@ variable "argoworkflow_config" {
     values                             = any
     namespace                          = string
     hostname                           = string
+    expose_dashboard                   = bool
     ingress_class_name                 = string
     autoscaling_enabled                = bool
     argoworkflow_ingress_load_balancer = string
@@ -598,6 +595,7 @@ variable "argoworkflow_config" {
     values                             = {}
     namespace                          = "argocd"
     hostname                           = ""
+    expose_dashboard                   = true
     ingress_class_name                 = ""
     autoscaling_enabled                = true
     argoworkflow_ingress_load_balancer = "nlb"
@@ -752,7 +750,7 @@ variable "metrics_server_version" {
 
 variable "cluster_autoscaler_version" {
   description = "Version of the cluster autoscaler addon"
-  default     = "9.37.0"
+  default     = "9.46.3"
   type        = string
 }
 
@@ -770,7 +768,7 @@ variable "keda_version" {
 
 variable "karpenter_version" {
   description = "Version of the karpenter addon"
-  default     = "1.0.6"
+  default     = "1.3.1"
   type        = string
 }
 

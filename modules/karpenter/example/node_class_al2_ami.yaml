@@ -29,8 +29,13 @@ spec:
   amiSelectorTerms:
     - owner: "602401143452"
       # name: "amazon-eks-arm64-node-1.30-v*"  # Use this for ARM images, update K8s version as required. Use format "amazon-eks-arm64-node-"+k8s version+"-v*"
-      name: amazon-eks-node-1.30-v*  # Use this for AMD images update K8s version as required. Use format "amazon-eks-node-"+k8s version+"-v*"
+      name: amazon-eks-node-1.32-v*  # Use this for AMD images update K8s version as required. Use format "amazon-eks-node-"+k8s version+"-v*"
 
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2 # This is changed to disable IMDS access from containers not on the host network
+    httpTokens: optional
 
   # Optional, configures storage devices for the instance
   blockDeviceMappings:

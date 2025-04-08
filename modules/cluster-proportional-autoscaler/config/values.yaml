@@ -14,7 +14,7 @@ config:
 # Target to scale. In format: deployment/*, replicationcontroller/* or replicaset/* (not case sensitive).
 # The following option should be defined in user defined values.yaml using var.helm_config
 options:
- target: deployment/coredns
+  target: deployment/coredns
 
 podAnnotations:
   co.elastic.logs/enabled: "true"
@@ -29,12 +29,12 @@ nodeSelector:
   kubernetes.io/os: linux
 
 resources:
-   limits:
-     cpu: 100m
-     memory: 128Mi
-   requests:
-     cpu: 100m
-     memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 tolerations:
   - key: "CriticalAddonsOnly"

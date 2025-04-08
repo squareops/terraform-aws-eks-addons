@@ -4,12 +4,6 @@ variable "helm_config" {
   default     = {}
 }
 
-variable "karpenter_helm_config" {
-  description = "Helm provider config for the Karpenter"
-  type        = any
-  default     = {}
-}
-
 variable "irsa_policies" {
   description = "Additional IAM policies for a IAM role for service accounts"
   type        = list(string)
@@ -66,7 +60,7 @@ variable "kms_key_arn" {
 variable "chart_version" {
   description = "Helm cart version for karpenter CRDs"
   type        = string
-  default     = "1.0.6"
+  default     = "1.3.1"
 }
 
 variable "enable_service_monitor" {

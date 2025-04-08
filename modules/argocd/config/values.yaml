@@ -160,6 +160,24 @@ redis-ha:
   hardAntiAffinity: false
   haproxy:
     hardAntiAffinity: false
+    affinity: |
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: Addons-Services
+              operator: In
+              values:
+              - "true"
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: Addons-Services
+            operator: In
+            values:
+            - "true"
 
 ## Notifications controller
 notifications:

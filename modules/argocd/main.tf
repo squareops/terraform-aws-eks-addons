@@ -32,6 +32,7 @@ data "kubernetes_secret" "argocd-secret" {
 }
 
 resource "kubernetes_ingress_v1" "argocd-ingress" {
+  count                  = var.argocd_config.expose_dashboard ? 1 : 0
   depends_on             = [helm_release.argocd_deploy]
   wait_for_load_balancer = true
 
@@ -39,7 +40,7 @@ resource "kubernetes_ingress_v1" "argocd-ingress" {
     name      = "argocd-ingress"
     namespace = var.namespace
     annotations = var.argocd_config.argocd_ingress_load_balancer == "alb" ? {
-      "kubernetes.io/ingress.class"                    = "alb"
+      "kubernetes.io/ingress.class"                    = var.argocd_config.ingress_class_name
       "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
       "alb.ingress.kubernetes.io/certificate-arn"      = var.argocd_config.alb_acm_certificate_arn

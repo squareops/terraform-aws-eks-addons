@@ -43,11 +43,14 @@ variable "addon_version" {
 variable "kubernetes_dashboard_config" {
   type = any
   default = {
-    hostname                     = ""
-    values_yaml                  = ""
-    ingress_class_name           = ""
-    enable_service_monitor       = ""
-    subnet_ids                   = []
+    k8s_dashboard_hostname              = ""
+    values_yaml                         = ""
+    ingress_class_name                  = ""
+    enable_service_monitor              = ""
+    subnet_ids                          = []
+    alb_acm_certificate_arn             = ""
+    k8s_dashboard_ingress_load_balancer = "nlb"
+    private_alb_enabled                 = false
   }
   description = "Specify the configuration settings for kubernetes-dashboard , including the hostname, and custom YAML values."
 }

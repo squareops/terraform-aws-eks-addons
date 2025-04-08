@@ -16,11 +16,11 @@ resource "helm_release" "kubernetes-dashboard" {
   repository = "https://kubernetes.github.io/dashboard/"
   timeout    = 600
   version    = var.addon_version
-   values = [
+  values = [
     templatefile("${path.module}/config/values.yaml", {
-      hostname                  = var.kubernetes_dashboard_config.k8s_dashboard_hostname
-      ingress_class_name        = var.kubernetes_dashboard_config.ingress_class_name
-      enable_service_monitor    = var.kubernetes_dashboard_config.enable_service_monitor
+      hostname               = var.kubernetes_dashboard_config.k8s_dashboard_hostname
+      ingress_class_name     = var.kubernetes_dashboard_config.ingress_class_name
+      enable_service_monitor = var.kubernetes_dashboard_config.enable_service_monitor
     }),
     var.kubernetes_dashboard_config.values_yaml
   ]
@@ -32,11 +32,11 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
   metadata {
     name      = "k8s-dashboard-ingress"
     namespace = "kubernetes-dashboard"
-    annotations = var.k8s_dashboard_ingress_load_balancer == "alb" ? {
-      "kubernetes.io/ingress.class"                    = "alb"
+    annotations = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? {
+      "kubernetes.io/ingress.class"                    = var.kubernetes_dashboard_config.ingress_class_name
       "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
-      "alb.ingress.kubernetes.io/certificate-arn"      = var.kubernetes_dashboard_config.alb_acm_certificate_arn,
+      "alb.ingress.kubernetes.io/certificate-arn"      = var.kubernetes_dashboard_config.alb_acm_certificate_arn
       "alb.ingress.kubernetes.io/healthcheck-path"     = "/"
       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTPS"
       "alb.ingress.kubernetes.io/backend-protocol"     = "HTTPS"
@@ -63,7 +63,9 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       host = var.kubernetes_dashboard_config.k8s_dashboard_hostname
       http {
         path {
-          path      = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "/" : "/dashboard(/|$)(.*)"
+          path_type = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer == "alb" ? "Prefix" : "ImplementationSpecific"
+
           backend {
             service {
               name = "kubernetes-dashboard"

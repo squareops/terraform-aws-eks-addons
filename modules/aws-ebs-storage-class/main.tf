@@ -11,7 +11,7 @@ resource "kubernetes_storage_class_v1" "single_az_sc" {
     {
       type      = "gp3"
       encrypted = true
-      kmskeyId  = var.kms_key_id
+      kmskeyId  = var.kms_key_id != "" ? var.kms_key_id : null
       zone      = var.availability_zone
     },
     { for k, v in var.tags_all : "tagSpecification_${k}" => "${k}=${v}" }

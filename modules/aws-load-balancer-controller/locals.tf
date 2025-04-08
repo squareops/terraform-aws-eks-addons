@@ -3,25 +3,15 @@ locals {
   service_account = try(var.helm_config.service_account, "${local.name}-sa")
   namespace       = var.namespace
   # https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/Chart.yaml
-  default_helm_config = {
+  helm_config = {
     name             = var.load_balancer_controller_name
     namespace        = var.namespace
     create_namespace = true
     chart            = "aws-load-balancer-controller"
     repository       = "https://aws.github.io/eks-charts"
     version          = var.addon_version
-    values           = [yamlencode(merge(local.default_helm_values_map, local.helm_config_map))]
+    values           = [local.default_helm_values[0], var.helm_config[0]]
     description      = "aws-load-balancer-controller Helm Chart for ingress resources"
-  }
-
-  helm_config = merge(
-    local.default_helm_config
-  )
-
-  # Decode and merge helm_config safely
-  helm_config_map = length(var.helm_config) > 0 && can(yamldecode(var.helm_config[0])) ? yamldecode(var.helm_config[0]) : {
-    affinity  = {}
-    resources = {}
   }
 
   default_helm_values = [templatefile("${path.module}/config/values.yaml", {
@@ -32,8 +22,6 @@ locals {
     sa_name                       = local.service_account
     namespace                     = var.namespace
   })]
-
-  default_helm_values_map = yamldecode(local.default_helm_values[0])
 
   set_values = concat(
     [

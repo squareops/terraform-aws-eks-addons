@@ -18,15 +18,11 @@ locals {
     enable_service_monitor = var.helm_config.enable_service_monitor
   })
 
-  template_values_map = yamldecode(local.default_helm_values)
-  external_values_map = yamldecode(var.helm_config.values[0])
-  helm_config_values  = yamlencode(merge(local.template_values_map, local.external_values_map))
-
   helm_config = merge(
     local.default_helm_config,
     var.helm_config,
     {
-      values = [local.helm_config_values]
+      values = [local.default_helm_values, var.helm_config.values[0]]
     }
   )
 

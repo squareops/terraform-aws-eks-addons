@@ -45,11 +45,12 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_addon_version"></a> [addon\_version](#input\_addon\_version) | Helm Chart version for Kubernetes-dashboard | `string` | `""` | no |
+| <a name="input_addon_version"></a> [addon\_version](#input\_addon\_version) | Helm Chart version for Kubernetes-dashboard | `string` | `"6.0.8"` | no |
 | <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
 | <a name="input_ingress_class_name"></a> [ingress\_class\_name](#input\_ingress\_class\_name) | resource name for nginx and internal nginx | `any` | `""` | no |
 | <a name="input_k8s_dashboard_hostname"></a> [k8s\_dashboard\_hostname](#input\_k8s\_dashboard\_hostname) | Specify the hostname for the k8s dashboard. | `string` | `""` | no |
 | <a name="input_k8s_dashboard_ingress_load_balancer"></a> [k8s\_dashboard\_ingress\_load\_balancer](#input\_k8s\_dashboard\_ingress\_load\_balancer) | Controls whether to enable ALB Ingress or not. | `string` | `"nlb"` | no |
+| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify the configuration settings for kubernetes-dashboard , including the hostname, and custom YAML values. | `any` | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "enable_service_monitor": "",<br>  "ingress_class_name": "",<br>  "k8s_dashboard_hostname": "",<br>  "k8s_dashboard_ingress_load_balancer": "nlb",<br>  "private_alb_enabled": false,<br>  "subnet_ids": [],<br>  "values_yaml": ""<br>}</pre> | no |
 | <a name="input_private_alb_enabled"></a> [private\_alb\_enabled](#input\_private\_alb\_enabled) | Specify if require private load balancer | `bool` | `false` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs required for load balancers | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 
