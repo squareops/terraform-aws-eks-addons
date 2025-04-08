@@ -88,13 +88,14 @@ resource "kubernetes_secret" "argo_workflow_token_secret" {
 }
 
 resource "kubernetes_ingress_v1" "argoworkflow-ingress" {
+  count                  = var.argoworkflow_config.expose_dashboard ? 1 : 0
   depends_on             = [helm_release.argo_workflow]
   wait_for_load_balancer = true
   metadata {
     name      = "argoworkflow-ingress"
     namespace = var.namespace
     annotations = var.argoworkflow_config.argoworkflow_ingress_load_balancer == "alb" ? {
-      "kubernetes.io/ingress.class"                    = "alb"
+      "kubernetes.io/ingress.class"                    = var.argoworkflow_config.ingress_class_name
       "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme
       "alb.ingress.kubernetes.io/target-type"          = "ip"
       "alb.ingress.kubernetes.io/certificate-arn"      = var.argoworkflow_config.alb_acm_certificate_arn,

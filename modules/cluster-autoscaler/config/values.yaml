@@ -1,17 +1,78 @@
+## Node affinity for particular node in which labels key is "Addons-Services" and value is "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+
+podAnnotations:
+  co.elastic.logs/enabled: "true"
+
+## Extra Arguments for cluster autoscaler
+
+extraArgs:
+  logtostderr: true
+  stderrthreshold: info
+  v: 4
+  skip-nodes-with-local-storage: false
+  expander: least-waste
+  scale-down-enabled: true
+  balance-similar-node-groups: true
+  min-replica-count: 0
+  scale-down-utilization-threshold: 0.4
+  skip-nodes-with-system-pods: true
+  aws-use-static-instance-list: true
+
+# awsRegion -- AWS region (required if `cloudProvider=aws`)
 awsRegion: ${aws_region}
 
 autoDiscovery:
   clusterName: ${eks_cluster_id}
-extraArgs:
-  aws-use-static-instance-list: true
+  namespace:  # default
 
-image:
-  tag: ${image_tag}
+  # autoDiscovery.tags -- ASG tags to match, run through `tpl`.
+  tags:
+    - k8s.io/cluster-autoscaler/enabled
+    - k8s.io/cluster-autoscaler/{{ .Values.autoDiscovery.clusterName }}
+  # - kubernetes.io/cluster/{{ .Values.autoDiscovery.clusterName }}
 
+  # autoDiscovery.roles -- Magnum node group roles to match.
+  roles:
+    - worker
+
+  # autoDiscovery.labels -- Cluster-API labels to match  https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/clusterapi/README.md#configuring-node-group-auto-discovery
+  labels: []
+    # - color: green
+    # - shape: circle
+
+cloudProvider: aws
+
+# resources -- Pod resource requests and limits.
 resources:
   limits:
-    cpu: 50m
-    memory: 250Mi
+    cpu: 20m
+    memory: 200Mi
   requests:
-    cpu: 25m
-    memory: 250Mi
+    cpu: 10m
+    memory: 100Mi
+
+image:
+  # image.repository -- Image repository
+  repository: registry.k8s.io/autoscaling/cluster-autoscaler
+  # image.tag -- Image tag
+  tag: ${image_tag}
+
+# replicaCount -- Desired number of pods
+replicaCount: 1
+
+# updateStrategy -- [Deployment update strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+updateStrategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+  type: RollingUpdate

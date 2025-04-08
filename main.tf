@@ -12,7 +12,7 @@ module "aws-ebs-csi-driver" {
   addon_config = merge(
     {
       kubernetes_version      = local.eks_cluster_version
-      additional_iam_policies = [var.kms_policy_arn]
+      additional_iam_policies = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
     },
     var.amazon_eks_aws_ebs_csi_driver_config,
   )
@@ -32,7 +32,7 @@ module "aws-efs-csi-driver" {
   source            = "./modules/aws-efs-csi-driver"
   count             = var.efs_storage_class_enabled ? 1 : 0
   helm_config       = var.aws_efs_csi_driver_helm_config
-  irsa_policies     = [var.kms_policy_arn]
+  irsa_policies    = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
   chart_version     = var.efs_version
@@ -45,14 +45,14 @@ module "aws-efs-filesystem-with-storage-class" {
   name        = var.name
   vpc_id      = var.vpc_id
   environment = var.environment
-  kms_key_arn = var.kms_key_arn
+  kms_key_arn = var.kms_key_arn != "" ? var.kms_key_arn : null
   subnets     = var.private_subnet_ids
 }
 
 ## LOAD BALANCER CONTROLLER
 module "aws-load-balancer-controller" {
   source                        = "./modules/aws-load-balancer-controller"
-  count                         = (var.aws_load_balancer_controller_enabled || var.k8s_dashboard_ingress_load_balancer == "alb") ? 1 : 0
+  count                         = (var.aws_load_balancer_controller_enabled) ? 1 : 0
   helm_config                   = var.aws_load_balancer_controller_helm_config.values
   manage_via_gitops             = var.argocd_manage_add_ons
   addon_context                 = merge(local.addon_context, { default_repository = local.amazon_container_image_registry_uris[data.aws_region.current.name] })
@@ -86,7 +86,7 @@ module "aws_vpc_cni" {
   addon_config = merge(
     {
       kubernetes_version      = local.eks_cluster_version
-      additional_iam_policies = [var.kms_policy_arn]
+      additional_iam_policies = var.kms_policy_arn != "" ? [var.kms_policy_arn] : []
       version                 = var.vpc_cni_version
     }
   )
@@ -115,7 +115,7 @@ module "cert-manager-le-http-issuer" {
   count                          = var.cert_manager_enabled ? 1 : 0
   depends_on                     = [module.cert-manager]
   cert_manager_letsencrypt_email = var.cert_manager_helm_config.cert_manager_letsencrypt_email
-  ingress_class_name             = var.ingress_nginx_config.ingress_class_name
+  ingress_class_name             = var.cert_manager_helm_config.ingress_class_name
 }
 
 ## CLUSTER AUTOSCALER
@@ -124,8 +124,7 @@ module "cluster-autoscaler" {
   count               = var.cluster_autoscaler_enabled ? 1 : 0
   eks_cluster_version = local.eks_cluster_version
   helm_config = {
-    version = var.cluster_autoscaler_chart_version
-    values  = var.cluster_autoscaler_helm_config
+    values = var.cluster_autoscaler_helm_config
   }
   manage_via_gitops = var.argocd_manage_add_ons
   addon_context     = local.addon_context
@@ -225,6 +224,7 @@ module "karpenter" {
   depends_on                = [module.aws_vpc_cni, module.service-monitor-crd]
   worker_iam_role_name      = var.worker_iam_role_name
   eks_cluster_name          = var.eks_cluster_name
+  chart_version             = var.karpenter_version
   helm_config               = var.karpenter_helm_config
   irsa_policies             = var.karpenter_irsa_policies
   node_iam_instance_profile = var.karpenter_node_iam_instance_profile
@@ -236,20 +236,20 @@ module "karpenter" {
 
 ## KUBERNETES DASHBOARD
 module "kubernetes-dashboard" {
-  source                              = "./modules/kubernetes-dashboard"
-  count                               = var.kubernetes_dashboard_enabled ? 1 : 0
-  depends_on                          = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
-  addon_version                       = var.kubernetes_dashboard_version
+  source        = "./modules/kubernetes-dashboard"
+  count         = var.kubernetes_dashboard_enabled ? 1 : 0
+  depends_on    = [module.cert-manager-le-http-issuer, module.ingress-nginx, module.private-ingress-nginx, module.aws-load-balancer-controller]
+  addon_version = var.kubernetes_dashboard_version
   kubernetes_dashboard_config = {
-  values_yaml                         = var.kubernetes_dashboard_config.values_yaml
-  k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
-  alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
-  k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
-  private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
-  ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
-  subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
-  enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
-}
+    values_yaml                         = var.kubernetes_dashboard_config.values_yaml
+    k8s_dashboard_hostname              = var.kubernetes_dashboard_config.k8s_dashboard_hostname
+    alb_acm_certificate_arn             = var.kubernetes_dashboard_config.alb_acm_certificate_arn
+    k8s_dashboard_ingress_load_balancer = var.kubernetes_dashboard_config.k8s_dashboard_ingress_load_balancer
+    private_alb_enabled                 = var.kubernetes_dashboard_config.private_alb_enabled
+    ingress_class_name                  = var.kubernetes_dashboard_config.ingress_class_name
+    subnet_ids                          = var.kubernetes_dashboard_config.private_alb_enabled == true ? var.private_subnet_ids : var.public_subnet_ids
+    enable_service_monitor              = var.kubernetes_dashboard_config.enable_service_monitor
+  }
 }
 
 ## KEDA
@@ -295,7 +295,7 @@ module "reloader" {
 module "single-az-sc" {
   for_each                             = { for sc in var.single_az_sc_config : sc.name => sc }
   source                               = "./modules/aws-ebs-storage-class"
-  kms_key_id                           = var.kms_key_arn
+  kms_key_id                          = var.kms_key_arn != "" ? var.kms_key_arn : null
   availability_zone                    = each.value.zone
   single_az_ebs_gp3_storage_class      = var.single_az_ebs_gp3_storage_class_enabled
   single_az_ebs_gp3_storage_class_name = each.value.name
@@ -335,6 +335,7 @@ module "argocd" {
     autoscaling_enabled          = var.argocd_config.autoscaling_enabled
     slack_notification_token     = var.argocd_config.slack_notification_token
     argocd_notifications_enabled = var.argocd_config.argocd_notifications_enabled
+    expose_dashboard             = var.argocd_config.expose_dashboard
     ingress_class_name           = var.argocd_config.ingress_class_name
     argocd_ingress_load_balancer = var.argocd_config.argocd_ingress_load_balancer
     private_alb_enabled          = var.argocd_config.private_alb_enabled
@@ -353,6 +354,7 @@ module "argocd-workflow" {
   argoworkflow_config = {
     values                             = var.argoworkflow_config.values
     hostname                           = var.argoworkflow_config.hostname
+    expose_dashboard                   = var.argoworkflow_config.expose_dashboard
     ingress_class_name                 = var.argoworkflow_config.ingress_class_name
     autoscaling_enabled                = var.argoworkflow_config.autoscaling_enabled
     argoworkflow_ingress_load_balancer = var.argoworkflow_config.argoworkflow_ingress_load_balancer

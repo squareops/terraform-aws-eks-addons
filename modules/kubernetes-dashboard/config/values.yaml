@@ -27,13 +27,13 @@ podLabels: {}
 ## @param podAnnotations Annotations for OAuth2 Proxy pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations: 
+podAnnotations:
   co.elastic.logs/enabled: "true"
 
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
-nodeSelector: 
+nodeSelector:
   kubernetes.io/os: linux
 
 ## List of node taints to tolerate (requires Kubernetes >= 1.6)
@@ -83,7 +83,7 @@ service:
     key: "kubernetes.io/cluster-service"
 
 ingress:
-  enabled: true
+  enabled: false
   annotations: {}
   ingressClassName: ${ingress_class_name}
   hostname: ${hostname}
@@ -98,7 +98,7 @@ ingress:
 
 settings:
   {}
- 
+
 ## Pinned CRDs that will be displayed in dashboard's menu
 metricsScraper:
   ## Wether to enable dashboard-metrics-scraper
@@ -107,7 +107,7 @@ metricsScraper:
     repository: kubernetesui/metrics-scraper
     tag: v1.0.9
   resources: {}
-  
+
 metrics-server:
   enabled: false
   ## Example for additional args
@@ -166,4 +166,3 @@ serviceMonitor:
   labels: {}
   ## Here annotations can be added to the serviceMonitor
   annotations: {}
-
