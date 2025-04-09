@@ -4,15 +4,24 @@
 
 image:
   keda:
-    repository: ghcr.io/kedacore/keda
+    # -- Image registry of KEDA operator
+    registry: ghcr.io
+    # -- Image name of KEDA operator
+    repository: kedacore/keda
     # Allows people to override tag if they don't want to use the app version
     tag:
   metricsApiServer:
-    repository: ghcr.io/kedacore/keda-metrics-apiserver
+    # -- Image registry of KEDA Metrics API Server
+    registry: ghcr.io
+    # -- Image name of KEDA Metrics API Server
+    repository: kedacore/keda-metrics-apiserver
     # Allows people to override tag if they don't want to use the app version
     tag:
   webhooks:
-    repository: ghcr.io/kedacore/keda-admission-webhooks
+    # -- Image registry of KEDA admission-webhooks
+    registry: ghcr.io
+    # -- Image name of KEDA admission-webhooks
+    repository: kedacore/keda-admission-webhooks
     # Allows people to override tag if they don't want to use the app version
     tag:
   pullPolicy: Always
@@ -121,22 +130,18 @@ rbac:
   create: true
 
 serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: keda-operator
-  # Specifies whether a service account should automount API-Credentials
-  automountServiceAccountToken: true
-  # Annotations to add to the service account
-  annotations: {}
+  operator:
+    # Specifies whether a service account should be created
+    create: true
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: keda-operator
+    # Specifies whether a service account should automount API-Credentials
+    automountServiceAccountToken: true
+    # Annotations to add to the service account
+    annotations: {}
 
 podIdentity:
-  activeDirectory:
-    # Set to the value of the Azure Active Directory Pod Identity
-    # See https://keda.sh/docs/concepts/authentication/#azure-pod-identity
-    # This will be set as a label on the KEDA Pod(s)
-    identity: ""
   azureWorkload:
     # Set to true to enable Azure Workload Identity usage.
     # See https://keda.sh/docs/concepts/authentication/#azure-workload-identity
@@ -166,7 +171,6 @@ podIdentity:
       # Set to the value of the service account token expiration duration.
       # This will be set as an annotation on the KEDA service account.
       tokenExpiration: 86400
-
 # Set this if you are using an external scaler and want to communicate
 # over TLS (recommended). This variable holds the name of the secret that
 # will be mounted to the /grpccerts path on the Pod
@@ -255,8 +259,6 @@ podSecurityContext:
 
 service:
   type: ClusterIP
-  portHttp: 80
-  portHttpTarget: 8080
   portHttps: 443
   portHttpsTarget: 6443
 
@@ -292,7 +294,6 @@ resources:
 nodeSelector: {}
 
 tolerations: []
-
 # -- Pod Topology Constraints https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
 topologySpreadConstraints: {}
   # operator: []
@@ -349,7 +350,7 @@ volumes:
 prometheus:
   metricServer:
     enabled: false
-    port: 9022
+    port: 8080
     portName: metrics
     path: /metrics
     serviceMonitor:
@@ -359,17 +360,23 @@ prometheus:
       targetLabels: []
       podTargetLabels: []
       port: metrics
-      targetPort:
-      interval:
-      scrapeTimeout:
+      # -- Name or number of the target port of the Pod behind the Service, the port must be specified with container port property. Mutually exclusive with port
+      targetPort: ""
+      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      interval: ""
+      # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
+      scrapeTimeout: ""
       relabellings: []
       additionalLabels: {}
     podMonitor:
       # Enables PodMonitor creation for the Prometheus Operator
       enabled: false
-      interval:
-      scrapeTimeout:
-      namespace:
+      # -- Scraping interval for metric server using podMonitor crd (prometheus operator)
+      interval: ""
+      # -- Scraping timeout for metric server using podMonitor crd (prometheus operator)
+      scrapeTimeout: ""
+      # -- Scraping namespace for metric server using podMonitor crd (prometheus operator)
+      namespace: ""
       additionalLabels: {}
       relabelings: []
   operator:
@@ -382,17 +389,24 @@ prometheus:
       targetLabels: []
       podTargetLabels: []
       port: metrics
-      targetPort:
-      interval:
-      scrapeTimeout:
+      # -- Name or number of the target port of the Pod behind the Service,
+      # the port must be specified with container port property. Mutually exclusive with port
+      targetPort: ""
+      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      interval: ""
+      # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
+      scrapeTimeout: ""
       relabellings: []
       additionalLabels: {}
     podMonitor:
       # Enables PodMonitor creation for the Prometheus Operator
       enabled: false
-      interval:
-      scrapeTimeout:
-      namespace:
+      # -- Scraping interval for KEDA Operator using podMonitor crd (prometheus operator)
+      interval: ""
+      # -- Scraping timeout for KEDA Operator using podMonitor crd (prometheus operator)
+      scrapeTimeout: ""
+      # -- Scraping namespace for KEDA Operator using podMonitor crd (prometheus operator)
+      namespace: ""
       additionalLabels: {}
       relabelings: []
     prometheusRules:
@@ -419,9 +433,12 @@ prometheus:
       targetLabels: []
       podTargetLabels: []
       port: metrics
-      targetPort:
-      interval:
-      scrapeTimeout:
+      # -- Name or number of the target port of the Pod behind the Service, the port must be specified with container port property. Mutually exclusive with port
+      targetPort: ""
+      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      interval: ""
+      # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
+      scrapeTimeout: ""
       relabellings: []
       additionalLabels: {}
     prometheusRules:
