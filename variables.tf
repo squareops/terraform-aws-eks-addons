@@ -744,13 +744,13 @@ variable "ebs_csi_driver_version" {
 
 variable "metrics_server_version" {
   description = "Version of the metrics server addon"
-  default     = "3.12.1"
+  default     = "3.12.2"
   type        = string
 }
 
 variable "cluster_autoscaler_version" {
   description = "Version of the cluster autoscaler addon"
-  default     = "9.46.3"
+  default     = "9.46.6"
   type        = string
 }
 
@@ -762,19 +762,19 @@ variable "aws_node_termination_handler_version" {
 
 variable "keda_version" {
   description = "Version of the keda addon"
-  default     = "2.14.2"
+  default     = "2.17.0"
   type        = string
 }
 
 variable "karpenter_version" {
   description = "Version of the karpenter addon"
-  default     = "1.3.1"
+  default     = "1.3.3"
   type        = string
 }
 
 variable "external_secrets_version" {
   description = "Version of the external secrets addon"
-  default     = "0.9.19"
+  default     = "0.15.1"
   type        = string
 }
 
@@ -846,7 +846,7 @@ variable "falco_version" {
 
 variable "efs_version" {
   description = "Version of the efs addon"
-  default     = "2.3.2"
+  default     = "3.1.8"
   type        = string
 }
 
@@ -858,6 +858,6 @@ variable "vpa_enabled" {
 
 variable "vpa_version" {
   description = "Version of VPA CRD"
-  default     = "9.9.0"
+  default     = "10.0.0"
   type        = string
 }
