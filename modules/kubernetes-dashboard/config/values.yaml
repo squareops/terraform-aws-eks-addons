@@ -1,46 +1,14 @@
-## Number of replicas
-replicaCount: 1
-
-annotations: {}
-## Here labels can be added to the kubernetes dashboard deployment
-
-securityContext:
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
-
-## SecurityContext defaults for the kubernetes dashboard container and metrics scraper container
-## To disable set the following configuration to null:
-# containerSecurityContext: null
-containerSecurityContext:
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  runAsUser: 1001
-  runAsGroup: 2001
-  capabilities:
-    drop: ["ALL"]
-
-## @param podLabels Extra labels for OAuth2 Proxy pods
-## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-##
-podLabels: {}
-## @param podAnnotations Annotations for OAuth2 Proxy pods
-## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-##
-podAnnotations:
-  co.elastic.logs/enabled: "true"
-
-## Node labels for pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelector:
-  kubernetes.io/os: linux
-
-## List of node taints to tolerate (requires Kubernetes >= 1.6)
-tolerations: []
-
-## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-affinity:
+# General configuration shared across resources
+app:
+  # Mode determines if chart should deploy a full Dashboard with all containers or just the API.
+  # - dashboard - deploys all the containers
+  # - api - deploys just the API
+  mode: 'dashboard'
+  scheduling:
+    nodeSelector:
+      kubernetes.io/os: linux
+  tolerations: []
+  affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -50,119 +18,89 @@ affinity:
               values:
               - "true"
 
-## Name of Priority Class of pods
-# priorityClassName: ""
+auth:
+  role: auth
+  scaling:
+    replicas: 1
+    revisionHistoryLimit: 10
+  service:
+    type: ClusterIP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 250m
+        memory: 400Mi
+  nodeSelector:
+      kubernetes.io/os: linux
 
-## Pod resource requests & limits
-resources:
-  requests:
-    cpu: 100m
-    memory: 200Mi
-  limits:
-    cpu: 2
-    memory: 200Mi
+# API deployment configuration
+api:
+  role: api
+  scaling:
+    replicas: 1
+    revisionHistoryLimit: 10
+  service:
+    type: ClusterIP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 250m
+        memory: 400Mi
+  nodeSelector:
+      kubernetes.io/os: linux
 
-## Serve application over HTTP without TLS
-##
-## Note: If set to true, you may want to add --enable-insecure-login to extraArgs
-protocolHttp: false
+# WEB UI deployment configuration
+web:
+  role: web
+  scaling:
+    replicas: 1
+    revisionHistoryLimit: 10
+  service:
+    type: ClusterIP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 250m
+        memory: 400Mi
+  nodeSelector:
+      kubernetes.io/os: linux
 
-service:
-  type: ClusterIP
-  # Dashboard service port
-  externalPort: 443
-  annotations: {}
-
-  ## Here labels can be added to the Kubernetes Dashboard service
-  labels: {}
-
-  ## Enable or disable the kubernetes.io/cluster-service label. Should be disabled for GKE clusters >=1.15.
-  ## Otherwise, the addon manager will presume ownership of the service and try to delete it.
-  clusterServiceLabel:
-    enabled: true
-    key: "kubernetes.io/cluster-service"
-
-ingress:
-  enabled: false
-  annotations: {}
-  ingressClassName: ${ingress_class_name}
-  hostname: ${hostname}
-
-  paths:
-    - /
-  #  - /*
-
-  ## Custom Kubernetes Dashboard Ingress paths. Will override default paths.
-  ##
-  customPaths: []
-
-settings:
-  {}
-
-## Pinned CRDs that will be displayed in dashboard's menu
 metricsScraper:
-  ## Wether to enable dashboard-metrics-scraper
-  enabled: false
-  image:
-    repository: kubernetesui/metrics-scraper
-    tag: v1.0.9
-  resources: {}
+  enabled: true
+  role: metrics-scraper
+  scaling:
+    replicas: 1
+    revisionHistoryLimit: 10
+  service:
+    type: ClusterIP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 250m
+        memory: 400Mi
+  nodeSelector:
+      kubernetes.io/os: linux
+
 
 metrics-server:
   enabled: false
-  ## Example for additional args
-  # args:
-  #  - --kubelet-preferred-address-types=InternalIP
-  #  - --kubelet-insecure-tls
+  args:
+    - --kubelet-preferred-address-types=InternalIP
+    - --kubelet-insecure-tls
 
-rbac:
-  # Specifies whether namespaced RBAC resources (Role, Rolebinding) should be created
-  create: true
-
-  # Specifies whether cluster-wide RBAC resources (ClusterRole, ClusterRolebinding) to access metrics should be created
-  # Independent from rbac.create parameter.
-  clusterRoleMetrics: true
-  clusterReadOnlyRole: false
-
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name:
-
-livenessProbe:
-  # Number of seconds to wait before sending first probe
-  initialDelaySeconds: 30
-  # Number of seconds to wait for probe response
-  timeoutSeconds: 30
-
-## podDisruptionBudget
-## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-podDisruptionBudget:
-  enabled: false
-  ## Minimum available instances; ignored if there is no PodDisruptionBudget
-  minAvailable:
-  ## Maximum unavailable instances; ignored if there is no PodDisruptionBudget
-  maxUnavailable:
-
-
-networkPolicy:
-  # Whether to create a network policy that allows/restricts access to the service
-  enabled: false
-
-  # Whether to set network policy to deny all ingress traffic for the kubernetes-dashboard
-  ingressDenyAll: false
-
-podSecurityPolicy:
-  # Specifies whether a pod security policy should be created
-  enabled: false
-
-serviceMonitor:
-  # Whether or not to create a Prometheus Operator service monitor.
-  enabled: ${enable_service_monitor}
-  ## Here labels can be added to the serviceMonitor
-  labels: {}
-  ## Here annotations can be added to the serviceMonitor
-  annotations: {}
+## Required Kong sub-chart with DBless configuration to act as a gateway
+## for our all containers.
+kong:
+  enabled: true
+  ## Configuration reference: https://docs.konghq.com/gateway/3.6.x/reference/configuration
+  serviceMonitor:
+    # Whether to create a Prometheus Operator service monitor.
+    enabled: ${enable_service_monitor}

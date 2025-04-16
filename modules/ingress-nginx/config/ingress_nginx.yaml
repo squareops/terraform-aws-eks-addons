@@ -59,6 +59,8 @@ controller:
             values:
             - "true"
   allowSnippetAnnotations: true
+  config:
+    annotations-risk-level: "Critical"
 ## Enabling metrics for prometheus monitoring
 
   metrics:
