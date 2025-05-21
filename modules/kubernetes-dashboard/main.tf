@@ -51,8 +51,8 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
       "nginx.ingress.kubernetes.io/backend-protocol"      = "HTTPS"
       "nginx.ingress.kubernetes.io/rewrite-target"        = "/$2"
       "nginx.ingress.kubernetes.io/configuration-snippet" = <<-EOF
-        if ($uri = "/dashboard") {
-          rewrite ^(/dashboard)$ $1/ redirect;
+        if ($request_uri = /) {
+          return 301 /dashboard/;
         }
       EOF
     }
@@ -68,7 +68,7 @@ resource "kubernetes_ingress_v1" "k8s-ingress" {
 
           backend {
             service {
-              name = "kubernetes-dashboard"
+              name = "kubernetes-dashboard-kong-proxy"
               port {
                 number = 443
               }
