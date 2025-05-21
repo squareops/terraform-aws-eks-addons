@@ -27,11 +27,11 @@ module "eks-addons" {
 
   #VPC-CNI-DRIVER
   amazon_eks_vpc_cni_enabled = true # enable VPC-CNI
-  vpc_cni_version            = "v1.19.2-eksbuild.1"
+  vpc_cni_version            = "v1.19.3-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
-  ebs_csi_driver_version               = "v1.36.0-eksbuild.1"
+  ebs_csi_driver_version               = "v1.41.0-eksbuild.1"
   amazon_eks_aws_ebs_csi_driver_config = {
     values = [file("${path.module}/config/ebs-csi.yaml")]
   }
@@ -42,26 +42,26 @@ module "eks-addons" {
 
   ## EfS-STORAGE-CLASS
   efs_storage_class_enabled = false # to enable EBS storage class
-  efs_version               = "2.3.2"
+  efs_version               = "3.1.8"
 
   ## SERVICE-MONITORING-CRDs
   service_monitor_crd_enabled = false # enable service monitor along with K8S-dashboard (required CRD) or when require service monitor in reloader and cert-manager
 
   ## METRIC-SERVER
   metrics_server_enabled     = false # to enable metrics server
-  metrics_server_version     = "3.12.1"
+  metrics_server_version     = "3.12.2"
   metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
 
   # VerticalPodAutoscaler
   vpa_enabled = false
-  vpa_version = "9.9.0"
+  vpa_version = "10.0.0"
   vpa_config = {
     values = [file("${path.module}/config/vpa-crd.yaml")]
   }
 
   ## CLUSTER-AUTOSCALER
   cluster_autoscaler_enabled     = false # to enable cluster autoscaller
-  cluster_autoscaler_version     = "9.37.0"
+  cluster_autoscaler_version     = "9.46.6"
   cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
 
   ## NODE-TERMINATION-HANDLER
@@ -75,14 +75,14 @@ module "eks-addons" {
 
   ## KEDA
   keda_enabled = false # to enable Keda in the EKS cluster
-  keda_version = "2.14.2"
+  keda_version = "2.17.0"
   keda_helm_config = {
     values = [file("${path.module}/config/keda.yaml")]
   }
 
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
-  karpenter_version = "1.0.6"
+  karpenter_version = "1.3.3"
   karpenter_helm_config = {
     enable_service_monitor = false # to enable monitoring for kafalserpenter
     values                 = [file("${path.module}/config/karpenter.yaml")]
@@ -101,7 +101,7 @@ module "eks-addons" {
 
   ## EXTERNAL-SECRETS
   external_secrets_enabled = false # to enable external secrets
-  external_secrets_version = "0.9.19"
+  external_secrets_version = "0.15.1"
   external_secrets_helm_config = {
     values = [file("${path.module}/config/external-secret.yaml")]
   }
@@ -480,20 +480,20 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_alb_acm_certificate_arn"></a> [alb\_acm\_certificate\_arn](#input\_alb\_acm\_certificate\_arn) | ARN of the ACM certificate to be used for ALB Ingress. | `string` | `""` | no |
 | <a name="input_amazon_eks_aws_ebs_csi_driver_config"></a> [amazon\_eks\_aws\_ebs\_csi\_driver\_config](#input\_amazon\_eks\_aws\_ebs\_csi\_driver\_config) | configMap for AWS EBS CSI Driver add-on | `any` | `{}` | no |
 | <a name="input_amazon_eks_vpc_cni_enabled"></a> [amazon\_eks\_vpc\_cni\_enabled](#input\_amazon\_eks\_vpc\_cni\_enabled) | Enable or disable the installation of the Amazon EKS VPC CNI addon. | `bool` | `false` | no |
-| <a name="input_argocd_config"></a> [argocd\_config](#input\_argocd\_config) | n/a | <pre>object({<br>    hostname                     = string<br>    values_yaml                  = any<br>    redis_ha_enabled             = bool<br>    autoscaling_enabled          = bool<br>    slack_notification_token     = string<br>    argocd_notifications_enabled = bool<br>    expose_dashboard             = bool<br>    ingress_class_name           = string<br>    namespace                    = string<br>    argocd_ingress_load_balancer = string<br>    private_alb_enabled          = bool<br>    alb_acm_certificate_arn      = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argocd_ingress_load_balancer": "nlb",<br>  "argocd_notifications_enabled": false,<br>  "autoscaling_enabled": false,<br>  "expose_dashboard": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "redis_ha_enabled": false,<br>  "slack_notification_token": "",<br>  "values_yaml": {}<br>}</pre> | no |
+| <a name="input_argocd_config"></a> [argocd\_config](#input\_argocd\_config) | n/a | <pre>object({<br/>    hostname                     = string<br/>    values_yaml                  = any<br/>    redis_ha_enabled             = bool<br/>    autoscaling_enabled          = bool<br/>    slack_notification_token     = string<br/>    argocd_notifications_enabled = bool<br/>    expose_dashboard             = bool<br/>    ingress_class_name           = string<br/>    namespace                    = string<br/>    argocd_ingress_load_balancer = string<br/>    private_alb_enabled          = bool<br/>    alb_acm_certificate_arn      = string<br/>  })</pre> | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "argocd_ingress_load_balancer": "nlb",<br/>  "argocd_notifications_enabled": false,<br/>  "autoscaling_enabled": false,<br/>  "expose_dashboard": true,<br/>  "hostname": "",<br/>  "ingress_class_name": "",<br/>  "namespace": "argocd",<br/>  "private_alb_enabled": false,<br/>  "redis_ha_enabled": false,<br/>  "slack_notification_token": "",<br/>  "values_yaml": {}<br/>}</pre> | no |
 | <a name="input_argocd_enabled"></a> [argocd\_enabled](#input\_argocd\_enabled) | Determine whether argocd is enabled or not | `bool` | `false` | no |
 | <a name="input_argocd_manage_add_ons"></a> [argocd\_manage\_add\_ons](#input\_argocd\_manage\_add\_ons) | Enable managing add-on configuration via ArgoCD App of Apps | `bool` | `false` | no |
 | <a name="input_argocd_version"></a> [argocd\_version](#input\_argocd\_version) | Version of the argocd addon | `string` | `"7.3.11"` | no |
-| <a name="input_argoproject_config"></a> [argoproject\_config](#input\_argoproject\_config) | n/a | <pre>object({<br>    name = string<br>  })</pre> | <pre>{<br>  "name": ""<br>}</pre> | no |
-| <a name="input_argorollout_config"></a> [argorollout\_config](#input\_argorollout\_config) | n/a | <pre>object({<br>    values                            = any<br>    namespace                         = string<br>    hostname                          = string<br>    ingress_class_name                = string<br>    enable_dashboard                  = bool<br>    argorollout_ingress_load_balancer = string<br>    private_alb_enabled               = bool<br>    alb_acm_certificate_arn           = string<br>    chart_version                     = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argorollout_ingress_load_balancer": "nlb",<br>  "chart_version": "2.38.0",<br>  "enable_dashboard": false,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argoproject_config"></a> [argoproject\_config](#input\_argoproject\_config) | n/a | <pre>object({<br/>    name = string<br/>  })</pre> | <pre>{<br/>  "name": ""<br/>}</pre> | no |
+| <a name="input_argorollout_config"></a> [argorollout\_config](#input\_argorollout\_config) | n/a | <pre>object({<br/>    values                            = any<br/>    namespace                         = string<br/>    hostname                          = string<br/>    ingress_class_name                = string<br/>    enable_dashboard                  = bool<br/>    argorollout_ingress_load_balancer = string<br/>    private_alb_enabled               = bool<br/>    alb_acm_certificate_arn           = string<br/>    chart_version                     = string<br/>  })</pre> | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "argorollout_ingress_load_balancer": "nlb",<br/>  "chart_version": "2.38.0",<br/>  "enable_dashboard": false,<br/>  "hostname": "",<br/>  "ingress_class_name": "",<br/>  "namespace": "argocd",<br/>  "private_alb_enabled": false,<br/>  "values": {}<br/>}</pre> | no |
 | <a name="input_argorollout_enabled"></a> [argorollout\_enabled](#input\_argorollout\_enabled) | Determine whether argo-rollout is enabled or not | `bool` | `false` | no |
-| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br>    values                             = any<br>    namespace                          = string<br>    hostname                           = string<br>    expose_dashboard                   = bool<br>    ingress_class_name                 = string<br>    autoscaling_enabled                = bool<br>    argoworkflow_ingress_load_balancer = string<br>    private_alb_enabled                = bool<br>    alb_acm_certificate_arn            = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "argoworkflow_ingress_load_balancer": "nlb",<br>  "autoscaling_enabled": true,<br>  "expose_dashboard": true,<br>  "hostname": "",<br>  "ingress_class_name": "",<br>  "namespace": "argocd",<br>  "private_alb_enabled": false,<br>  "values": {}<br>}</pre> | no |
+| <a name="input_argoworkflow_config"></a> [argoworkflow\_config](#input\_argoworkflow\_config) | n/a | <pre>object({<br/>    values                             = any<br/>    namespace                          = string<br/>    hostname                           = string<br/>    expose_dashboard                   = bool<br/>    ingress_class_name                 = string<br/>    autoscaling_enabled                = bool<br/>    argoworkflow_ingress_load_balancer = string<br/>    private_alb_enabled                = bool<br/>    alb_acm_certificate_arn            = string<br/>  })</pre> | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "argoworkflow_ingress_load_balancer": "nlb",<br/>  "autoscaling_enabled": true,<br/>  "expose_dashboard": true,<br/>  "hostname": "",<br/>  "ingress_class_name": "",<br/>  "namespace": "argocd",<br/>  "private_alb_enabled": false,<br/>  "values": {}<br/>}</pre> | no |
 | <a name="input_argoworkflow_enabled"></a> [argoworkflow\_enabled](#input\_argoworkflow\_enabled) | Determine whether argocd-workflow is enabled or not | `bool` | `false` | no |
 | <a name="input_argoworkflow_version"></a> [argoworkflow\_version](#input\_argoworkflow\_version) | Version of the argoworkflow addon | `string` | `"0.29.2"` | no |
 | <a name="input_auto_scaling_group_names"></a> [auto\_scaling\_group\_names](#input\_auto\_scaling\_group\_names) | List of self-managed node groups autoscaling group names | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver_helm_config"></a> [aws\_efs\_csi\_driver\_helm\_config](#input\_aws\_efs\_csi\_driver\_helm\_config) | AWS EFS CSI driver Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_load_balancer_controller_enabled"></a> [aws\_load\_balancer\_controller\_enabled](#input\_aws\_load\_balancer\_controller\_enabled) | Enable or disable AWS Load Balancer Controller add-on for managing and controlling load balancers in Kubernetes. | `bool` | `false` | no |
-| <a name="input_aws_load_balancer_controller_helm_config"></a> [aws\_load\_balancer\_controller\_helm\_config](#input\_aws\_load\_balancer\_controller\_helm\_config) | Configuration for the AWS Load Balancer Controller Helm release | <pre>object({<br>    values                        = any<br>    namespace                     = string<br>    load_balancer_controller_name = string<br>  })</pre> | <pre>{<br>  "load_balancer_controller_name": "",<br>  "namespace": "",<br>  "values": []<br>}</pre> | no |
+| <a name="input_aws_load_balancer_controller_helm_config"></a> [aws\_load\_balancer\_controller\_helm\_config](#input\_aws\_load\_balancer\_controller\_helm\_config) | Configuration for the AWS Load Balancer Controller Helm release | <pre>object({<br/>    values                        = any<br/>    namespace                     = string<br/>    load_balancer_controller_name = string<br/>  })</pre> | <pre>{<br/>  "load_balancer_controller_name": "",<br/>  "namespace": "",<br/>  "values": []<br/>}</pre> | no |
 | <a name="input_aws_load_balancer_controller_version"></a> [aws\_load\_balancer\_controller\_version](#input\_aws\_load\_balancer\_controller\_version) | Version of the aws load balancer controller addon | `string` | `"1.8.1"` | no |
 | <a name="input_aws_node_termination_handler_enabled"></a> [aws\_node\_termination\_handler\_enabled](#input\_aws\_node\_termination\_handler\_enabled) | Enable or disable node termination handler | `bool` | `false` | no |
 | <a name="input_aws_node_termination_handler_helm_config"></a> [aws\_node\_termination\_handler\_helm\_config](#input\_aws\_node\_termination\_handler\_helm\_config) | AWS Node Termination Handler Helm Chart config | `any` | `{}` | no |
@@ -509,7 +509,7 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_cert_manager_version"></a> [cert\_manager\_version](#input\_cert\_manager\_version) | Version of the cert manager addon | `string` | `"v1.15.1"` | no |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Whether to enable the Cluster Autoscaler add-on or not. | `bool` | `false` | no |
 | <a name="input_cluster_autoscaler_helm_config"></a> [cluster\_autoscaler\_helm\_config](#input\_cluster\_autoscaler\_helm\_config) | CoreDNS Autoscaler Helm Chart config | `any` | `{}` | no |
-| <a name="input_cluster_autoscaler_version"></a> [cluster\_autoscaler\_version](#input\_cluster\_autoscaler\_version) | Version of the cluster autoscaler addon | `string` | `"9.46.3"` | no |
+| <a name="input_cluster_autoscaler_version"></a> [cluster\_autoscaler\_version](#input\_cluster\_autoscaler\_version) | Version of the cluster autoscaler addon | `string` | `"9.46.6"` | no |
 | <a name="input_cluster_issuer"></a> [cluster\_issuer](#input\_cluster\_issuer) | Specify the letsecrypt cluster-issuer for ingress tls. | `string` | `"letsencrypt-prod"` | no |
 | <a name="input_cluster_proportional_autoscaler_chart_version"></a> [cluster\_proportional\_autoscaler\_chart\_version](#input\_cluster\_proportional\_autoscaler\_chart\_version) | Version of the cluster proportional autoscaler helm chart | `string` | `"1.1.0"` | no |
 | <a name="input_cluster_proportional_autoscaler_enabled"></a> [cluster\_proportional\_autoscaler\_enabled](#input\_cluster\_proportional\_autoscaler\_enabled) | Whether to enable the Cluster proportional Autoscaler add-on or not. | `bool` | `false` | no |
@@ -520,9 +520,9 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_data_plane_wait_arn"></a> [data\_plane\_wait\_arn](#input\_data\_plane\_wait\_arn) | Addon deployment will not proceed until this value is known. Set to node group/Fargate profile ARN to wait for data plane to be ready before provisioning addons | `string` | `""` | no |
 | <a name="input_defectdojo_enabled"></a> [defectdojo\_enabled](#input\_defectdojo\_enabled) | Enable defectdojo for service mesh. | `bool` | `false` | no |
 | <a name="input_defectdojo_hostname"></a> [defectdojo\_hostname](#input\_defectdojo\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
-| <a name="input_ebs_csi_driver_version"></a> [ebs\_csi\_driver\_version](#input\_ebs\_csi\_driver\_version) | Version of the ebs csi driver addon | `string` | `"v1.36.0-eksbuild.1"` | no |
+| <a name="input_ebs_csi_driver_version"></a> [ebs\_csi\_driver\_version](#input\_ebs\_csi\_driver\_version) | Version of the ebs csi driver addon | `string` | `"v1.41.0-eksbuild.1"` | no |
 | <a name="input_efs_storage_class_enabled"></a> [efs\_storage\_class\_enabled](#input\_efs\_storage\_class\_enabled) | Enable or disable the Amazon Elastic File System (EFS) add-on for EKS cluster. | `bool` | `false` | no |
-| <a name="input_efs_version"></a> [efs\_version](#input\_efs\_version) | Version of the efs addon | `string` | `"2.3.2"` | no |
+| <a name="input_efs_version"></a> [efs\_version](#input\_efs\_version) | Version of the efs addon | `string` | `"3.1.8"` | no |
 | <a name="input_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#input\_eks\_cluster\_endpoint) | Endpoint for your Kubernetes API server | `string` | `null` | no |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Fetch Cluster ID of the cluster | `string` | `""` | no |
 | <a name="input_eks_cluster_version"></a> [eks\_cluster\_version](#input\_eks\_cluster\_version) | The Kubernetes version for the cluster | `string` | `null` | no |
@@ -534,12 +534,12 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_external_secrets_enabled"></a> [external\_secrets\_enabled](#input\_external\_secrets\_enabled) | Enable or disable External Secrets operator add-on for managing external secrets. | `bool` | `false` | no |
 | <a name="input_external_secrets_helm_config"></a> [external\_secrets\_helm\_config](#input\_external\_secrets\_helm\_config) | External Secrets operator Helm Chart config | `any` | `{}` | no |
 | <a name="input_external_secrets_irsa_policies"></a> [external\_secrets\_irsa\_policies](#input\_external\_secrets\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
-| <a name="input_external_secrets_secrets_manager_arns"></a> [external\_secrets\_secrets\_manager\_arns](#input\_external\_secrets\_secrets\_manager\_arns) | List of Secrets Manager ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br>  "arn:aws:secretsmanager:*:*:secret:*"<br>]</pre> | no |
-| <a name="input_external_secrets_ssm_parameter_arns"></a> [external\_secrets\_ssm\_parameter\_arns](#input\_external\_secrets\_ssm\_parameter\_arns) | List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br>  "arn:aws:ssm:*:*:parameter/*"<br>]</pre> | no |
-| <a name="input_external_secrets_version"></a> [external\_secrets\_version](#input\_external\_secrets\_version) | Version of the external secrets addon | `string` | `"0.9.19"` | no |
+| <a name="input_external_secrets_secrets_manager_arns"></a> [external\_secrets\_secrets\_manager\_arns](#input\_external\_secrets\_secrets\_manager\_arns) | List of Secrets Manager ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br/>  "arn:aws:secretsmanager:*:*:secret:*"<br/>]</pre> | no |
+| <a name="input_external_secrets_ssm_parameter_arns"></a> [external\_secrets\_ssm\_parameter\_arns](#input\_external\_secrets\_ssm\_parameter\_arns) | List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets | `list(string)` | <pre>[<br/>  "arn:aws:ssm:*:*:parameter/*"<br/>]</pre> | no |
+| <a name="input_external_secrets_version"></a> [external\_secrets\_version](#input\_external\_secrets\_version) | Version of the external secrets addon | `string` | `"0.15.1"` | no |
 | <a name="input_falco_enabled"></a> [falco\_enabled](#input\_falco\_enabled) | Determines whether Falco is enabled. | `bool` | `false` | no |
 | <a name="input_falco_version"></a> [falco\_version](#input\_falco\_version) | Version of the falco addon | `string` | `"4.0.0"` | no |
-| <a name="input_ingress_nginx_config"></a> [ingress\_nginx\_config](#input\_ingress\_nginx\_config) | Configure ingress-nginx to setup addons | <pre>object({<br>    ingress_class_name     = string<br>    enable_service_monitor = bool<br>    values                 = any<br>    namespace              = string<br>  })</pre> | <pre>{<br>  "enable_service_monitor": false,<br>  "ingress_class_name": "ingress-nginx",<br>  "namespace": "ingress-nginx",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_ingress_nginx_config"></a> [ingress\_nginx\_config](#input\_ingress\_nginx\_config) | Configure ingress-nginx to setup addons | <pre>object({<br/>    ingress_class_name     = string<br/>    enable_service_monitor = bool<br/>    values                 = any<br/>    namespace              = string<br/>  })</pre> | <pre>{<br/>  "enable_service_monitor": false,<br/>  "ingress_class_name": "ingress-nginx",<br/>  "namespace": "ingress-nginx",<br/>  "values": {}<br/>}</pre> | no |
 | <a name="input_ingress_nginx_enabled"></a> [ingress\_nginx\_enabled](#input\_ingress\_nginx\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_ingress_nginx_version"></a> [ingress\_nginx\_version](#input\_ingress\_nginx\_version) | Version of the ingress nginx addon | `string` | `"4.11.0"` | no |
 | <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | whether IPv6 enabled or not | `bool` | `false` | no |
@@ -551,11 +551,11 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_karpenter_helm_config"></a> [karpenter\_helm\_config](#input\_karpenter\_helm\_config) | Karpenter autoscaler add-on config | `any` | `{}` | no |
 | <a name="input_karpenter_irsa_policies"></a> [karpenter\_irsa\_policies](#input\_karpenter\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
 | <a name="input_karpenter_node_iam_instance_profile"></a> [karpenter\_node\_iam\_instance\_profile](#input\_karpenter\_node\_iam\_instance\_profile) | Karpenter Node IAM Instance profile id | `string` | `""` | no |
-| <a name="input_karpenter_version"></a> [karpenter\_version](#input\_karpenter\_version) | Version of the karpenter addon | `string` | `"1.3.1"` | no |
+| <a name="input_karpenter_version"></a> [karpenter\_version](#input\_karpenter\_version) | Version of the karpenter addon | `string` | `"1.3.3"` | no |
 | <a name="input_keda_enabled"></a> [keda\_enabled](#input\_keda\_enabled) | Enable or disable Kubernetes Event-driven Autoscaling (KEDA) add-on for autoscaling workloads. | `bool` | `false` | no |
 | <a name="input_keda_helm_config"></a> [keda\_helm\_config](#input\_keda\_helm\_config) | KEDA Event-based autoscaler add-on config | `any` | `{}` | no |
 | <a name="input_keda_irsa_policies"></a> [keda\_irsa\_policies](#input\_keda\_irsa\_policies) | Additional IAM policies for a IAM role for service accounts | `list(string)` | `[]` | no |
-| <a name="input_keda_version"></a> [keda\_version](#input\_keda\_version) | Version of the keda addon | `string` | `"2.14.2"` | no |
+| <a name="input_keda_version"></a> [keda\_version](#input\_keda\_version) | Version of the keda addon | `string` | `"2.17.0"` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key used to encrypt AWS resources in the EKS cluster. | `string` | `""` | no |
 | <a name="input_kms_policy_arn"></a> [kms\_policy\_arn](#input\_kms\_policy\_arn) | Specify the ARN of KMS policy, for service accounts. | `string` | `""` | no |
 | <a name="input_kubeclarity_enabled"></a> [kubeclarity\_enabled](#input\_kubeclarity\_enabled) | Enable or disable the deployment of an kubeclarity for Kubernetes. | `bool` | `false` | no |
@@ -565,20 +565,20 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_kubecost_enabled"></a> [kubecost\_enabled](#input\_kubecost\_enabled) | Enable or disable the deployment of an Kubecost for Kubernetes. | `bool` | `false` | no |
 | <a name="input_kubecost_hostname"></a> [kubecost\_hostname](#input\_kubecost\_hostname) | Specify the hostname for the kubecsot. | `string` | `""` | no |
 | <a name="input_kubecost_version"></a> [kubecost\_version](#input\_kubecost\_version) | Version of the kubecost addon | `string` | `"v2.1.0-eksbuild.1"` | no |
-| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify all the configuration setup here | <pre>object({<br>    k8s_dashboard_hostname              = string<br>    values_yaml                         = any<br>    enable_service_monitor              = bool<br>    k8s_dashboard_ingress_load_balancer = string<br>    alb_acm_certificate_arn             = string<br>    private_alb_enabled                 = bool<br>    ingress_class_name                  = string<br>  })</pre> | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "enable_service_monitor": false,<br>  "ingress_class_name": "",<br>  "k8s_dashboard_hostname": "",<br>  "k8s_dashboard_ingress_load_balancer": "",<br>  "private_alb_enabled": false,<br>  "values_yaml": {}<br>}</pre> | no |
+| <a name="input_kubernetes_dashboard_config"></a> [kubernetes\_dashboard\_config](#input\_kubernetes\_dashboard\_config) | Specify all the configuration setup here | <pre>object({<br/>    k8s_dashboard_hostname              = string<br/>    values_yaml                         = any<br/>    enable_service_monitor              = bool<br/>    k8s_dashboard_ingress_load_balancer = string<br/>    alb_acm_certificate_arn             = string<br/>    private_alb_enabled                 = bool<br/>    ingress_class_name                  = string<br/>  })</pre> | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "enable_service_monitor": false,<br/>  "ingress_class_name": "",<br/>  "k8s_dashboard_hostname": "",<br/>  "k8s_dashboard_ingress_load_balancer": "",<br/>  "private_alb_enabled": false,<br/>  "values_yaml": {}<br/>}</pre> | no |
 | <a name="input_kubernetes_dashboard_enabled"></a> [kubernetes\_dashboard\_enabled](#input\_kubernetes\_dashboard\_enabled) | Determines whether k8s-dashboard is enabled or not | `bool` | `false` | no |
 | <a name="input_kubernetes_dashboard_version"></a> [kubernetes\_dashboard\_version](#input\_kubernetes\_dashboard\_version) | Version of the kubernetes dashboard addon | `string` | `"6.0.8"` | no |
 | <a name="input_metrics_server_enabled"></a> [metrics\_server\_enabled](#input\_metrics\_server\_enabled) | Enable or disable the metrics server add-on for EKS cluster. | `bool` | `false` | no |
 | <a name="input_metrics_server_helm_config"></a> [metrics\_server\_helm\_config](#input\_metrics\_server\_helm\_config) | Metrics Server Helm Chart config | `any` | `{}` | no |
 | <a name="input_metrics_server_helm_version"></a> [metrics\_server\_helm\_version](#input\_metrics\_server\_helm\_version) | Version of the metrics server helm chart | `string` | `"3.11.0"` | no |
-| <a name="input_metrics_server_version"></a> [metrics\_server\_version](#input\_metrics\_server\_version) | Version of the metrics server addon | `string` | `"3.12.1"` | no |
+| <a name="input_metrics_server_version"></a> [metrics\_server\_version](#input\_metrics\_server\_version) | Version of the metrics server addon | `string` | `"3.12.2"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specify the name prefix of the EKS cluster resources. | `string` | `""` | no |
 | <a name="input_node_termination_handler_version"></a> [node\_termination\_handler\_version](#input\_node\_termination\_handler\_version) | Specify the version of node termination handler | `string` | `"0.21.0"` | no |
-| <a name="input_private_ingress_nginx_config"></a> [private\_ingress\_nginx\_config](#input\_private\_ingress\_nginx\_config) | Configure private-ingress-nginx to setup addons | <pre>object({<br>    ingress_class_name     = string<br>    enable_service_monitor = bool<br>    values                 = any<br>    namespace              = string<br>  })</pre> | <pre>{<br>  "enable_service_monitor": false,<br>  "ingress_class_name": "private-nginx",<br>  "namespace": "private-nginx",<br>  "values": {}<br>}</pre> | no |
+| <a name="input_private_ingress_nginx_config"></a> [private\_ingress\_nginx\_config](#input\_private\_ingress\_nginx\_config) | Configure private-ingress-nginx to setup addons | <pre>object({<br/>    ingress_class_name     = string<br/>    enable_service_monitor = bool<br/>    values                 = any<br/>    namespace              = string<br/>  })</pre> | <pre>{<br/>  "enable_service_monitor": false,<br/>  "ingress_class_name": "private-nginx",<br/>  "namespace": "private-nginx",<br/>  "values": {}<br/>}</pre> | no |
 | <a name="input_private_ingress_nginx_enabled"></a> [private\_ingress\_nginx\_enabled](#input\_private\_ingress\_nginx\_enabled) | Control wheather to install public nlb or private nlb. Default is private | `bool` | `false` | no |
 | <a name="input_private_ingress_nginx_version"></a> [private\_ingress\_nginx\_version](#input\_private\_ingress\_nginx\_version) | Version of the ingress nginx addon | `string` | `"4.11.0"` | no |
-| <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets of the VPC which can be used by EFS, argocd, workflow and k8s dashboard | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
-| <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnets of the VPC which can be used by argocd, workflow and k8s dashboard | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets of the VPC which can be used by EFS, argocd, workflow and k8s dashboard | `list(string)` | <pre>[<br/>  ""<br/>]</pre> | no |
+| <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnets of the VPC which can be used by argocd, workflow and k8s dashboard | `list(string)` | <pre>[<br/>  ""<br/>]</pre> | no |
 | <a name="input_reloader_enabled"></a> [reloader\_enabled](#input\_reloader\_enabled) | Enable or disable Reloader, a Kubernetes controller to watch changes in ConfigMap and Secret objects and trigger an application reload on their changes. | `bool` | `false` | no |
 | <a name="input_reloader_helm_config"></a> [reloader\_helm\_config](#input\_reloader\_helm\_config) | Reloader Helm Chart config | `any` | `{}` | no |
 | <a name="input_reloader_version"></a> [reloader\_version](#input\_reloader\_version) | Version of the reloader addon | `string` | `"v1.0.115"` | no |
@@ -589,12 +589,12 @@ Velero is designed to work with cloud native environments, making it a popular c
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | The Slack webhook URL used for notifications. | `string` | `""` | no |
 | <a name="input_storage_class_name"></a> [storage\_class\_name](#input\_storage\_class\_name) | Specify the hostname for the kubecsot. | `string` | `"infra-service-sc"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `map('BusinessUnit`,`XYZ`) | `map(string)` | `{}` | no |
-| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br>  "backup_bucket_name": "",<br>  "namespaces": "",<br>  "retention_period_in_days": 45,<br>  "schedule_backup_cron_time": "",<br>  "slack_appToken": "",<br>  "slack_botToken": "",<br>  "slack_notification_channel_name": "",<br>  "velero_backup_name": ""<br>}</pre> | no |
+| <a name="input_velero_config"></a> [velero\_config](#input\_velero\_config) | Configuration to provide settings for Velero, including which namespaces to backup, retention period, backup schedule, and backup bucket name. | `any` | <pre>{<br/>  "backup_bucket_name": "",<br/>  "namespaces": "",<br/>  "retention_period_in_days": 45,<br/>  "schedule_backup_cron_time": "",<br/>  "slack_appToken": "",<br/>  "slack_botToken": "",<br/>  "slack_notification_channel_name": "",<br/>  "velero_backup_name": ""<br/>}</pre> | no |
 | <a name="input_velero_enabled"></a> [velero\_enabled](#input\_velero\_enabled) | Enable or disable the installation of Velero, which is a backup and restore solution for Kubernetes clusters. | `bool` | `false` | no |
 | <a name="input_velero_notification_enabled"></a> [velero\_notification\_enabled](#input\_velero\_notification\_enabled) | Enable or disable the notification for velero backup. | `bool` | `false` | no |
-| <a name="input_vpa_config"></a> [vpa\_config](#input\_vpa\_config) | Configure VPA CRD to setup addon | <pre>object({<br>    values = list(string)<br>  })</pre> | <pre>{<br>  "values": []<br>}</pre> | no |
+| <a name="input_vpa_config"></a> [vpa\_config](#input\_vpa\_config) | Configure VPA CRD to setup addon | <pre>object({<br/>    values = list(string)<br/>  })</pre> | <pre>{<br/>  "values": []<br/>}</pre> | no |
 | <a name="input_vpa_enabled"></a> [vpa\_enabled](#input\_vpa\_enabled) | Choose whether to enable vpa or not | `bool` | `false` | no |
-| <a name="input_vpa_version"></a> [vpa\_version](#input\_vpa\_version) | Version of VPA CRD | `string` | `"9.9.0"` | no |
+| <a name="input_vpa_version"></a> [vpa\_version](#input\_vpa\_version) | Version of VPA CRD | `string` | `"10.0.0"` | no |
 | <a name="input_vpc_cni_version"></a> [vpc\_cni\_version](#input\_vpc\_cni\_version) | Specify VPC CNI addons version | `string` | `"v1.19.0-eksbuild.1"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the VPC where the cluster and its nodes will be provisioned | `string` | `""` | no |
 | <a name="input_worker_iam_role_arn"></a> [worker\_iam\_role\_arn](#input\_worker\_iam\_role\_arn) | Specify the IAM role Arn for the nodes | `string` | `""` | no |

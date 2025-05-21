@@ -19,8 +19,6 @@ affinity:
           - "true"
 
 settings:
-  clusterName: ${eks_cluster_id}
-  clusterEndpoint: ${eks_cluster_endpoint}
   eksControlPlane: false
   featureGates:
     spotToSpotConsolidation: true
