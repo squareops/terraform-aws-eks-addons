@@ -37,5 +37,5 @@ variable "addon_context" {
 variable "chart_version" {
   description = "aws efs addons helm version"
   type        = string
-  default     = "2.3.2"
+  default     = "3.1.8"
 }

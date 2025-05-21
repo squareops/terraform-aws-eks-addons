@@ -22,7 +22,7 @@ locals {
 }
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.2.0"
+  version              = "4.3.0"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -38,11 +38,11 @@ module "eks-addons" {
 
   #VPC-CNI-DRIVER
   amazon_eks_vpc_cni_enabled = false # enable VPC-CNI
-  vpc_cni_version            = "v1.19.2-eksbuild.1"
+  vpc_cni_version            = "v1.19.3-eksbuild.1"
 
   #EBS-CSI-DRIVER
   enable_amazon_eks_aws_ebs_csi_driver = false # enable EBS CSI Driver
-  ebs_csi_driver_version               = "v1.36.0-eksbuild.1"
+  ebs_csi_driver_version               = "v1.41.0-eksbuild.1"
   amazon_eks_aws_ebs_csi_driver_config = {
     values = [file("${path.module}/config/ebs-csi.yaml")]
   }
@@ -53,26 +53,26 @@ module "eks-addons" {
 
   ## EfS-STORAGE-CLASS
   efs_storage_class_enabled = false # to enable EBS storage class
-  efs_version               = "2.3.2"
+  efs_version               = "3.1.8"
 
   ## SERVICE-MONITORING-CRDs
   service_monitor_crd_enabled = false # enable service monitor along with K8S-dashboard (required CRD) or when require service monitor in reloader and cert-manager
 
   ## METRIC-SERVER
   metrics_server_enabled     = false # to enable metrics server
-  metrics_server_version     = "3.12.1"
+  metrics_server_version     = "3.12.2"
   metrics_server_helm_config = [file("${path.module}/config/metrics-server.yaml")]
 
   # VerticalPodAutoscaler
   vpa_enabled = false
-  vpa_version = "9.9.0"
+  vpa_version = "10.0.0"
   vpa_config = {
     values = [file("${path.module}/config/vpa-crd.yaml")]
   }
 
   ## CLUSTER-AUTOSCALER
   cluster_autoscaler_enabled     = false # to enable cluster autoscaller
-  cluster_autoscaler_version     = "9.46.3"
+  cluster_autoscaler_version     = "9.46.6"
   cluster_autoscaler_helm_config = [file("${path.module}/config/cluster-autoscaler.yaml")]
 
   ## NODE-TERMINATION-HANDLER
@@ -86,14 +86,14 @@ module "eks-addons" {
 
   ## KEDA
   keda_enabled = false # to enable Keda in the EKS cluster
-  keda_version = "2.14.2"
+  keda_version = "2.17.0"
   keda_helm_config = {
     values = [file("${path.module}/config/keda.yaml")]
   }
 
   ## KARPENTER
   karpenter_enabled = false # to enable Karpenter (installs required CRDs )
-  karpenter_version = "1.3.1"
+  karpenter_version = "1.3.3"
   karpenter_helm_config = {
     enable_service_monitor = false # to enable monitoring for kafalserpenter
     values                 = [file("${path.module}/config/karpenter.yaml")]
@@ -112,7 +112,7 @@ module "eks-addons" {
 
   ## EXTERNAL-SECRETS
   external_secrets_enabled = false # to enable external secrets
-  external_secrets_version = "0.9.19"
+  external_secrets_version = "0.15.1"
   external_secrets_helm_config = {
     values = [file("${path.module}/config/external-secret.yaml")]
   }
