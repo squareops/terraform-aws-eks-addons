@@ -22,7 +22,7 @@ locals {
 }
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.3.0"
+  version              = "4.3.1"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
