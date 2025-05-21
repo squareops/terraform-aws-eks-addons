@@ -22,7 +22,7 @@ locals {
 }
 module "eks-addons" {
   source               = "squareops/eks-addons/aws"
-  version              = "4.3.0"
+  version              = "4.3.1"
   name                 = local.name
   tags                 = local.additional_tags
   vpc_id               = local.vpc_id
@@ -137,7 +137,7 @@ module "eks-addons" {
 
   ## INGRESS-NGINX
   ingress_nginx_enabled = false # to enable ingress nginx
-  ingress_nginx_version = "4.11.0"
+  ingress_nginx_version = "4.12.1"
   ingress_nginx_config = {
     values                 = [file("${path.module}/config/ingress-nginx.yaml")]
     enable_service_monitor = false   # enable monitoring in nginx ingress
@@ -166,7 +166,7 @@ module "eks-addons" {
 
   ## KUBERNETES-DASHBOARD
   kubernetes_dashboard_enabled = false
-  kubernetes_dashboard_version = "6.0.8"
+  kubernetes_dashboard_version = "7.11.1"
   kubernetes_dashboard_config = {
     values_yaml                         = file("${path.module}/config/kubernetes-dashboard.yaml")
     k8s_dashboard_ingress_load_balancer = "nlb"                            # Pass either "nlb/alb" to choose load balancer controller as ingress-nginx controller or ALB controller
